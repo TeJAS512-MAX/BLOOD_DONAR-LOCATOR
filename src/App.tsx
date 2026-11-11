@@ -8,7 +8,6 @@ import {
   BLOOD_GROUPS,
   COMPATIBILITY_MAP,
   COMPONENT_STORIES,
-  DONATION_GUIDES,
   DONOR_PROFILES,
   GITHUB_REPO_URL,
   INITIAL_URGENT_REQUESTS,
@@ -27,6 +26,14 @@ function BrandMark() {
       <path d="M19 3.5C15.2 9.2 7.3 16.8 7.3 23.1a11.7 11.7 0 0 0 23.4 0C30.7 16.8 22.8 9.2 19 3.5Z" />
       <path d="M12.6 23.3a6.4 6.4 0 0 0 6.4 6.4" />
       <circle cx="19" cy="19.2" r="2.2" />
+    </svg>
+  );
+}
+
+function DropBadgeIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="drop-icon">
+      <path d="M12 2.5C9.2 6.8 5 11.4 5 15.3a7 7 0 0 0 14 0C19 11.4 14.8 6.8 12 2.5Z" />
     </svg>
   );
 }
@@ -60,61 +67,137 @@ function CloseIcon() {
   );
 }
 
-function App() {
-  const finderRef = useRef<HTMLElement>(null);
-  const locationRef = useRef<HTMLInputElement>(null);
+function StepIllustration({ step }: { step: 1 | 2 | 3 }) {
+  if (step === 1) {
+    return (
+      <svg aria-hidden="true" className="step-svg" viewBox="0 0 96 96" fill="none">
+        <rect x="16" y="20" width="64" height="56" rx="14" fill="#FFF1F2" stroke="#FDA4AF" strokeWidth="2" />
+        <circle cx="44" cy="46" r="14" stroke="#E11D48" strokeWidth="2.5" />
+        <path d="M54 56l12 12" stroke="#E11D48" strokeWidth="3" strokeLinecap="round" />
+        <path d="M44 39v14M37 46h14" stroke="#E11D48" strokeWidth="2.2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (step === 2) {
+    return (
+      <svg aria-hidden="true" className="step-svg" viewBox="0 0 96 96" fill="none">
+        <rect x="16" y="20" width="64" height="56" rx="14" fill="#ECFDF5" stroke="#6EE7B7" strokeWidth="2" />
+        <path d="M48 30l16 7v12c0 10-7 18-16 21-9-3-16-11-16-21V37l16-7Z" fill="#D1FAE5" stroke="#10B981" strokeWidth="2.4" />
+        <path d="M41 49l5 5 10-10" stroke="#059669" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg aria-hidden="true" className="step-svg" viewBox="0 0 96 96" fill="none">
+      <rect x="16" y="20" width="64" height="56" rx="14" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="2" />
+      <path d="M48 31c-4.5 6.8-11 13.5-11 20a11 11 0 0 0 22 0c0-6.5-6.5-13.2-11-20Z" fill="#DBEAFE" stroke="#2563EB" strokeWidth="2.4" />
+      <circle cx="67" cy="36" r="5" fill="#E11D48" />
+      <circle cx="29" cy="58" r="4" fill="#10B981" />
+    </svg>
+  );
+}
 
-  // Navigation & Hero 3D controls
+interface CountUpMetricProps {
+  end: number;
+  suffix?: string;
+  prefix?: string;
+  trigger: boolean;
+}
+
+function CountUpMetric({ end, suffix = "", prefix = "", trigger }: CountUpMetricProps) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (!trigger) return;
+    let frameId = 0;
+    const duration = 1100;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * end));
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(tick);
+      }
+    };
+    frameId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [end, trigger]);
+
+  return (
+    <span>
+      {prefix}
+      {value}
+      {suffix}
+    </span>
+  );
+}
+
+function App() {
+  const finderSectionRef = useRef<HTMLElement>(null);
+  const requestsCarouselRef = useRef<HTMLDivElement>(null);
+  const impactStatsRef = useRef<HTMLDivElement>(null);
+
+  // Navigation, Toast & Hero 3D
   const [menuOpen, setMenuOpen] = useState(false);
   const [heroBoost, setHeroBoost] = useState(false);
-  const [heroFreeExplore, setHeroFreeExplore] = useState(false);
   const [pulseCount, setPulseCount] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [impactVisible, setImpactVisible] = useState(false);
 
-  // Motion Film chapter synchronization
-  const [requestedFilmChapter, setRequestedFilmChapter] = useState<number | null>(null);
-  const [activeFilmChapter, setActiveFilmChapter] = useState(0);
-
-  // Donor discovery & compatibility-aware matching
+  // Floating Find a Donor Bridge State
   const [bloodGroup, setBloodGroup] = useState<"all" | BloodGroup>("O-");
-  const [includeCompatible, setIncludeCompatible] = useState(true);
-  const [readyOnly, setReadyOnly] = useState(false);
   const [location, setLocation] = useState("");
-  const [compatGroup, setCompatGroup] = useState<BloodGroup>("O-");
+  const [urgencyLevel, setUrgencyLevel] = useState<"any" | "emergency" | "same-day" | "scheduled">("any");
+  const [includeCompatible, setIncludeCompatible] = useState(true);
+  const [showDonorDrawer, setShowDonorDrawer] = useState(true);
   const [activeDonor, setActiveDonor] = useState<DonorProfile | null>(null);
 
-  // Urgent requests + Demo Request Composer
+  // Urgent Requests Carousel + Skeleton Loader
   const [requestList, setRequestList] = useState<BloodRequest[]>(INITIAL_URGENT_REQUESTS);
-  const [requestFilter, setRequestFilter] = useState<"all" | "Urgent" | "Priority">("all");
-  const [scenarioFilter, setScenarioFilter] = useState<
-    "all" | "Emergency Trauma" | "Planned Surgery" | "Critical Care"
-  >("all");
+  const [requestsLoading, setRequestsLoading] = useState(false);
   const [activeRequest, setActiveRequest] = useState<BloodRequest | null>(null);
   const [createRequestOpen, setCreateRequestOpen] = useState(false);
 
-  // Blood bank network & 3D spatial topology
+  // Blood Bank & Hospital Network + Skeleton Loader
   const [directoryQuery, setDirectoryQuery] = useState("");
   const [partnerTypeFilter, setPartnerTypeFilter] = useState<"all" | "Blood bank" | "Hospital partner">("all");
   const [selectedPartnerId, setSelectedPartnerId] = useState<string>(BLOOD_BANKS[0].id);
+  const [mapLoading, setMapLoading] = useState(false);
 
-  // Donation awareness
-  const [openGuide, setOpenGuide] = useState(0);
-  const [awarenessTab, setAwarenessTab] = useState<"guide" | "myths" | "readiness">("guide");
+  // Donation Awareness Bento Box
   const [checkedReadiness, setCheckedReadiness] = useState<Record<string, boolean>>({});
+  const [mythIndex, setMythIndex] = useState(0);
+  const [filmModalOpen, setFilmModalOpen] = useState(false);
+  const [requestedFilmChapter, setRequestedFilmChapter] = useState<number | null>(null);
 
-  // 3D Impact Orbit & simulator
+  // 3D Impact Component Orbit
   const [selectedComponentId, setSelectedComponentId] = useState<BloodComponentStory["id"]>("red-cells");
   const [donationCount, setDonationCount] = useState(1);
 
-  // Donor registration & challenge brief modals
+  // Auth / Registration / Brief / Newsletter
+  const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [briefOpen, setBriefOpen] = useState(false);
-  const [repoCopied, setRepoCopied] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
   const [demoPass, setDemoPass] = useState<{ name: string; group: string; city: string; id: string } | null>(null);
+  const [demoUser, setDemoUser] = useState<string | null>(null);
 
   const modalOpen =
-    registerOpen || briefOpen || createRequestOpen || activeRequest !== null || activeDonor !== null;
+    registerOpen ||
+    loginOpen ||
+    briefOpen ||
+    filmModalOpen ||
+    createRequestOpen ||
+    activeRequest !== null ||
+    activeDonor !== null;
+
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    window.setTimeout(() => {
+      setToastMessage((cur) => (cur === msg ? null : cur));
+    }, 3600);
+  }, []);
 
   const matches = useMemo(() => {
     const query = location.trim().toLowerCase();
@@ -134,25 +217,18 @@ function App() {
         profile.location.toLowerCase().includes(query) ||
         profile.city.toLowerCase().includes(query);
 
-      const readinessMatches = !readyOnly || profile.availability === "Ready this week";
-      return groupMatches && locationMatches && readinessMatches;
+      const urgencyMatches =
+        urgencyLevel === "emergency" ? profile.availability === "Ready this week" : true;
+
+      return groupMatches && locationMatches && urgencyMatches;
     }).sort((a, b) => {
-      // Prioritize exact group match first when compatible matching is enabled
       if (bloodGroup !== "all") {
         if (a.group === bloodGroup && b.group !== bloodGroup) return -1;
         if (b.group === bloodGroup && a.group !== bloodGroup) return 1;
       }
       return 0;
     });
-  }, [bloodGroup, includeCompatible, location, readyOnly]);
-
-  const filteredRequests = useMemo(() => {
-    return requestList.filter((req) => {
-      const matchesPriority = requestFilter === "all" || req.priority === requestFilter;
-      const matchesScenario = scenarioFilter === "all" || req.scenario === scenarioFilter;
-      return matchesPriority && matchesScenario;
-    });
-  }, [requestList, requestFilter, scenarioFilter]);
+  }, [bloodGroup, includeCompatible, location, urgencyLevel]);
 
   const filteredBanks = useMemo(() => {
     const query = directoryQuery.trim().toLowerCase();
@@ -177,29 +253,43 @@ function App() {
     [selectedComponentId],
   );
 
-  const activeCompatibility = COMPATIBILITY_MAP[compatGroup];
-
+  // Scroll fade-in-up observer + Impact CountUp trigger
   useEffect(() => {
-    const onScroll = () => {
-      const doc = document.documentElement;
-      const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
-      setScrollProgress(Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100)));
+    const elements = document.querySelectorAll(".fade-in-up");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+          }
+        });
+      },
+      { threshold: 0.12 },
+    );
+    elements.forEach((el) => observer.observe(el));
+
+    const statsEl = impactStatsRef.current;
+    const statsObs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setImpactVisible(true);
+          statsObs.disconnect();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    if (statsEl) statsObs.observe(statsEl);
+
+    return () => {
+      observer.disconnect();
+      statsObs.disconnect();
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
     if (!modalOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setRegisterOpen(false);
-        setBriefOpen(false);
-        setCreateRequestOpen(false);
-        setActiveRequest(null);
-        setActiveDonor(null);
-      }
+      if (event.key === "Escape") closeAllModals();
     };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
@@ -209,20 +299,14 @@ function App() {
     };
   }, [modalOpen]);
 
-  const toggleReadiness = (id: string) => {
-    setCheckedReadiness((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const checkedReadinessCount = Object.values(checkedReadiness).filter(Boolean).length;
-
-  const copyRepoUrl = () => {
-    navigator.clipboard
-      ?.writeText(GITHUB_REPO_URL)
-      .then(() => {
-        setRepoCopied(true);
-        window.setTimeout(() => setRepoCopied(false), 2200);
-      })
-      .catch(() => {});
+  const closeAllModals = () => {
+    setRegisterOpen(false);
+    setLoginOpen(false);
+    setBriefOpen(false);
+    setFilmModalOpen(false);
+    setCreateRequestOpen(false);
+    setActiveRequest(null);
+    setActiveDonor(null);
   };
 
   const handleHeroPulse = useCallback(() => {
@@ -237,13 +321,33 @@ function App() {
     setSelectedPartnerId(id);
   }, []);
 
-  const scrollToFinder = () => {
-    finderRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.setTimeout(() => locationRef.current?.focus({ preventScroll: true }), 450);
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setShowDonorDrawer(true);
+    finderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleGeolocateDemo = () => {
+    setLocation("Bengaluru");
+    showToast("Demo location set to Bengaluru — showing local & compatible donors.");
+  };
+
+  const simulateRequestsRefresh = () => {
+    setRequestsLoading(true);
+    window.setTimeout(() => {
+      setRequestsLoading(false);
+      showToast("Urgent demo request feed synced.");
+    }, 520);
+  };
+
+  const simulateDirectorySync = (nextType: "all" | "Blood bank" | "Hospital partner") => {
+    setPartnerTypeFilter(nextType);
+    setMapLoading(true);
+    window.setTimeout(() => setMapLoading(false), 360);
+  };
+
+  const scrollCarousel = (dir: -1 | 1) => {
+    requestsCarouselRef.current?.scrollBy({ left: dir * 344, behavior: "smooth" });
   };
 
   const handleRegistration = (event: FormEvent<HTMLFormElement>) => {
@@ -255,13 +359,23 @@ function App() {
     const randomNum = Math.floor(500 + Math.random() * 480);
     setDemoPass({ name, group, city, id: `BL-DEMO-${randomNum}` });
     setRegistrationComplete(true);
+    showToast(`Concept donor pass ${`BL-DEMO-${randomNum}`} created!`);
+  };
+
+  const handleDemoLogin = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") || "volunteer@bloodlink.demo").trim();
+    setDemoUser(email.split("@")[0]);
+    setLoginOpen(false);
+    showToast(`Signed in to demo portal as ${email.split("@")[0]}.`);
   };
 
   const handleCreateDemoRequest = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const group = (String(formData.get("reqGroup") || "O-") as BloodGroup);
-    const hospital = String(formData.get("reqHospital") || "City General Hospital").trim();
+    const group = String(formData.get("reqGroup") || "O-") as BloodGroup;
+    const hospital = String(formData.get("reqHospital") || "City Trauma Centre").trim();
     const city = String(formData.get("reqCity") || "Bengaluru").trim();
     const units = String(formData.get("reqUnits") || "2 units").trim();
     const scenario = String(formData.get("reqScenario") || "Emergency Trauma") as BloodRequest["scenario"];
@@ -277,312 +391,228 @@ function App() {
       need: `${scenario} support`,
       scenario,
       priority,
-      updatedLabel: "Demo posted just now",
+      updatedLabel: "Just now",
       componentNeeded: scenario === "Critical Care" ? "Platelets / Plasma" : "Packed Red Cells",
     };
 
     setRequestList((prev) => [newReq, ...prev]);
-    setRequestFilter("all");
-    setScenarioFilter("all");
     setCreateRequestOpen(false);
+    showToast(`Demo urgent request posted for ${group} at ${hospital}.`);
   };
 
-  const openRegistration = () => {
-    setMenuOpen(false);
-    setRegistrationComplete(false);
-    setRegisterOpen(true);
-  };
-
-  const exploreRequest = (request: BloodRequest) => {
+  const acceptRequestDemo = (req: BloodRequest) => {
     setActiveRequest(null);
-    setBloodGroup(request.group);
+    setBloodGroup(req.group);
     setIncludeCompatible(true);
-    setLocation(request.city);
-    window.setTimeout(scrollToFinder, 120);
+    setLocation(req.city);
+    setShowDonorDrawer(true);
+    showToast(`Matching compatible donors for ${req.group} in ${req.city}.`);
+    finderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const applyCompatibilityToSearch = (group: BloodGroup) => {
-    setBloodGroup(group);
-    setIncludeCompatible(true);
-    setLocation("");
+  const toggleReadiness = (id: string) => {
+    setCheckedReadiness((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const closeAllModals = () => {
-    setRegisterOpen(false);
-    setBriefOpen(false);
-    setCreateRequestOpen(false);
-    setActiveRequest(null);
-    setActiveDonor(null);
+  const checkedCount = Object.values(checkedReadiness).filter(Boolean).length;
+  const currentMyth = MYTHS_AND_FACTS[mythIndex];
+
+  const handleNewsletter = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const input = event.currentTarget.elements.namedItem("newsletterEmail") as HTMLInputElement;
+    if (input) input.value = "";
+    showToast("Demo updates subscribed (prototype only — no email saved).");
   };
 
   return (
     <>
-      <div className="scroll-progress-track" aria-hidden="true">
-        <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
-      </div>
+      {/* Z-50: STICKY GLASSMORPHISM NAVBAR */}
+      <header className="sticky-navbar">
+        <div className="max-container navbar-inner">
+          <a className="brand" href="#top" aria-label="BloodLink home" onClick={() => setMenuOpen(false)}>
+            <BrandMark />
+            <span>
+              Blood<span className="brand-accent">Link</span>
+            </span>
+          </a>
 
-      <main>
-        {/* HERO: LIVE 3D WEBGL BLOODSTREAM MACRO-WORLD */}
-        <section className={`hero ${heroFreeExplore ? "is-free-explore" : ""}`} id="top">
-          <HeroBloodstream3D
-            interactiveBoost={heroBoost}
-            freeExplore={heroFreeExplore}
-            onPulse={handleHeroPulse}
-          />
-          <div className="hero-shade" aria-hidden="true" />
+          <nav className={`desktop-nav ${menuOpen ? "is-open" : ""}`} aria-label="Primary navigation">
+            <a href="#find-blood" onClick={() => setMenuOpen(false)}>Find Blood</a>
+            <a href="#requests" onClick={() => setMenuOpen(false)}>Urgent Requests</a>
+            <a href="#network" onClick={() => setMenuOpen(false)}>Blood Banks</a>
+            <a href="#awareness" onClick={() => setMenuOpen(false)}>Awareness</a>
+            <a href="#how-it-works" onClick={() => setMenuOpen(false)}>About</a>
 
-          <header className="site-header page-width">
-            <a className="brand" href="#top" aria-label="BloodLink home" onClick={() => setMenuOpen(false)}>
-              <BrandMark />
-              <span>
-                Blood<span className="brand-accent">Link</span>
-              </span>
-            </a>
-            <button
-              className={`menu-toggle ${menuOpen ? "is-open" : ""}`}
-              type="button"
-              aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <span />
-              <span />
-            </button>
-            <div className={`nav-shell ${menuOpen ? "is-open" : ""}`}>
-              <nav className="main-nav" aria-label="Main navigation">
-                <a href="#problem" onClick={() => setMenuOpen(false)}>Solutions & Film</a>
-                <a href="#discover" onClick={() => setMenuOpen(false)}>Find Donor</a>
-                <a href="#requests" onClick={() => setMenuOpen(false)}>Urgent Needs</a>
-                <a href="#network" onClick={() => setMenuOpen(false)}>Blood Banks</a>
-                <a href="#learn" onClick={() => setMenuOpen(false)}>Awareness</a>
-              </nav>
-              <button className="header-cta" type="button" onClick={openRegistration}>
-                Become a donor <ArrowIcon diagonal />
+            <div className="nav-mobile-actions">
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setLoginOpen(true);
+                }}
+              >
+                {demoUser ? `Hi, ${demoUser}` : "Login"}
+              </button>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setRegistrationComplete(false);
+                  setRegisterOpen(true);
+                }}
+              >
+                Become a Donor
               </button>
             </div>
-          </header>
+          </nav>
 
-          <div className="hero-content-shell page-width">
-            <div className="hero-copy">
-              <p className="eyebrow hero-eyebrow">
-                <span className="live-dot" /> REAL-TIME 3D BLOODSTREAM PLATFORM · CONCEPT PROTOTYPE
-              </p>
-              <h1>
-                Blood<span>Link</span>
-              </h1>
-              <p className="hero-tagline">Every drop connects a life.</p>
-              <p className="hero-description">
-                Connecting voluntary donors, hospitals, and authorised blood banks in one calm, compatibility-aware platform — built for rapid coordination during emergencies, surgeries, and critical care.
-              </p>
-              <div className="hero-actions">
-                <button className="button button-light" type="button" onClick={scrollToFinder}>
-                  Find a donor <ArrowIcon />
-                </button>
-                <button className="button button-outline-light" type="button" onClick={openRegistration}>
-                  Become a donor <ArrowIcon diagonal />
-                </button>
-                <a className="button button-ghost-light" href="#problem">
-                  Watch motion film <ArrowIcon />
-                </a>
-              </div>
-            </div>
+          <div className="navbar-actions">
+            <button type="button" className="btn-ghost" onClick={() => setLoginOpen(true)}>
+              {demoUser ? `Hi, ${demoUser}` : "Login"}
+            </button>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                setRegistrationComplete(false);
+                setRegisterOpen(true);
+              }}
+            >
+              Become a Donor
+            </button>
           </div>
 
-          <div className="hero-bottom-bar page-width">
-            <a className="hero-scroll" href="#problem">
-              <span className="scroll-line" />
-              <span>Scroll to explore solutions</span>
-              <span className="scroll-index">01</span>
-            </a>
+          <button
+            type="button"
+            className={`menu-toggle ${menuOpen ? "is-open" : ""}`}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
+      </header>
 
-            <div className="hero-3d-hud">
-              <span>
-                {heroFreeExplore
-                  ? "FREE 3D ORBIT · DRAG TO ROTATE 360° · CLICK TO PULSE"
-                  : `LIVE 3D WEBGL · DRAG OR CLICK TO PULSE${pulseCount > 0 ? ` (${pulseCount})` : ""}`}
+      <main>
+        {/* B. HERO SECTION: 60% CONTENT / 40% LIVE 3D WEBGL STAGE */}
+        <section className="hero-section" id="top">
+          <div className="hero-radial-glow" aria-hidden="true" />
+          <div className="max-container hero-grid">
+            <div className="hero-left">
+              <span className="hero-badge">
+                <span className="pulse-dot" /> LIVE 3D BLOOD NETWORK · AI PROMPT BATTLE 2.0
               </span>
-              <div className="hero-hud-actions">
+              <h1>
+                Every Drop<br />
+                <span>Connects a Life.</span>
+              </h1>
+              <p className="hero-sub">
+                During medical emergencies, surgeries, and critical treatments, finding suitable donors and verified blood banks shouldn&apos;t stall. BloodLink bridges voluntary donors, hospitals, and authorised blood banks in seconds.
+              </p>
+              <div className="hero-cta-row">
+                <a className="btn-primary btn-lg" href="#find-blood">
+                  Find a Donor <ArrowIcon />
+                </a>
                 <button
                   type="button"
-                  className={`hero-boost-btn ${heroBoost ? "is-active" : ""}`}
+                  className="btn-outline-light btn-lg"
+                  onClick={() => {
+                    setRequestedFilmChapter(0);
+                    setFilmModalOpen(true);
+                  }}
+                >
+                  ▶ Watch Motion Film
+                </button>
+              </div>
+              <div className="hero-3d-controls">
+                <span>Drag 3D network to orbit · Click to pulse{pulseCount > 0 ? ` (${pulseCount})` : ""}</span>
+                <button
+                  type="button"
+                  className={`mini-chip ${heroBoost ? "is-active" : ""}`}
                   onClick={() => setHeroBoost((b) => !b)}
                 >
-                  {heroBoost ? "Flow: Fast" : "Boost Flow"}
-                </button>
-                <button
-                  type="button"
-                  className={`hero-boost-btn ${heroFreeExplore ? "is-active" : ""}`}
-                  onClick={() => setHeroFreeExplore((e) => !e)}
-                >
-                  {heroFreeExplore ? "Exit 3D View" : "Full 3D View"}
+                  {heroBoost ? "Signal Flow: Fast" : "Boost 3D Flow"}
                 </button>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* KINETIC MOTION TICKER */}
-        <div className="kinetic-ticker" aria-hidden="true">
-          <div className="ticker-track">
-            <span>EVERY DROP CONNECTS A LIFE</span>
-            <i />
-            <span>COMPATIBILITY-AWARE DONOR DISCOVERY</span>
-            <i />
-            <span>VERIFIED HOSPITAL REQUEST WORKFLOW</span>
-            <i />
-            <span>3D AUTHORISED BLOOD BANK TOPOLOGY</span>
-            <i />
-            <span>60FPS MOTION GRAPHICS STORYTELLING</span>
-            <i />
-            <span>EVERY DROP CONNECTS A LIFE</span>
-            <i />
-            <span>COMPATIBILITY-AWARE DONOR DISCOVERY</span>
-            <i />
-            <span>VERIFIED HOSPITAL REQUEST WORKFLOW</span>
-            <i />
-            <span>3D AUTHORISED BLOOD BANK TOPOLOGY</span>
-            <i />
-          </div>
-        </div>
-
-        {/* SECTION 01: PROBLEM STATEMENT, SOLUTION MATRIX & MOTION VIDEO REEL */}
-        <section className="problem-section section-pad" id="problem">
-          <div className="page-width">
-            <div className="section-intro problem-header">
-              <div>
-                <p className="eyebrow section-eyebrow problem-eyebrow">
-                  <span>01</span> PROBLEM STATEMENT & SOLUTION ARCHITECTURE
-                </p>
-                <h2>
-                  Four real bottlenecks.<br />
-                  <span>Engineered into clear solutions.</span>
-                </h2>
-              </div>
-              <p className="section-description problem-lead">
-                During medical emergencies, surgeries, and critical treatments, people struggle to identify suitable donors, locate verified blood banks, and coordinate requests quickly. For each bottleneck, we evaluated possible approaches and implemented the strongest digital workflow below.
-              </p>
-            </div>
-
-            <div className="problem-grid">
-              <div className="problem-pillars">
-                <div className="pillar-list">
-                  {PROBLEM_SOLUTIONS.map((item, idx) => {
-                    const isSynced = activeFilmChapter === idx;
-                    return (
-                      <article
-                        key={item.id}
-                        className={`pillar-card ${isSynced ? "is-active" : ""}`}
-                      >
-                        <div className="pillar-top">
-                          <span className="pillar-num">PROBLEM {item.index}</span>
-                          <button
-                            type="button"
-                            className="pillar-film-btn"
-                            onClick={() => setRequestedFilmChapter(item.filmChapter)}
-                          >
-                            Play Scene {item.index}
-                          </button>
-                        </div>
-                        <h3>{item.problemTitle}</h3>
-                        <p className="pillar-pain">{item.painPoint}</p>
-                        <p className="pillar-evaluated">{item.optionsEvaluated}</p>
-                        <div className="pillar-solution-row">
-                          <span className="solution-badge">BEST SOLUTION</span>
-                          <p>{item.chosenSolution}</p>
-                        </div>
-                        <a className="pillar-jump" href={item.targetSection}>
-                          Try live solution <ArrowIcon />
-                        </a>
-                      </article>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="problem-film-column">
-                <div className="film-sticky-wrap">
-                  <MotionVideoReel
-                    externalChapterRequest={requestedFilmChapter}
-                    onChapterChange={setActiveFilmChapter}
-                  />
-                  <div className="film-mission-summary">
-                    <span className="mono-tag">OUR MISSION</span>
-                    <p>
-                      BloodLink brings voluntary donors, hospitals, and authorised blood banks into one verified, privacy-preserving network — turning critical delays into immediate clarity.
-                    </p>
-                  </div>
+            <div className="hero-right">
+              <div className="hero-3d-frame">
+                <HeroBloodstream3D interactiveBoost={heroBoost} onPulse={handleHeroPulse} />
+                <div className="hero-3d-legend">
+                  <span><i className="dot-red" /> Donors</span>
+                  <span><i className="dot-blue" /> Blood Banks</span>
+                  <span><i className="dot-green" /> Hospitals</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 02: SMART COMPATIBILITY-AWARE DONOR DISCOVERY */}
-        <section className="finder-section section-pad" id="discover" ref={finderRef}>
-          <div className="page-width">
-            <div className="section-intro">
-              <div>
-                <p className="eyebrow section-eyebrow">
-                  <span>02</span> SMART DONOR DISCOVERY
-                </p>
-                <h2>
-                  Find direct &amp; medically<br />
-                  <span>compatible donors.</span>
-                </h2>
-              </div>
-              <p className="section-description">
-                Unlike basic directories that only show exact matches, BloodLink automatically surfaces compatible red-cell blood groups so urgent needs are filled faster.
-              </p>
-            </div>
+        {/* C. FLOATING "FIND A DONOR" BRIDGE CARD (z-40, margin-top: -60px) */}
+        <section className="floating-finder-wrap" id="find-blood" ref={finderSectionRef}>
+          <div className="max-container">
+            <div className="floating-search-card">
+              <form className="floating-search-row" onSubmit={handleSearchSubmit}>
+                <label className="search-field">
+                  <span>Blood Group</span>
+                  <select
+                    value={bloodGroup}
+                    onChange={(e) => setBloodGroup(e.target.value as "all" | BloodGroup)}
+                  >
+                    <option value="all">All Blood Groups</option>
+                    {BLOOD_GROUPS.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </label>
 
-            <div className="finder-console">
-              <div className="console-topline">
-                <div>
-                  <span className="console-pulse" />
-                  <span>COMPATIBILITY-AWARE DONOR CONSOLE</span>
-                </div>
-                <span className="console-demo">CONCEPT PROTOTYPE · SAMPLE DATA</span>
-              </div>
-
-              <form className="search-form" onSubmit={handleSearch}>
-                <label className="field-group" htmlFor="blood-group">
-                  <span className="field-label">Required blood group</span>
-                  <span className="select-wrap">
-                    <select
-                      id="blood-group"
-                      value={bloodGroup}
-                      onChange={(event) => setBloodGroup(event.target.value as "all" | BloodGroup)}
+                <label className="search-field search-field-location">
+                  <span>Location / City</span>
+                  <div className="location-input-wrap">
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="City or area (e.g. Bengaluru, Mumbai)"
+                    />
+                    <button
+                      type="button"
+                      className="geolocate-btn"
+                      onClick={handleGeolocateDemo}
+                      title="Use sample city location"
                     >
-                      <option value="all">Any blood group</option>
-                      {BLOOD_GROUPS.map((group) => (
-                        <option key={group} value={group}>
-                          {group}
-                        </option>
-                      ))}
-                    </select>
-                    <span className="select-caret" aria-hidden="true" />
-                  </span>
+                      Locate
+                    </button>
+                  </div>
                 </label>
 
-                <label className="field-group" htmlFor="donor-location">
-                  <span className="field-label">City or neighbourhood</span>
-                  <input
-                    ref={locationRef}
-                    id="donor-location"
-                    type="text"
-                    value={location}
-                    onChange={(event) => setLocation(event.target.value)}
-                    placeholder="Try Bengaluru, Mumbai, Hyderabad, or leave blank"
-                  />
+                <label className="search-field">
+                  <span>Urgency Level</span>
+                  <select
+                    value={urgencyLevel}
+                    onChange={(e) =>
+                      setUrgencyLevel(e.target.value as "any" | "emergency" | "same-day" | "scheduled")
+                    }
+                  >
+                    <option value="any">Any Urgency</option>
+                    <option value="emergency">Emergency (&lt; 2 hrs)</option>
+                    <option value="same-day">Same Day Surgery</option>
+                    <option value="scheduled">Scheduled Care</option>
+                  </select>
                 </label>
 
-                <button className="button button-primary search-button" type="submit">
-                  <SearchIcon /> <span>Update results</span>
+                <button type="submit" className="btn-primary floating-search-btn">
+                  <SearchIcon /> Search Donors
                 </button>
               </form>
 
-              <div className="search-filter-bar">
-                <label className="toggle-pill">
+              <div className="floating-subbar">
+                <label className="compat-checkbox">
                   <input
                     type="checkbox"
                     checked={includeCompatible}
@@ -590,632 +620,684 @@ function App() {
                     disabled={bloodGroup === "all"}
                   />
                   <span>
-                    Include compatible red-cell donors
+                    Smart Compatibility Matching
                     {bloodGroup !== "all"
-                      ? ` (${COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(", ")})`
+                      ? ` — includes ${COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(", ")}`
                       : ""}
                   </span>
                 </label>
-
-                <label className="toggle-pill">
-                  <input
-                    type="checkbox"
-                    checked={readyOnly}
-                    onChange={(e) => setReadyOnly(e.target.checked)}
-                  />
-                  <span>Ready this week only</span>
-                </label>
-              </div>
-
-              <div className="search-results" aria-live="polite">
-                <div className="results-heading">
-                  <div>
-                    <p className="results-label">ILLUSTRATIVE DONOR MATCHES</p>
-                    <h3>
-                      {matches.length} {matches.length === 1 ? "matching donor profile" : "matching donor profiles"}
-                    </h3>
-                  </div>
-                  <p className="results-disclaimer">Sample profiles only — no real personal data is stored.</p>
-                </div>
-
-                {matches.length > 0 ? (
-                  <div className="donor-list">
-                    {matches.map((profile) => {
-                      const isDirect = bloodGroup === "all" || profile.group === bloodGroup;
-                      return (
-                        <button
-                          type="button"
-                          className="donor-row donor-row-interactive"
-                          key={profile.id}
-                          onClick={() => setActiveDonor(profile)}
-                        >
-                          <span className="donor-group">{profile.group}</span>
-                          <div className="donor-location">
-                            <strong>{profile.location}</strong>
-                            <span>
-                              {profile.id} · {profile.donationsLogged} illustrative donations · {profile.responseWindow}
-                            </span>
-                          </div>
-                          <span className={`match-type-badge ${isDirect ? "is-direct" : "is-compatible"}`}>
-                            {bloodGroup === "all"
-                              ? "Sample profile"
-                              : isDirect
-                                ? "Exact match"
-                                : `Compatible for ${bloodGroup}`}
-                          </span>
-                          <span className="donor-availability">
-                            <span
-                              className={`availability-dot ${profile.availability === "Ready this week" ? "is-ready" : ""}`}
-                            />
-                            {profile.availability}
-                          </span>
-                          <ArrowIcon diagonal />
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="empty-results-wrap">
-                    <p className="empty-results">
-                      No sample profiles match those filters. Try enabling compatible donors or clearing the city field.
-                    </p>
-                    <button
-                      type="button"
-                      className="text-link"
-                      onClick={() => {
-                        setBloodGroup("all");
-                        setLocation("");
-                        setReadyOnly(false);
-                      }}
-                    >
-                      Reset filters <ArrowIcon />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Compatibility Matrix Explorer */}
-              <div className="compat-drawer">
-                <div className="compat-header">
-                  <div>
-                    <span className="compat-eyebrow">ABO / RH COMPATIBILITY REFERENCE</span>
-                    <p>Click any blood group to inspect red-cell donation and receiving pathways</p>
-                  </div>
-                  <div className="compat-pills" role="group" aria-label="Blood group compatibility selector">
-                    {BLOOD_GROUPS.map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        className={`compat-pill ${compatGroup === g ? "is-active" : ""}`}
-                        onClick={() => setCompatGroup(g)}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="compat-grid">
-                  <div className="compat-box">
-                    <span>CAN DONATE RED CELLS TO</span>
-                    <div className="compat-badges">
-                      {activeCompatibility.donateRedCellsTo.map((g) => (
-                        <strong key={g}>{g}</strong>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="compat-box">
-                    <span>CAN RECEIVE RED CELLS FROM</span>
-                    <div className="compat-badges">
-                      {activeCompatibility.receiveRedCellsFrom.map((g) => (
-                        <strong key={g}>{g}</strong>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="compat-note-box">
-                    <p>{activeCompatibility.note}</p>
-                    <button
-                      type="button"
-                      className="text-link"
-                      onClick={() => applyCompatibilityToSearch(compatGroup)}
-                    >
-                      Search compatible donors for {compatGroup} <ArrowIcon />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <p className="prototype-note">
-              <span>i</span> BloodLink is a concept prototype. It does not connect to live donor registries or emergency medical dispatch.
-            </p>
-          </div>
-        </section>
-
-        {/* SECTION 03: HOSPITAL-VERIFIED URGENT BLOOD REQUESTS */}
-        <section className="requests-section section-pad" id="requests">
-          <div className="page-width requests-layout">
-            <div className="requests-intro">
-              <p className="eyebrow section-eyebrow">
-                <span>03</span> VERIFIED REQUEST COORDINATION
-              </p>
-              <h2>
-                When time matters,<br />
-                <span>verification builds trust.</span>
-              </h2>
-              <p className="section-description">
-                Eliminate unverified social forwards. Hospitals post structured requests showing blood group, component needed, clinical urgency, and one-click compatible donor matching.
-              </p>
-              <div className="requests-cta-group">
                 <button
                   type="button"
-                  className="button button-primary"
-                  onClick={() => setCreateRequestOpen(true)}
+                  className="text-link"
+                  onClick={() => setShowDonorDrawer((s) => !s)}
                 >
-                  Raise a demo request <ArrowIcon diagonal />
+                  {showDonorDrawer ? "Hide" : "Show"} {matches.length} demo matches
                 </button>
-                <a className="text-link text-link-light" href="#network">
-                  Inspect verified blood banks <ArrowIcon />
-                </a>
-              </div>
-              <p className="request-demo-note">
-                Demonstration records only. Raising a request previews the hospital intake workflow locally without contacting real medical facilities.
-              </p>
-            </div>
-
-            <div className="request-feed">
-              <div className="feed-heading">
-                <div className="feed-filters" role="group" aria-label="Filter by priority">
-                  {(["all", "Urgent", "Priority"] as const).map((filterVal) => (
-                    <button
-                      key={filterVal}
-                      type="button"
-                      className={`feed-filter-btn ${requestFilter === filterVal ? "is-active" : ""}`}
-                      onClick={() => setRequestFilter(filterVal)}
-                    >
-                      {filterVal === "all" ? "All Priorities" : filterVal}
-                    </button>
-                  ))}
-                </div>
-                <div className="feed-filters" role="group" aria-label="Filter by clinical scenario">
-                  {(["all", "Emergency Trauma", "Planned Surgery", "Critical Care"] as const).map((sc) => (
-                    <button
-                      key={sc}
-                      type="button"
-                      className={`feed-filter-btn ${scenarioFilter === sc ? "is-active" : ""}`}
-                      onClick={() => setScenarioFilter(sc)}
-                    >
-                      {sc === "all" ? "All Scenarios" : sc}
-                    </button>
-                  ))}
-                </div>
               </div>
 
-              {filteredRequests.length > 0 ? (
-                filteredRequests.map((request, index) => (
-                  <button
-                    className="request-row"
-                    type="button"
-                    key={request.id}
-                    onClick={() => setActiveRequest(request)}
-                  >
-                    <span className="request-sequence">0{index + 1}</span>
-                    <span className="request-group">{request.group}</span>
-                    <span className="request-main">
-                      <strong>{request.hospital}</strong>
-                      <span>
-                        {request.city} <i /> {request.units} <i /> {request.componentNeeded} <i /> {request.scenario}
-                      </span>
-                    </span>
-                    <span className={`request-status ${request.priority === "Urgent" ? "is-urgent" : ""}`}>
-                      <span className="verified-check">&#10003;</span> {request.priority} · Verified demo
-                    </span>
-                    <span className="request-arrow">
-                      <ArrowIcon />
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <p className="empty-directory">No demo requests match those filters.</p>
-              )}
-
-              <button className="all-requests-link" type="button" onClick={scrollToFinder}>
-                Jump to compatibility donor search <ArrowIcon />
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 04: AUTHORISED BLOOD BANK NETWORK + 3D TOPOLOGY */}
-        <section className="network-section section-pad" id="network">
-          <div className="page-width">
-            <div className="section-intro network-intro">
-              <div>
-                <p className="eyebrow section-eyebrow">
-                  <span>04</span> AUTHORISED BLOOD BANK NETWORK
-                </p>
-                <h2>
-                  Locate verified hubs<br />
-                  <span>by real capability.</span>
-                </h2>
-              </div>
-              <div className="network-intro-aside">
-                <p className="section-description">
-                  Inspect authorised blood banks and partner hospitals by component services (platelets, plasma, 24/7 cross-matching) on an interactive 3D spatial topology.
-                </p>
-                <p className="directory-note">
-                  Illustrative directory entries — verify live hours and inventory directly with your local blood centre.
-                </p>
-              </div>
-            </div>
-
-            <div className="network-split">
-              <div className="network-spatial-column">
-                <NetworkTopology3D
-                  partners={BLOOD_BANKS}
-                  selectedPartnerId={selectedPartner.id}
-                  onSelectPartner={handleSelectPartner}
-                />
-                <div className="selected-partner-card">
-                  <div className="selected-partner-head">
-                    <span className={selectedPartner.type === "Hospital partner" ? "is-hospital" : "is-bank"}>
-                      {selectedPartner.type.toUpperCase()}
-                    </span>
-                    <strong>{selectedPartner.city}</strong>
-                  </div>
-                  <h3>{selectedPartner.name}</h3>
-                  <p className="selected-partner-address">{selectedPartner.address}</p>
-                  <p className="selected-partner-hours">{selectedPartner.hours}</p>
-                  <div className="selected-partner-services">
-                    {selectedPartner.services.map((srv) => (
-                      <span key={srv}>{srv}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="network-directory-column">
-                <div className="directory-toolbar">
-                  <div className="directory-filter-tabs" role="group" aria-label="Filter partner types">
-                    {(["all", "Blood bank", "Hospital partner"] as const).map((typeVal) => (
-                      <button
-                        key={typeVal}
-                        type="button"
-                        className={`dir-tab ${partnerTypeFilter === typeVal ? "is-active" : ""}`}
-                        onClick={() => setPartnerTypeFilter(typeVal)}
-                      >
-                        {typeVal === "all" ? "All partners" : typeVal === "Blood bank" ? "Blood banks" : "Hospitals"}
-                      </button>
-                    ))}
-                  </div>
-                  <label className="directory-search" htmlFor="directory-search">
-                    <SearchIcon />
-                    <input
-                      id="directory-search"
-                      type="search"
-                      value={directoryQuery}
-                      onChange={(event) => setDirectoryQuery(event.target.value)}
-                      placeholder="Search city, centre, or platelets..."
-                    />
-                  </label>
-                </div>
-
-                <div className="bank-list" aria-live="polite">
-                  {filteredBanks.length > 0 ? (
-                    filteredBanks.map((bank, index) => (
-                      <button
-                        type="button"
-                        className={`bank-row bank-row-btn ${selectedPartner.id === bank.id ? "is-selected" : ""}`}
-                        key={bank.id}
-                        onClick={() => setSelectedPartnerId(bank.id)}
-                      >
-                        <span className="bank-index">0{index + 1}</span>
-                        <div className="bank-name">
-                          <h3>{bank.name}</h3>
-                          <p>
-                            {bank.type} <span>·</span> {bank.services[0]} &amp; {bank.services[1]}
-                          </p>
-                        </div>
-                        <span className="bank-area">{bank.city}</span>
-                        <span className="bank-arrow">
-                          <ArrowIcon diagonal />
-                        </span>
-                      </button>
-                    ))
+              {showDonorDrawer && (
+                <div className="donor-drawer" aria-live="polite">
+                  {matches.length > 0 ? (
+                    <div className="donor-drawer-grid">
+                      {matches.slice(0, 6).map((profile) => {
+                        const isDirect = bloodGroup === "all" || profile.group === bloodGroup;
+                        return (
+                          <button
+                            key={profile.id}
+                            type="button"
+                            className="donor-mini-card"
+                            onClick={() => setActiveDonor(profile)}
+                          >
+                            <div className="donor-mini-top">
+                              <span className="donor-pill-group">{profile.group}</span>
+                              <span className={`match-tag ${isDirect ? "is-direct" : "is-compat"}`}>
+                                {bloodGroup === "all"
+                                  ? "Demo Profile"
+                                  : isDirect
+                                    ? "Exact Match"
+                                    : `Compatible (${bloodGroup})`}
+                              </span>
+                            </div>
+                            <strong>{profile.location}</strong>
+                            <small>{profile.availability} · {profile.responseWindow}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <p className="empty-directory">
-                      No example partners match that search. Try searching a city (e.g., Bengaluru) or service (e.g., platelets).
+                    <p className="empty-hint">
+                      No sample profiles found for that filter. Clear the city field or enable Smart Compatibility Matching.
                     </p>
                   )}
+                  <p className="prototype-disclaimer-line">
+                    Concept prototype only — sample donor profiles are shown with privacy shielding; no live registry is connected.
+                  </p>
                 </div>
-                <div className="network-footnote">
-                  <span>04</span> Illustrative partner network — click any row or 3D beacon to inspect services.
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </section>
 
-        {/* SECTION 05: DONATION AWARENESS, MYTHS & READINESS */}
-        <section className="learn-section section-pad" id="learn">
-          <div className="page-width learn-layout">
-            <div className="learn-intro">
-              <p className="eyebrow section-eyebrow">
-                <span>05</span> DONATION AWARENESS
-              </p>
-              <h2>
-                Clarity removes<br />
-                <span>hesitation.</span>
-              </h2>
-              <p className="section-description">
-                Explore eligibility guidelines, dispel common misconceptions, and walk through a quick non-medical readiness check before booking an appointment.
-              </p>
-              <div className="learn-tabs" role="tablist" aria-label="Awareness topics">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={awarenessTab === "guide"}
-                  className={`learn-tab ${awarenessTab === "guide" ? "is-active" : ""}`}
-                  onClick={() => setAwarenessTab("guide")}
-                >
-                  Donation Guide (04)
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={awarenessTab === "myths"}
-                  className={`learn-tab ${awarenessTab === "myths" ? "is-active" : ""}`}
-                  onClick={() => setAwarenessTab("myths")}
-                >
-                  Myths vs. Facts (03)
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={awarenessTab === "readiness"}
-                  className={`learn-tab ${awarenessTab === "readiness" ? "is-active" : ""}`}
-                  onClick={() => setAwarenessTab("readiness")}
-                >
-                  Readiness Check (04)
-                </button>
+        {/* D. URGENT BLOOD REQUESTS (HORIZONTAL CAROUSEL + SKELETON LOADER) */}
+        <section className="requests-carousel-section section-pad" id="requests">
+          <div className="max-container fade-in-up">
+            <div className="carousel-header">
+              <div>
+                <span className="eyebrow">LIVE DEMO DISPATCH</span>
+                <h2>Urgent Blood Requests</h2>
               </div>
-              <span className="learn-footnote">
-                General educational guidance only. A qualified clinician at your blood bank performs official eligibility screening.
-              </span>
+              <div className="carousel-actions">
+                <button type="button" className="btn-secondary-outline" onClick={simulateRequestsRefresh}>
+                  Sync Feed
+                </button>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => setCreateRequestOpen(true)}
+                >
+                  + Raise Demo Request
+                </button>
+                <div className="carousel-nav-arrows">
+                  <button type="button" onClick={() => scrollCarousel(-1)} aria-label="Scroll requests left">
+                    ←
+                  </button>
+                  <button type="button" onClick={() => scrollCarousel(1)} aria-label="Scroll requests right">
+                    →
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {awarenessTab === "guide" ? (
-              <div className="guide-list">
-                {DONATION_GUIDES.map((guide, index) => (
-                  <div className={`guide-item ${openGuide === index ? "is-open" : ""}`} key={guide.title}>
-                    <button
-                      className="guide-trigger"
-                      type="button"
-                      aria-expanded={openGuide === index}
-                      aria-controls={`guide-detail-${index}`}
-                      onClick={() => setOpenGuide(openGuide === index ? -1 : index)}
-                    >
-                      <span className="guide-number">0{index + 1}</span>
-                      <span className="guide-title">{guide.title}</span>
-                      <span className="guide-toggle" aria-hidden="true">
-                        {openGuide === index ? "−" : "+"}
-                      </span>
-                    </button>
-                    {openGuide === index && (
-                      <p className="guide-detail" id={`guide-detail-${index}`}>
-                        {guide.detail}
-                      </p>
-                    )}
+            {requestsLoading ? (
+              <div className="requests-carousel-track">
+                {[1, 2, 3, 4].map((skeleton) => (
+                  <div className="request-card skeleton-card" key={skeleton} aria-hidden="true">
+                    <div className="skeleton-line short" />
+                    <div className="skeleton-line tall" />
+                    <div className="skeleton-line medium" />
+                    <div className="skeleton-btn" />
                   </div>
-                ))}
-              </div>
-            ) : awarenessTab === "myths" ? (
-              <div className="myths-list">
-                {MYTHS_AND_FACTS.map((item, idx) => (
-                  <article className="myth-card" key={item.myth}>
-                    <div className="myth-badge">MYTH 0{idx + 1}</div>
-                    <h3>{item.myth}</h3>
-                    <p className="myth-fact">
-                      <strong>Medical Fact:</strong> {item.fact}
-                    </p>
-                  </article>
                 ))}
               </div>
             ) : (
-              <div className="readiness-list">
-                {READINESS_CHECKS.map((item) => {
-                  const isChecked = Boolean(checkedReadiness[item.id]);
-                  return (
+              <div className="requests-carousel-track" ref={requestsCarouselRef}>
+                {requestList.map((req) => (
+                  <article className="request-card" key={req.id}>
+                    <div className="request-card-top">
+                      <span className="request-scenario-chip">{req.scenario}</span>
+                      <span className="live-indicator">
+                        <span className="pulse-dot" /> {req.priority}
+                      </span>
+                    </div>
+
+                    <div className="request-card-blood">
+                      <span className="blood-drop-badge">
+                        <DropBadgeIcon />
+                        <strong>{req.group}</strong>
+                      </span>
+                      <div>
+                        <span className="request-units">{req.units} · {req.componentNeeded}</span>
+                        <span className="request-time">{req.updatedLabel} (Demo)</span>
+                      </div>
+                    </div>
+
+                    <h3>{req.hospital}</h3>
+                    <p className="request-city">{req.city} · {req.need}</p>
+
                     <button
                       type="button"
-                      key={item.id}
-                      className={`readiness-card ${isChecked ? "is-checked" : ""}`}
-                      onClick={() => toggleReadiness(item.id)}
-                      aria-pressed={isChecked}
+                      className="btn-primary request-accept-btn"
+                      onClick={() => setActiveRequest(req)}
                     >
-                      <span className="readiness-box" aria-hidden="true">
-                        {isChecked ? "✓" : ""}
-                      </span>
-                      <div className="readiness-copy">
-                        <h3>{item.question}</h3>
-                        <p>{item.tip}</p>
-                      </div>
+                      Accept Request (Demo)
                     </button>
-                  );
-                })}
-                <div className="readiness-summary" aria-live="polite">
-                  <strong>
-                    {checkedReadinessCount} / {READINESS_CHECKS.length} preparation steps checked
-                  </strong>
-                  <span>
-                    {checkedReadinessCount === READINESS_CHECKS.length
-                      ? "You look prepared for an on-site check-in! Authorised blood centre staff will confirm full medical eligibility before donation."
-                      : "Review these four preparation habits before visiting an authorised blood bank."}
-                  </span>
-                </div>
+                  </article>
+                ))}
               </div>
             )}
           </div>
         </section>
 
-        {/* SECTION 06: OUR IMPACT — LIVE 3D COMPONENT SEPARATION */}
-        <section className="impact-section section-pad" id="impact">
-          <div className="impact-backglow" aria-hidden="true" />
-          <div className="page-width impact-layout">
-            <div className="impact-copy">
-              <p className="eyebrow impact-eyebrow">
-                <span>06</span> OUR IMPACT · 3D COMPONENT VISUALIZER
+        {/* E. HOW IT WORKS (3-COLUMN GRID + DOTTED SVG CONNECTORS + PROBLEM SOLUTIONS) */}
+        <section className="how-section section-pad" id="how-it-works">
+          <div className="max-container fade-in-up">
+            <div className="centered-header">
+              <span className="eyebrow">SOLVING THE CHALLENGE</span>
+              <h2>Simple Steps to Save a Life</h2>
+              <p>
+                Every step directly addresses emergency delays — replacing fragmented social messages with verified hospital requests, compatible donor matching, and 3D blood bank discovery.
               </p>
-              <h2>
-                One voluntary gift.<br />
-                <span>Three distinct therapies.</span>
-              </h2>
-              <p className="impact-description">
-                Modern blood banking separates a single whole-blood unit into targeted components. Orbit the 3D visualization or choose a component below to see how one donation supports multiple patient pathways.
-              </p>
-
-              <div className="component-selector" role="tablist" aria-label="Blood components">
-                {COMPONENT_STORIES.map((comp) => (
-                  <button
-                    key={comp.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={selectedComponentId === comp.id}
-                    className={`component-chip ${selectedComponentId === comp.id ? "is-active" : ""}`}
-                    onClick={() => setSelectedComponentId(comp.id)}
-                  >
-                    <span className="chip-dot" style={{ background: comp.color }} />
-                    {comp.title}
-                  </button>
-                ))}
-              </div>
-
-              <div className="component-story-card" aria-live="polite">
-                <div className="component-story-top">
-                  <span>{selectedComponent.subtitle}</span>
-                  <span>{selectedComponent.shelfLife}</span>
-                </div>
-                <h3>{selectedComponent.title}</h3>
-                <p>{selectedComponent.description}</p>
-                <div className="component-usecase">
-                  <strong>Clinical focus:</strong> {selectedComponent.useCase}
-                </div>
-              </div>
-
-              <div className="impact-simulator">
-                <div className="sim-header">
-                  <label htmlFor="impact-slider">
-                    COMMUNITY SIMULATOR: <strong>{donationCount}</strong>{" "}
-                    {donationCount === 1 ? "voluntary donation" : "voluntary donations"}
-                  </label>
-                  <span>Up to ~{donationCount * 3} potential care pathways</span>
-                </div>
-                <input
-                  id="impact-slider"
-                  type="range"
-                  min={1}
-                  max={50}
-                  value={donationCount}
-                  onChange={(e) => setDonationCount(Number(e.target.value))}
-                  className="impact-range"
-                />
-              </div>
-
-              <p className="impact-caveat">
-                Depending on component preparation and clinical use, one voluntary donation may help support up to three patients.
-              </p>
-              <button className="text-link text-link-light impact-link" type="button" onClick={openRegistration}>
-                Become part of the network <ArrowIcon />
-              </button>
             </div>
 
-            <div className="impact-3d-column">
-              <ImpactOrbit3D
-                selectedId={selectedComponentId}
-                donationCount={donationCount}
-                onSelectComponent={handleSelectComponent}
-              />
+            <div className="steps-wrapper">
+              {/* Desktop Dotted SVG Connectors */}
+              <svg className="step-connectors" viewBox="0 0 1000 120" fill="none" aria-hidden="true">
+                <path
+                  d="M200 58 C 280 18, 360 18, 440 58"
+                  stroke="#FDA4AF"
+                  strokeWidth="2.5"
+                  strokeDasharray="6 8"
+                />
+                <path
+                  d="M560 58 C 640 18, 720 18, 800 58"
+                  stroke="#93C5FD"
+                  strokeWidth="2.5"
+                  strokeDasharray="6 8"
+                />
+              </svg>
+
+              <div className="steps-grid">
+                <article className="step-card">
+                  <StepIllustration step={1} />
+                  <span className="step-index">STEP 01</span>
+                  <h3>Search Compatible Donors</h3>
+                  <p>
+                    Enter the required blood group and city to discover both direct and ABO/Rh compatible voluntary donors without exposing private contact numbers.
+                  </p>
+                </article>
+
+                <article className="step-card">
+                  <StepIllustration step={2} />
+                  <span className="step-index">STEP 02</span>
+                  <h3>Verify Hospital &amp; Bank</h3>
+                  <p>
+                    Inspect verified hospital requests and locate authorised blood banks with the exact component capability (red cells, plasma, or platelets) in 3D.
+                  </p>
+                </article>
+
+                <article className="step-card">
+                  <StepIllustration step={3} />
+                  <span className="step-index">STEP 03</span>
+                  <h3>Donate &amp; Multiply Impact</h3>
+                  <p>
+                    Confirm on-site readiness with clinicians and donate safely — one voluntary unit separates into components that can support up to three lives.
+                  </p>
+                </article>
+              </div>
+            </div>
+
+            {/* Problem-to-Solution Summary Strip */}
+            <div className="solutions-strip">
+              {PROBLEM_SOLUTIONS.map((sol) => (
+                <a key={sol.id} href={sol.targetSection} className="solution-mini-item">
+                  <span>{sol.index} · {sol.problemTitle}</span>
+                  <strong>{sol.chosenSolution}</strong>
+                </a>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* SECTION 07: TAKE ACTION */}
-        <section className="join-section" id="join">
-          <div className="page-width join-layout">
-            <div>
-              <p className="eyebrow join-eyebrow">
-                <span className="live-dot" /> TAKE ACTION TODAY
-              </p>
-              <h2>
-                Be the link<br />
-                someone counts on.
-              </h2>
+        {/* F. BLOOD BANK & HOSPITAL NETWORK (MIDNIGHT BLUE 50/50 SPLIT + 3D MAP) */}
+        <section className="network-dark-section section-pad" id="network">
+          <div className="max-container fade-in-up">
+            <div className="network-header">
+              <div>
+                <span className="eyebrow eyebrow-blue">VERIFIED DIRECTORY</span>
+                <h2>Blood Bank &amp; Hospital Network</h2>
+              </div>
+              <div className="network-controls">
+                <div className="filter-pills">
+                  {(["all", "Blood bank", "Hospital partner"] as const).map((typeVal) => (
+                    <button
+                      key={typeVal}
+                      type="button"
+                      className={`filter-pill ${partnerTypeFilter === typeVal ? "is-active" : ""}`}
+                      onClick={() => simulateDirectorySync(typeVal)}
+                    >
+                      {typeVal === "all" ? "All Centres" : typeVal === "Blood bank" ? "Blood Banks (Blue)" : "Hospitals (Red)"}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="search"
+                  className="network-search-input"
+                  value={directoryQuery}
+                  onChange={(e) => setDirectoryQuery(e.target.value)}
+                  placeholder="Filter by city, hospital, or platelets..."
+                  aria-label="Filter blood bank and hospital directory"
+                />
+              </div>
             </div>
-            <div className="join-action">
+
+            <div className="network-split-50">
+              <div className="network-list-col">
+                <div className="network-scroll-list">
+                  {mapLoading ? (
+                    [1, 2, 3].map((s) => (
+                      <div key={s} className="network-list-item skeleton-dark" aria-hidden="true">
+                        <div className="skeleton-line short" />
+                        <div className="skeleton-line medium" />
+                      </div>
+                    ))
+                  ) : filteredBanks.length > 0 ? (
+                    filteredBanks.map((bank) => {
+                      const isBank = bank.type === "Blood bank";
+                      return (
+                        <button
+                          key={bank.id}
+                          type="button"
+                          className={`network-list-item ${selectedPartner.id === bank.id ? "is-active" : ""}`}
+                          onClick={() => setSelectedPartnerId(bank.id)}
+                        >
+                          <div className="network-item-top">
+                            <span className={`marker-badge ${isBank ? "is-blue" : "is-red"}`}>
+                              {bank.type}
+                            </span>
+                            <span className="network-city">{bank.city}</span>
+                          </div>
+                          <h3>{bank.name}</h3>
+                          <p>{bank.address} · {bank.hours}</p>
+                          <div className="network-services">
+                            {bank.services.map((srv) => (
+                              <span key={srv}>{srv}</span>
+                            ))}
+                          </div>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <p className="empty-dark">No illustrative centres match that search.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="network-map-col">
+                <div className="network-map-frame">
+                  <NetworkTopology3D
+                    partners={BLOOD_BANKS}
+                    selectedPartnerId={selectedPartner.id}
+                    onSelectPartner={handleSelectPartner}
+                  />
+                  <div className="map-selected-overlay">
+                    <span className={selectedPartner.type === "Blood bank" ? "dot-blue" : "dot-red"} />
+                    <div>
+                      <strong>{selectedPartner.name}</strong>
+                      <small>{selectedPartner.address} · {selectedPartner.services.join(" · ")}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* G. DONATION AWARENESS (4-COLUMN × 2-ROW BENTO BOX UI) */}
+        <section className="awareness-section section-pad" id="awareness">
+          <div className="max-container fade-in-up">
+            <div className="centered-header">
+              <span className="eyebrow">DONATION AWARENESS</span>
+              <h2>Know Before You Donate</h2>
               <p>
-                Preview how effortless voluntary donor onboarding can be — generate a digital BloodLink Concept Donor Pass in under 20 seconds.
+                Interactive eligibility guidance, myth-busting medical facts, preparation habits, and our 60fps animated motion film in one clean Bento workspace.
               </p>
-              <button className="button button-primary" type="button" onClick={openRegistration}>
-                Start your donor profile <ArrowIcon diagonal />
+            </div>
+
+            <div className="bento-grid">
+              {/* Block 1: Large 2x2 Eligibility Self-Check Quiz */}
+              <div className="bento-card bento-eligibility">
+                <div className="bento-head">
+                  <span className="bento-tag">INTERACTIVE CHECKLIST</span>
+                  <span className="bento-counter">{checkedCount} / {READINESS_CHECKS.length} Ready</span>
+                </div>
+                <h3>Am I Ready to Donate?</h3>
+                <p className="bento-sub">
+                  Review these four preparation indicators before visiting an authorised donation centre.
+                </p>
+
+                <div className="quiz-list">
+                  {READINESS_CHECKS.map((item) => {
+                    const checked = Boolean(checkedReadiness[item.id]);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`quiz-item ${checked ? "is-checked" : ""}`}
+                        onClick={() => toggleReadiness(item.id)}
+                        aria-pressed={checked}
+                      >
+                        <span className="quiz-check">{checked ? "✓" : ""}</span>
+                        <div>
+                          <strong>{item.question}</strong>
+                          <small>{item.tip}</small>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="quiz-footer-note">
+                  {checkedCount === READINESS_CHECKS.length
+                    ? "Prepared for check-in! On-site clinicians confirm official medical eligibility."
+                    : "Educational overview only — local blood bank clinicians always perform final screening."}
+                </div>
+              </div>
+
+              {/* Block 2: Medium 2x1 Myth vs Fact Slider */}
+              <div className="bento-card bento-myths">
+                <div className="bento-head">
+                  <span className="bento-tag">MYTH VS. MEDICAL FACT</span>
+                  <div className="slider-controls">
+                    <button
+                      type="button"
+                      onClick={() => setMythIndex((i) => (i - 1 + MYTHS_AND_FACTS.length) % MYTHS_AND_FACTS.length)}
+                      aria-label="Previous myth"
+                    >
+                      ←
+                    </button>
+                    <span>0{mythIndex + 1} / 0{MYTHS_AND_FACTS.length}</span>
+                    <button
+                      type="button"
+                      onClick={() => setMythIndex((i) => (i + 1) % MYTHS_AND_FACTS.length)}
+                      aria-label="Next myth"
+                    >
+                      →
+                    </button>
+                  </div>
+                </div>
+                <h3>{currentMyth.myth}</h3>
+                <p className="myth-answer">
+                  <strong>Fact:</strong> {currentMyth.fact}
+                </p>
+              </div>
+
+              {/* Block 3: Small 1x1 Quick Prep Tips */}
+              <div className="bento-card bento-prep">
+                <span className="bento-tag">QUICK PREP TIPS</span>
+                <h3>4 Habits Before You Visit</h3>
+                <ul className="prep-list">
+                  <li><span>💧</span> Drink 500ml water 2 hrs prior</li>
+                  <li><span>🥗</span> Eat an iron-rich balanced meal</li>
+                  <li><span>🪪</span> Carry valid government photo ID</li>
+                  <li><span>🛋️</span> Rest 15 mins after donating</li>
+                </ul>
+              </div>
+
+              {/* Block 4: Small 1x1 Motion Film Video Card */}
+              <button
+                type="button"
+                className="bento-card bento-video-card"
+                onClick={() => {
+                  setRequestedFilmChapter(0);
+                  setFilmModalOpen(true);
+                }}
+              >
+                <div className="video-thumb-overlay">
+                  <span className="video-play-circle">▶</span>
+                  <span className="bento-tag video-tag">60FPS MOTION FILM</span>
+                </div>
+                <div className="video-card-copy">
+                  <h3>See the Solution Story</h3>
+                  <small>4-chapter interactive motion graphic film (24s)</small>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* H. OUR IMPACT (4-COLUMN COUNTUP METRICS + 3D COMPONENT SEPARATION) */}
+        <section
+          className="impact-metrics-section section-pad"
+          id="impact"
+          style={{
+            backgroundImage:
+              "linear-gradient(180deg, rgba(11, 15, 25, 0.92), rgba(34, 10, 22, 0.92)), url('./images/bloodlink-world.jpg')",
+          }}
+        >
+          <div className="impact-bg-overlay" aria-hidden="true" />
+          <div className="max-container impact-container fade-in-up">
+            <div className="centered-header centered-light">
+              <span className="eyebrow eyebrow-rose">OUR IMPACT MODEL</span>
+              <h2>One Voluntary Gift, Multiplied</h2>
+              <p>
+                Separated in component laboratories, a single blood unit branches into targeted clinical therapies. (Illustrative prototype metrics below.)
+              </p>
+            </div>
+
+            <div className="metrics-4-grid" ref={impactStatsRef}>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={3} prefix="Up to " trigger={impactVisible} />
+                </strong>
+                <span>LIVES SUPPORTED PER UNIT</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={8} trigger={impactVisible} />
+                </strong>
+                <span>ABO / RH GROUPS MATCHED</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={24} suffix="/7" trigger={impactVisible} />
+                </strong>
+                <span>VERIFIED REQUEST WORKFLOW</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={100} suffix="%" trigger={impactVisible} />
+                </strong>
+                <span>PRIVACY-SHIELDED DEMO RELAY</span>
+              </div>
+            </div>
+
+            {/* Interactive 3D Blood Component Separation Orbit */}
+            <div className="impact-3d-split">
+              <div className="impact-3d-info">
+                <span className="eyebrow eyebrow-rose">INTERACTIVE 3D SEPARATION</span>
+                <h3>Explore Separated Components</h3>
+                <div className="component-tabs">
+                  {COMPONENT_STORIES.map((comp) => (
+                    <button
+                      key={comp.id}
+                      type="button"
+                      className={`comp-tab ${selectedComponentId === comp.id ? "is-active" : ""}`}
+                      onClick={() => setSelectedComponentId(comp.id)}
+                    >
+                      <span className="comp-dot" style={{ background: comp.color }} />
+                      {comp.title}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="comp-detail-box">
+                  <div className="comp-meta">
+                    <span>{selectedComponent.subtitle}</span>
+                    <span>{selectedComponent.shelfLife}</span>
+                  </div>
+                  <h4>{selectedComponent.title}</h4>
+                  <p>{selectedComponent.description}</p>
+                  <small>Clinical focus: {selectedComponent.useCase}</small>
+                </div>
+
+                <div className="sim-box">
+                  <div className="sim-top">
+                    <label htmlFor="impact-slider">
+                      Donation Simulator: <strong>{donationCount}</strong>{" "}
+                      {donationCount === 1 ? "unit" : "units"}
+                    </label>
+                    <span>Up to ~{donationCount * 3} care pathways</span>
+                  </div>
+                  <input
+                    id="impact-slider"
+                    type="range"
+                    min={1}
+                    max={50}
+                    value={donationCount}
+                    onChange={(e) => setDonationCount(Number(e.target.value))}
+                    className="impact-range"
+                  />
+                </div>
+              </div>
+
+              <div className="impact-3d-stage-col">
+                <ImpactOrbit3D
+                  selectedId={selectedComponentId}
+                  donationCount={donationCount}
+                  onSelectComponent={handleSelectComponent}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* I. PRE-FOOTER CALL TO ACTION */}
+        <section className="prefooter-section section-pad">
+          <div className="max-container fade-in-up">
+            <div className="prefooter-card">
+              <span className="prefooter-tag">EVERY DROP CONNECTS A LIFE</span>
+              <h2>Ready to Become a Voluntary Donor?</h2>
+              <p>
+                Preview how fast joining a community donor network can feel — create an illustrative BloodLink Concept Pass in under 20 seconds.
+              </p>
+              <button
+                type="button"
+                className="btn-light btn-lg"
+                onClick={() => {
+                  setRegistrationComplete(false);
+                  setRegisterOpen(true);
+                }}
+              >
+                Register as a Donor Today <ArrowIcon diagonal />
               </button>
             </div>
           </div>
         </section>
       </main>
 
+      {/* J. 4-COLUMN FOOTER */}
       <footer className="site-footer">
-        <div className="page-width footer-main">
-          <a className="brand footer-brand" href="#top">
-            <BrandMark />
-            <span>
-              Blood<span className="brand-accent">Link</span>
-            </span>
-          </a>
-          <p>Every drop connects a life.</p>
-          <nav className="footer-nav" aria-label="Footer navigation">
-            <a href="#problem">Solutions & Film</a>
-            <a href="#discover">Find Donor</a>
-            <a href="#requests">Requests</a>
-            <a href="#network">Blood Banks</a>
-            <button type="button" className="footer-brief-btn" onClick={() => setBriefOpen(true)}>
-              Challenge Brief
+        <div className="max-container footer-4-grid">
+          <div className="footer-col">
+            <a className="brand" href="#top">
+              <BrandMark />
+              <span>
+                Blood<span className="brand-accent">Link</span>
+              </span>
+            </a>
+            <p className="footer-about">
+              An AI Prompt Battle 2.0 3D WebGL &amp; motion-graphics prototype connecting voluntary blood donors, hospitals, and authorised blood banks.
+            </p>
+          </div>
+
+          <div className="footer-col">
+            <h4>Quick Links</h4>
+            <a href="#find-blood">Find a Donor</a>
+            <a href="#requests">Urgent Requests</a>
+            <a href="#network">Blood Bank Network</a>
+            <a href="#awareness">Donation Awareness</a>
+          </div>
+
+          <div className="footer-col">
+            <h4>Resources &amp; Project</h4>
+            <a href="#how-it-works">How It Works</a>
+            <button type="button" className="footer-text-btn" onClick={() => setBriefOpen(true)}>
+              Problem &amp; Architecture Brief
+            </button>
+            <button
+              type="button"
+              className="footer-text-btn"
+              onClick={() => {
+                setRequestedFilmChapter(0);
+                setFilmModalOpen(true);
+              }}
+            >
+              Watch 60fps Motion Film
             </button>
             <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
-              GitHub Repo
+              GitHub: TeJAS512-MAX
             </a>
-          </nav>
+          </div>
+
+          <div className="footer-col">
+            <h4>Stay Updated (Demo)</h4>
+            <p className="footer-sub-copy">Get notified about community blood drives in this concept UI.</p>
+            <form className="newsletter-form" onSubmit={handleNewsletter}>
+              <input
+                name="newsletterEmail"
+                type="email"
+                placeholder="you@example.com"
+                required
+                aria-label="Email for demo updates"
+              />
+              <button type="submit" className="btn-primary">
+                Join
+              </button>
+            </form>
+          </div>
         </div>
-        <div className="page-width footer-bottom">
-          <span>CONCEPT PROTOTYPE · NO REAL MEDICAL OR DONOR DATA STORED</span>
-          <span>AI PROMPT BATTLE 2.0 · LIVE 3D &amp; MOTION PROTOTYPE</span>
-          <a href="#top">
-            Back to top <ArrowIcon diagonal />
-          </a>
+
+        <div className="max-container footer-bottom-row">
+          <span>© 2026 BloodLink Concept Prototype · Not a live medical or emergency service.</span>
+          <div className="footer-socials">
+            <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.36 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.35 9.35 0 0 1 12 6.84c.85 0 1.7.12 2.5.35 1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
+              </svg>
+            </a>
+            <a href="#top" aria-label="Back to top">
+              <ArrowIcon diagonal />
+            </a>
+          </div>
         </div>
       </footer>
 
-      {/* MODALS */}
+      {/* Z-50 TOAST ALERT */}
+      {toastMessage && (
+        <div className="toast-banner" role="status" aria-live="polite">
+          <span className="pulse-dot" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Z-50 MODALS */}
       {modalOpen && (
         <div
           className="modal-backdrop"
           role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeAllModals();
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) closeAllModals();
           }}
         >
-          <section className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <button className="modal-close" type="button" aria-label="Close dialog" onClick={closeAllModals}>
+          <section
+            className={`modal-panel ${filmModalOpen ? "modal-panel-wide" : ""}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+          >
+            <button type="button" className="modal-close" aria-label="Close modal" onClick={closeAllModals}>
               <CloseIcon />
             </button>
 
-            {registerOpen ? (
+            {filmModalOpen ? (
+              <div className="film-modal-wrap">
+                <p className="eyebrow">60FPS MOTION GRAPHICS FILM · BLOODLINK STORY</p>
+                <h2 id="modal-title" style={{ marginBottom: "16px" }}>
+                  How BloodLink Connects Lives
+                </h2>
+                <MotionVideoReel externalChapterRequest={requestedFilmChapter} />
+              </div>
+            ) : loginOpen ? (
+              <>
+                <p className="eyebrow">VOLUNTEER PORTAL · CONCEPT DEMO</p>
+                <h2 id="modal-title">Sign in to BloodLink</h2>
+                <p className="modal-intro">Demo sign-in preview — no real credentials or server authentication required.</p>
+                <form className="registration-form" onSubmit={handleDemoLogin}>
+                  <label htmlFor="login-email">Email address (demo)</label>
+                  <input id="login-email" name="email" type="email" defaultValue="donor@bloodlink.demo" required />
+                  <button type="submit" className="btn-primary modal-submit">
+                    Enter Demo Portal <ArrowIcon />
+                  </button>
+                </form>
+              </>
+            ) : registerOpen ? (
               registrationComplete && demoPass ? (
                 <div className="modal-success">
                   <span className="success-mark">&#10003;</span>
-                  <p className="eyebrow section-eyebrow">CONCEPT DONOR PASS READY</p>
-                  <h2 id="modal-title">Thank you for stepping up, {demoPass.name}.</h2>
-                  <p>
-                    This interactive pass demonstrates voluntary onboarding. Nothing has been saved, transmitted, or shared with an external service.
+                  <p className="eyebrow">CONCEPT DONOR PASS READY</p>
+                  <h2 id="modal-title">Welcome to the chain, {demoPass.name}.</h2>
+                  <p className="modal-intro">
+                    Illustrative digital pass generated locally — nothing has been transmitted or stored.
                   </p>
                   <div className="demo-donor-pass">
                     <div className="pass-top">
@@ -1230,95 +1312,59 @@ function App() {
                       <span className="pass-group">{demoPass.group}</span>
                     </div>
                   </div>
-                  <button className="button button-primary" type="button" onClick={closeAllModals}>
-                    Return to BloodLink <ArrowIcon />
+                  <button type="button" className="btn-primary" onClick={closeAllModals}>
+                    Back to BloodLink <ArrowIcon />
                   </button>
                 </div>
               ) : (
                 <>
-                  <p className="eyebrow section-eyebrow">
-                    <span>VOLUNTARY PLEDGE</span> BECOME A DONOR
-                  </p>
-                  <h2 id="modal-title">Create your demo donor pass.</h2>
-                  <p className="modal-intro">
-                    Experience how voluntary donor registration works without sharing sensitive medical records.
-                  </p>
+                  <p className="eyebrow">VOLUNTARY PLEDGE · BECOME A DONOR</p>
+                  <h2 id="modal-title">Register as a Demo Donor</h2>
+                  <p className="modal-intro">Experience BloodLink&apos;s fast voluntary donor onboarding.</p>
                   <form className="registration-form" onSubmit={handleRegistration}>
-                    <label htmlFor="donor-name">Display name (demo)</label>
-                    <input
-                      id="donor-name"
-                      name="name"
-                      type="text"
-                      placeholder="e.g. Aarav Nair"
-                      autoComplete="off"
-                      required
-                    />
+                    <label htmlFor="donor-name">Display name</label>
+                    <input id="donor-name" name="name" type="text" placeholder="e.g. Aarav Nair" required />
                     <div className="registration-fields">
                       <label htmlFor="registration-group">
                         Blood group
                         <select id="registration-group" name="group" defaultValue="" required>
-                          <option value="" disabled>
-                            Select group
-                          </option>
-                          {BLOOD_GROUPS.map((group) => (
-                            <option key={group} value={group}>
-                              {group}
-                            </option>
+                          <option value="" disabled>Select group</option>
+                          {BLOOD_GROUPS.map((g) => (
+                            <option key={g} value={g}>{g}</option>
                           ))}
                         </select>
                       </label>
                       <label htmlFor="registration-city">
                         City
-                        <input
-                          id="registration-city"
-                          name="city"
-                          type="text"
-                          placeholder="e.g. Bengaluru"
-                          autoComplete="off"
-                          required
-                        />
+                        <input id="registration-city" name="city" type="text" placeholder="e.g. Bengaluru" required />
                       </label>
                     </div>
-                    <p className="form-privacy-note">
-                      Prototype preview only — no personal or health data leaves your browser.
-                    </p>
-                    <button className="button button-primary modal-submit" type="submit">
-                      Generate concept donor pass <ArrowIcon />
+                    <p className="form-privacy-note">Prototype only — no personal or health data is saved.</p>
+                    <button type="submit" className="btn-primary modal-submit">
+                      Generate Concept Donor Pass <ArrowIcon />
                     </button>
                   </form>
                 </>
               )
             ) : createRequestOpen ? (
               <>
-                <p className="eyebrow section-eyebrow">
-                  <span>HOSPITAL INTAKE SIMULATOR</span> DEMO WORKFLOW
-                </p>
-                <h2 id="modal-title">Raise a verified demo request.</h2>
-                <p className="modal-intro">
-                  Test how a hospital blood desk logs a structured request so compatible voluntary donors can be matched immediately.
-                </p>
+                <p className="eyebrow">HOSPITAL INTAKE SIMULATOR</p>
+                <h2 id="modal-title">Raise a Verified Demo Request</h2>
+                <p className="modal-intro">Preview how a hospital blood desk logs a request onto the live board.</p>
                 <form className="registration-form" onSubmit={handleCreateDemoRequest}>
-                  <label htmlFor="req-hospital">Hospital or medical centre</label>
-                  <input
-                    id="req-hospital"
-                    name="reqHospital"
-                    type="text"
-                    placeholder="e.g. Apollo Clinical Centre"
-                    required
-                  />
+                  <label htmlFor="req-hospital">Hospital / Centre Name</label>
+                  <input id="req-hospital" name="reqHospital" type="text" placeholder="e.g. Apollo Clinical Centre" required />
                   <div className="registration-fields">
                     <label htmlFor="req-group">
-                      Blood group needed
+                      Blood Group
                       <select id="req-group" name="reqGroup" defaultValue="O-" required>
                         {BLOOD_GROUPS.map((g) => (
-                          <option key={g} value={g}>
-                            {g}
-                          </option>
+                          <option key={g} value={g}>{g}</option>
                         ))}
                       </select>
                     </label>
                     <label htmlFor="req-units">
-                      Units required
+                      Units Needed
                       <input id="req-units" name="reqUnits" type="text" defaultValue="2 units" required />
                     </label>
                   </div>
@@ -1328,7 +1374,7 @@ function App() {
                       <input id="req-city" name="reqCity" type="text" placeholder="e.g. Bengaluru" required />
                     </label>
                     <label htmlFor="req-scenario">
-                      Clinical scenario
+                      Scenario
                       <select id="req-scenario" name="reqScenario" defaultValue="Emergency Trauma">
                         <option value="Emergency Trauma">Emergency Trauma</option>
                         <option value="Planned Surgery">Planned Surgery</option>
@@ -1336,19 +1382,14 @@ function App() {
                       </select>
                     </label>
                   </div>
-                  <p className="form-privacy-note">
-                    Session demonstration only — adds an illustrative request locally to the board.
-                  </p>
-                  <button className="button button-primary modal-submit" type="submit">
-                    Post demo request to board <ArrowIcon />
+                  <button type="submit" className="btn-primary modal-submit">
+                    Post Demo Request <ArrowIcon />
                   </button>
                 </form>
               </>
             ) : activeRequest ? (
               <>
-                <p className="eyebrow section-eyebrow">
-                  <span>HOSPITAL-VERIFIED DEMO</span> {activeRequest.scenario.toUpperCase()}
-                </p>
+                <p className="eyebrow">VERIFIED HOSPITAL REQUEST · {activeRequest.scenario.toUpperCase()}</p>
                 <div className="request-modal-group">{activeRequest.group}</div>
                 <h2 id="modal-title">{activeRequest.hospital}</h2>
                 <p className="modal-intro">
@@ -1368,26 +1409,21 @@ function App() {
                     <strong>Hospital blood desk — demo verified</strong>
                   </div>
                 </div>
-                <p className="form-privacy-note">
-                  Illustrative demonstration record — not an active medical alert.
-                </p>
                 <button
-                  className="button button-primary modal-submit"
                   type="button"
-                  onClick={() => exploreRequest(activeRequest)}
+                  className="btn-primary modal-submit"
+                  onClick={() => acceptRequestDemo(activeRequest)}
                 >
-                  Auto-match compatible donors <ArrowIcon />
+                  Accept &amp; Match Compatible Donors <ArrowIcon />
                 </button>
               </>
             ) : activeDonor ? (
               <>
-                <p className="eyebrow section-eyebrow">
-                  <span>PRIVACY-SHIELDED PROFILE</span> DEMO DONOR {activeDonor.id}
-                </p>
+                <p className="eyebrow">PRIVACY-SHIELDED DEMO PROFILE · {activeDonor.id}</p>
                 <div className="request-modal-group">{activeDonor.group}</div>
                 <h2 id="modal-title">{activeDonor.location}</h2>
                 <p className="modal-intro">
-                  Personal phone numbers stay protected — BloodLink demonstrates relay notifications coordinated exclusively through an authorised blood bank.
+                  Donor contact details remain hidden until coordinated through an authorised blood centre.
                 </p>
                 <div className="request-detail-list">
                   <div>
@@ -1403,60 +1439,47 @@ function App() {
                     <strong>{COMPATIBILITY_MAP[activeDonor.group].donateRedCellsTo.join(", ")}</strong>
                   </div>
                 </div>
-                <p className="form-privacy-note">
-                  Illustrative sample profile — no live messaging or donor contact exists.
-                </p>
                 <button
-                  className="button button-primary modal-submit"
                   type="button"
+                  className="btn-primary modal-submit"
                   onClick={() => {
                     setActiveDonor(null);
-                    openRegistration();
+                    setRegistrationComplete(false);
+                    setRegisterOpen(true);
                   }}
                 >
-                  Create your own demo profile <ArrowIcon />
+                  Create Your Own Demo Pass <ArrowIcon />
                 </button>
               </>
             ) : briefOpen ? (
               <>
-                <p className="eyebrow section-eyebrow">
-                  <span>AI PROMPT BATTLE 2.0</span> PROBLEM &amp; SOLUTION ARCHITECTURE
-                </p>
-                <h2 id="modal-title">BloodLink — Every Drop Connects a Life</h2>
+                <p className="eyebrow">AI PROMPT BATTLE 2.0 · ARCHITECTURE BRIEF</p>
+                <h2 id="modal-title">BloodLink — Problem-Solving Blueprint</h2>
                 <p className="modal-intro">
-                  Designed and engineered with live Three.js WebGL scenes, a 60fps procedural motion film, and four targeted workflows solving the core blood-discovery bottlenecks.
+                  Combines Three.js interactive 3D scenes, a 60fps procedural motion film, compatibility-aware matching, and hospital-verified request intake.
                 </p>
                 <div className="request-detail-list">
                   <div>
-                    <span>01 Donor matching</span>
-                    <strong>ABO/Rh compatibility-aware search + shielded relay</strong>
+                    <span>3D Stages</span>
+                    <strong>Hero Biological Network · 3D Topology Map · 3D Component Orbit</strong>
                   </div>
                   <div>
-                    <span>02 Bank discovery</span>
-                    <strong>Interactive 3D spatial topology + service tags</strong>
+                    <span>Motion Graphics</span>
+                    <strong>24s 4-chapter procedural canvas film + fullscreen cinema modal</strong>
                   </div>
                   <div>
-                    <span>03 Request coordination</span>
-                    <strong>Hospital-verified intake + 1-click auto-match</strong>
-                  </div>
-                  <div>
-                    <span>04 Awareness &amp; impact</span>
-                    <strong>Guide, myths, readiness check &amp; 3D component orbit</strong>
+                    <span>Repository</span>
+                    <strong>TeJAS512-MAX/BLOOD_DONAR-LOCATOR</strong>
                   </div>
                 </div>
-                <div className="brief-actions">
-                  <a
-                    className="button button-primary"
-                    href={GITHUB_REPO_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open GitHub Repo <ArrowIcon diagonal />
-                  </a>
-                  <button className="button button-secondary-dark" type="button" onClick={copyRepoUrl}>
-                    {repoCopied ? "Copied URL!" : "Copy Repo URL"}
-                  </button>
-                </div>
+                <a
+                  className="btn-primary modal-submit"
+                  href={GITHUB_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open GitHub Repository <ArrowIcon diagonal />
+                </a>
               </>
             ) : null}
           </section>

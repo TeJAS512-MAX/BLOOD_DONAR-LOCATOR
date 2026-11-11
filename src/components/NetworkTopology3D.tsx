@@ -93,20 +93,20 @@ export function NetworkTopology3D({
       const isBank = p.type === "Blood bank";
 
       const beaconMat = new THREE.MeshStandardMaterial({
-        color: isBank ? 0xff4d6d : 0x34d399,
-        emissive: isBank ? 0xe11d48 : 0x059669,
-        emissiveIntensity: 0.72,
+        color: isBank ? 0x38bdf8 : 0xff4d6d,
+        emissive: isBank ? 0x0284c7 : 0xe11d48,
+        emissiveIntensity: 0.78,
         roughness: 0.25,
       });
       const pillarMat = new THREE.MeshBasicMaterial({
-        color: isBank ? 0xff4d6d : 0x34d399,
+        color: isBank ? 0x38bdf8 : 0xff4d6d,
         transparent: true,
         opacity: 0.45,
       });
       const ringMat = new THREE.MeshBasicMaterial({
-        color: isBank ? 0xff4d6d : 0x34d399,
+        color: isBank ? 0x38bdf8 : 0xff4d6d,
         transparent: true,
-        opacity: 0.42,
+        opacity: 0.44,
         side: THREE.DoubleSide,
       });
       disposables.push(beaconMat, pillarMat, ringMat);
@@ -217,10 +217,13 @@ export function NetworkTopology3D({
       frameId = window.requestAnimationFrame(animate);
       const elapsed = reducedMotion ? 1.2 : clock.getElapsedTime();
 
-      mapGroup.rotation.y = Math.sin(elapsed * 0.22) * 0.24 + pointerOffsetX;
-      mapGroup.rotation.x = pointerOffsetY * 0.3;
-
       const activeId = selectedRef.current;
+      const selectedNode = partnerNodes.find((n) => n.id === activeId);
+      const panYaw = selectedNode ? -selectedNode.worldPos.x * 0.16 : 0;
+
+      mapGroup.rotation.y += (Math.sin(elapsed * 0.2) * 0.18 + pointerOffsetX + panYaw - mapGroup.rotation.y) * 0.06;
+      mapGroup.rotation.x += (pointerOffsetY * 0.26 - mapGroup.rotation.x) * 0.06;
+
       partnerNodes.forEach((node, idx) => {
         const isSelected = activeId === node.id;
         const targetScale = isSelected ? 1.55 : 1.0 + Math.sin(elapsed * 2 + idx) * 0.08;
