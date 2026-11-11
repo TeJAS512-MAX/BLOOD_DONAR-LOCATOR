@@ -8,17 +8,44 @@ interface ImpactOrbit3DProps {
   onSelectComponent: (id: BloodComponentStory["id"]) => void;
 }
 
+function createGlowSprite(): THREE.CanvasTexture {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const h = size / 2;
+    const grad = ctx.createRadialGradient(h, h, 0, h, h, h);
+    grad.addColorStop(0, "rgba(255,255,255,1)");
+    grad.addColorStop(0.3, "rgba(255,180,192,0.85)");
+    grad.addColorStop(1, "rgba(255,77,109,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+
 function createMiniRbcGeometry(): THREE.BufferGeometry {
-  const geo = new THREE.SphereGeometry(0.42, 42, 28);
+  const geo = new THREE.SphereGeometry(0.42, 56, 36);
   const pos = geo.attributes.position;
+  const colors = new Float32Array(pos.count * 3);
   for (let i = 0; i < pos.count; i += 1) {
     const x = pos.getX(i) / 0.42;
     const y = pos.getY(i) / 0.42;
     const z = pos.getZ(i) / 0.42;
     const r2 = Math.min(1, x * x + z * z);
-    const factor = 0.22 + 1.9 * r2 - 1.02 * r2 * r2;
-    pos.setXYZ(i, x * 0.52, y * 0.42 * factor * 0.65, z * 0.52);
+    const r = Math.sqrt(r2);
+    const factor = 0.24 + 1.86 * r2 - 1.02 * r2 * r2;
+    const micro = 0.014 * Math.sin(x * 7 + z * 5);
+    pos.setXYZ(i, x * 0.52 * (1 + micro), y * 0.42 * factor * 0.58, z * 0.52 * (1 + micro));
+
+    const shade = 0.45 + 0.55 * Math.pow(r, 1.3);
+    colors[i * 3] = shade;
+    colors[i * 3 + 1] = shade * 0.85;
+    colors[i * 3 + 2] = shade * 0.88;
   }
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
   geo.computeVertexNormals();
   return geo;
 }
@@ -150,10 +177,11 @@ export function ImpactOrbit3D({ selectedId, donationCount, onSelectComponent }: 
       const mat = new THREE.MeshPhysicalMaterial({
         color: new THREE.Color(spec.color),
         emissive: new THREE.Color(spec.color),
-        emissiveIntensity: 0.35,
-        roughness: 0.24,
-        metalness: 0.1,
-        clearcoat: 0.85,
+        emissiveIntensity: 0.28,
+        roughness: spec.id === "red-cells" ? 0.52 : 0.24,
+        metalness: 0.05,
+        clearcoat: spec.id === "red-cells" ? 0.35 : 0.85,
+        vertexColors: spec.id === "red-cells",
       });
       nodeMats.push(mat);
 
@@ -164,7 +192,8 @@ export function ImpactOrbit3D({ selectedId, donationCount, onSelectComponent }: 
       nodeMeshes.push({ id: spec.id, mesh, pivot, spec });
     });
 
-    // Dynamic orbiting impact particles (scaled visually by donationCount)
+    // Dynamic orbiting impact particles (soft round bokeh glow)
+    const glowSprite = createGlowSprite();
     const maxParticles = 240;
     const pPositions = new Float32Array(maxParticles * 3);
     const pMeta = Array.from({ length: maxParticles }, () => ({
@@ -176,12 +205,14 @@ export function ImpactOrbit3D({ selectedId, donationCount, onSelectComponent }: 
     const particleGeo = new THREE.BufferGeometry();
     particleGeo.setAttribute("position", new THREE.BufferAttribute(pPositions, 3));
     const particleMat = new THREE.PointsMaterial({
+      map: glowSprite,
       color: 0xff8b99,
-      size: 0.06,
+      size: 0.13,
       transparent: true,
-      opacity: 0.78,
+      opacity: 0.82,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
+      alphaTest: 0.001,
     });
     const particlePoints = new THREE.Points(particleGeo, particleMat);
     rootGroup.add(particlePoints);
@@ -311,6 +342,7 @@ export function ImpactOrbit3D({ selectedId, donationCount, onSelectComponent }: 
       nodeMats.forEach((m) => m.dispose());
       ringGeos.forEach((g) => g.dispose());
       ringMats.forEach((m) => m.dispose());
+      glowSprite.dispose();
       particleGeo.dispose();
       particleMat.dispose();
       renderer.dispose();
