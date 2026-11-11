@@ -233,11 +233,11 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         triggerHeartbeatSound();
       }
 
-      // Base cinematic dark burgundy canvas
-      const bgGrad = ctx.createRadialGradient(W * 0.54, H * 0.46, 40, W * 0.5, H * 0.5, W * 0.72);
-      bgGrad.addColorStop(0, "#310d17");
-      bgGrad.addColorStop(0.55, "#19080d");
-      bgGrad.addColorStop(1, "#0d0407");
+      // Base cinematic midnight-slate & crimson studio gradient
+      const bgGrad = ctx.createRadialGradient(W * 0.54, H * 0.46, 40, W * 0.5, H * 0.5, W * 0.75);
+      bgGrad.addColorStop(0, "#24111c");
+      bgGrad.addColorStop(0.52, "#111622");
+      bgGrad.addColorStop(1, "#090d14");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
@@ -334,18 +334,18 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "rgba(250, 104, 119, 0.92)";
-        ctx.font = '500 15px "DM Mono", monospace';
+        ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 165);
 
         ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 58px "Space Grotesk", sans-serif';
+        ctx.font = '600 58px "Outfit", sans-serif';
         ctx.fillText("When every minute matters,", W * 0.5, 232);
         ctx.fillStyle = "#fa6877";
         ctx.fillText("matching donors shouldn't stall.", W * 0.5, 294);
 
         ctx.fillStyle = "rgba(255, 240, 235, 0.7)";
-        ctx.font = '400 20px "Manrope", sans-serif';
+        ctx.font = '400 20px "Plus Jakarta Sans", sans-serif';
         ctx.fillText("Surgeries, trauma & critical treatments demand rapid, trusted donor coordination.", W * 0.5, 535);
         ctx.restore();
       }
@@ -388,7 +388,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.stroke();
 
           ctx.fillStyle = "#fff8f5";
-          ctx.font = '600 14px "DM Mono", monospace';
+          ctx.font = '600 14px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(node.id, nx, ny);
@@ -399,15 +399,15 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "rgba(250, 104, 119, 0.9)";
-        ctx.font = '500 15px "DM Mono", monospace';
+        ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("SCENE 02  /  DISCONNECTED SIGNALS", W * 0.5, 116);
 
         ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 44px "Space Grotesk", sans-serif';
+        ctx.font = '600 44px "Outfit", sans-serif';
         ctx.fillText("Willing donors exist.", W * 0.5, 590);
         ctx.fillStyle = "rgba(255, 228, 224, 0.72)";
-        ctx.font = '400 19px "Manrope", sans-serif';
+        ctx.font = '400 19px "Plus Jakarta Sans", sans-serif';
         ctx.fillText("Finding who is available, compatible, and verified shouldn't depend on guesswork.", W * 0.5, 632);
         ctx.restore();
       }
@@ -468,7 +468,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.stroke();
 
           ctx.fillStyle = "#fff8f5";
-          ctx.font = '700 13px "DM Mono", monospace';
+          ctx.font = '700 13px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(node.id, node.x, node.y);
@@ -490,12 +490,12 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
         ctx.save();
         ctx.fillStyle = "rgba(255, 224, 214, 0.9)";
-        ctx.font = '500 15px "DM Mono", monospace';
+        ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("SCENE 03  /  ENTER BLOODLINK", W * 0.5, 96);
 
         ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 40px "Space Grotesk", sans-serif';
+        ctx.font = '600 40px "Outfit", sans-serif';
         ctx.fillText("Donors, hospitals & blood banks — aligned.", W * 0.5, 622);
         ctx.restore();
       }
@@ -508,9 +508,9 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
         // 3D projected rotating component orbits
         const components = [
-          { label: "RED CELLS", sub: "Oxygen Delivery", color: "#fa6877", angle: t * 0.85 },
-          { label: "PLASMA", sub: "Clotting Support", color: "#f2b880", angle: t * 0.85 + (Math.PI * 2) / 3 },
-          { label: "PLATELETS", sub: "Bleeding Control", color: "#ff9aa7", angle: t * 0.85 + (Math.PI * 4) / 3 },
+          { label: "RED CELLS", sub: "Oxygen Delivery", color: "#ff4d6d", angle: t * 0.85 },
+          { label: "PLASMA", sub: "Clotting Support", color: "#fbbf24", angle: t * 0.85 + (Math.PI * 2) / 3 },
+          { label: "PLATELETS", sub: "Bleeding Shield", color: "#34d399", angle: t * 0.85 + (Math.PI * 4) / 3 },
         ];
 
         ctx.save();
@@ -555,11 +555,11 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.strokeRect(px - 68, py + 22, 136, 42);
 
           ctx.fillStyle = "#fff8f5";
-          ctx.font = '600 11px "DM Mono", monospace';
+          ctx.font = '600 11px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.fillText(comp.label, px, py + 39);
           ctx.fillStyle = "#b89fa2";
-          ctx.font = '400 10px "Manrope", sans-serif';
+          ctx.font = '400 10px "Plus Jakarta Sans", sans-serif';
           ctx.fillText(comp.sub, px, py + 55);
         });
 
@@ -577,12 +577,12 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "rgba(250, 104, 119, 0.92)";
-        ctx.font = '500 14px "DM Mono", monospace';
+        ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92);
 
         ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 54px "Space Grotesk", sans-serif';
+        ctx.font = '600 54px "Outfit", sans-serif';
         ctx.fillText("BloodLink — Every drop connects a life.", W * 0.5, 622);
         ctx.restore();
       }
@@ -590,7 +590,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       // Top broadcast film overlay badge
       ctx.save();
       ctx.fillStyle = "rgba(255, 248, 245, 0.64)";
-      ctx.font = '500 11px "DM Mono", monospace';
+      ctx.font = '500 11px "JetBrains Mono", monospace';
       ctx.textAlign = "left";
       ctx.fillText(
         `BLOODLINK MOTION FILM  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,

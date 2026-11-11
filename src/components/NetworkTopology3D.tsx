@@ -43,8 +43,8 @@ export function NetworkTopology3D({
     camera.position.set(0, 3.6, 5.4);
     camera.lookAt(0, 0.2, 0);
 
-    scene.add(new THREE.AmbientLight(0x632030, 1.9));
-    const dirLight = new THREE.DirectionalLight(0xffd2cc, 2.2);
+    scene.add(new THREE.AmbientLight(0x475569, 2.0));
+    const dirLight = new THREE.DirectionalLight(0xf8fafc, 2.2);
     dirLight.position.set(3, 6, 4);
     scene.add(dirLight);
 
@@ -52,15 +52,15 @@ export function NetworkTopology3D({
     scene.add(mapGroup);
 
     // Architectural topographic grid base
-    const gridHelper = new THREE.GridHelper(6.8, 16, 0x8c2e41, 0x3b151e);
+    const gridHelper = new THREE.GridHelper(6.8, 16, 0x334155, 0x1e293b);
     gridHelper.position.y = -0.02;
     mapGroup.add(gridHelper);
 
     const baseRingGeo = new THREE.RingGeometry(2.65, 2.7, 72);
     const baseRingMat = new THREE.MeshBasicMaterial({
-      color: 0xfa6877,
+      color: 0xff4d6d,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.25,
       side: THREE.DoubleSide,
     });
     const baseRing = new THREE.Mesh(baseRingGeo, baseRingMat);
@@ -93,18 +93,18 @@ export function NetworkTopology3D({
       const isBank = p.type === "Blood bank";
 
       const beaconMat = new THREE.MeshStandardMaterial({
-        color: isBank ? 0xfa6877 : 0xffe4de,
-        emissive: isBank ? 0xd62c46 : 0x9b3648,
-        emissiveIntensity: 0.65,
+        color: isBank ? 0xff4d6d : 0x34d399,
+        emissive: isBank ? 0xe11d48 : 0x059669,
+        emissiveIntensity: 0.72,
         roughness: 0.25,
       });
       const pillarMat = new THREE.MeshBasicMaterial({
-        color: isBank ? 0xfa6877 : 0xf4c4be,
+        color: isBank ? 0xff4d6d : 0x34d399,
         transparent: true,
         opacity: 0.45,
       });
       const ringMat = new THREE.MeshBasicMaterial({
-        color: isBank ? 0xfa6877 : 0xffe4de,
+        color: isBank ? 0xff4d6d : 0x34d399,
         transparent: true,
         opacity: 0.42,
         side: THREE.DoubleSide,

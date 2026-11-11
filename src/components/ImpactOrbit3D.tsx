@@ -107,9 +107,9 @@ export function ImpactOrbit3D({ selectedId, donationCount, onSelectComponent }: 
       phase: number;
       color: number;
     }[] = [
-      { id: "red-cells", radius: 2.05, tiltX: 1.05, tiltZ: -0.38, speed: 0.52, phase: 0.4, color: 0xfa6877 },
-      { id: "plasma", radius: 2.55, tiltX: 1.18, tiltZ: 0.55, speed: -0.4, phase: 2.6, color: 0xf2b880 },
-      { id: "platelets", radius: 2.95, tiltX: 0.94, tiltZ: -0.82, speed: 0.34, phase: 4.5, color: 0xff9aa7 },
+      { id: "red-cells", radius: 2.05, tiltX: 1.05, tiltZ: -0.38, speed: 0.52, phase: 0.4, color: 0xff4d6d },
+      { id: "plasma", radius: 2.55, tiltX: 1.18, tiltZ: 0.55, speed: -0.4, phase: 2.6, color: 0xfbbf24 },
+      { id: "platelets", radius: 2.95, tiltX: 0.94, tiltZ: -0.82, speed: 0.34, phase: 4.5, color: 0x34d399 },
     ];
 
     const ringGeos: THREE.TorusGeometry[] = [];
