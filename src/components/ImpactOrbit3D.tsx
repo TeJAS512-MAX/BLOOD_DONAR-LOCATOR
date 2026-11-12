@@ -319,10 +319,10 @@ export function ImpactOrbit3D({
       <div
         ref={mountRef}
         className="impact-3d-canvas"
-        aria-label="Interactive 3D blood component centrifuge and orbital separation model"
+        aria-label="Interactive model of one donation separating into red cells, plasma and platelets"
       />
       <div className="impact-3d-hint">
-        Drag to orbit 3D centrifuge · Click any orbital ring to inspect component
+        Drag to rotate · click a ring to inspect
       </div>
     </div>
   );

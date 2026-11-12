@@ -679,29 +679,29 @@ export function HeroNetworkGrid3D({
       <div className="hero-3d-topbar">
         <div className="hero-3d-status">
           <span className="pulse-dot" />
-          <span>3D WEBGL BIOMEDICAL TELEMETRY</span>
+          <span>LIVE DONOR NETWORK</span>
         </div>
-        <div className="hero-3d-cam-tabs" role="group" aria-label="3D Camera View Mode">
+        <div className="hero-3d-cam-tabs" role="group" aria-label="Camera view">
           <button
             type="button"
             className={`cam-tab ${cameraPreset === "network" ? "is-active" : ""}`}
             onClick={() => setCameraPreset("network")}
           >
-            Dispatch Grid
+            Network
           </button>
           <button
             type="button"
             className={`cam-tab ${cameraPreset === "macro" ? "is-active" : ""}`}
             onClick={() => setCameraPreset("macro")}
           >
-            Macro RBC
+            Red cell
           </button>
           <button
             type="button"
             className={`cam-tab ${cameraPreset === "radar" ? "is-active" : ""}`}
             onClick={() => setCameraPreset("radar")}
           >
-            Top Radar
+            Top view
           </button>
         </div>
       </div>

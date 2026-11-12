@@ -40,11 +40,8 @@ export interface NetworkPartner {
   area: string;
   address: string;
   hours: string;
-  licenseId: string;
-  emergencyPhone: string;
   distanceKm: number;
   services: string[];
-  coords: [number, number];
   inventory: Record<BloodGroup, number>;
   plateletsUnits: number;
   plasmaUnits: number;
@@ -59,12 +56,6 @@ export interface DonationGuide {
 export interface MythFact {
   myth: string;
   fact: string;
-}
-
-export interface ReadinessItem {
-  id: string;
-  question: string;
-  tip: string;
 }
 
 export interface CompatibilityInfo {
@@ -393,11 +384,8 @@ export const BLOOD_BANKS: NetworkPartner[] = [
     area: "New Thippasandra",
     address: "HAL 3rd Stage, New Thippasandra, Bengaluru",
     hours: "24/7 Component & Apheresis Lab",
-    licenseId: "NABH · KAR/BB/018",
-    emergencyPhone: "+91 80 2528 7903",
     distanceKm: 2.1,
     services: ["Platelet apheresis", "NAT-tested PRBC", "Cryoprecipitate"],
-    coords: [-0.82, 0.36],
     inventory: { "O-": 6, "O+": 28, "A-": 5, "A+": 22, "B-": 4, "B+": 25, "AB-": 3, "AB+": 14 },
     plateletsUnits: 18,
     plasmaUnits: 42,
@@ -410,11 +398,8 @@ export const BLOOD_BANKS: NetworkPartner[] = [
     area: "Old Airport Road",
     address: "98 HAL Old Airport Road, Bengaluru",
     hours: "24/7 Level-1 Trauma Blood Desk",
-    licenseId: "NABH · KAR/HT/004",
-    emergencyPhone: "+91 80 2502 4444",
     distanceKm: 3.4,
     services: ["24/7 cross-matching", "Uncrossed O- trauma release", "Leukoreduction"],
-    coords: [-0.36, -0.44],
     inventory: { "O-": 4, "O+": 31, "A-": 6, "A+": 19, "B-": 3, "B+": 21, "AB-": 2, "AB+": 11 },
     plateletsUnits: 14,
     plasmaUnits: 36,
@@ -427,11 +412,8 @@ export const BLOOD_BANKS: NetworkPartner[] = [
     area: "Parel",
     address: "Dr. E Borges Road, Parel, Mumbai",
     hours: "24/7 Oncology & Apheresis Suite",
-    licenseId: "NABH · MAH/BB/112",
-    emergencyPhone: "+91 22 2417 7000",
     distanceKm: 4.0,
     services: ["Single-donor platelets", "Gamma irradiation", "HLA-matched registry"],
-    coords: [0.64, 0.54],
     inventory: { "O-": 8, "O+": 34, "A-": 7, "A+": 29, "B-": 5, "B+": 27, "AB-": 4, "AB+": 16 },
     plateletsUnits: 26,
     plasmaUnits: 54,
@@ -444,11 +426,8 @@ export const BLOOD_BANKS: NetworkPartner[] = [
     area: "Jubilee Hills",
     address: "Road No. 72, Film Nagar, Jubilee Hills, Hyderabad",
     hours: "24/7 Critical Care & Transplant Desk",
-    licenseId: "NABH · TEL/HT/049",
-    emergencyPhone: "+91 40 2360 7777",
     distanceKm: 2.8,
     services: ["Single-donor platelets", "Pediatric aliquots", "Cryo-storage"],
-    coords: [-0.08, 0.78],
     inventory: { "O-": 5, "O+": 26, "A-": 4, "A+": 24, "B-": 6, "B+": 22, "AB-": 3, "AB+": 12 },
     plateletsUnits: 19,
     plasmaUnits: 38,
@@ -461,11 +440,8 @@ export const BLOOD_BANKS: NetworkPartner[] = [
     area: "Connaught Place",
     address: "1 Red Cross Road, Sansad Marg, New Delhi",
     hours: "24/7 National Rare Phenotype Hub",
-    licenseId: "NACO · DL/BB/001",
-    emergencyPhone: "+91 11 2371 1551",
     distanceKm: 3.2,
-    services: ["Rare Rh-negative bank", "NAT nucleic testing", "3D cold-chain dispatch"],
-    coords: [0.46, -0.64],
+    services: ["Rare Rh-negative bank", "NAT nucleic testing", "Cold-chain dispatch"],
     inventory: { "O-": 11, "O+": 39, "A-": 8, "A+": 31, "B-": 7, "B+": 33, "AB-": 5, "AB+": 19 },
     plateletsUnits: 22,
     plasmaUnits: 60,
@@ -495,7 +471,7 @@ export const DONATION_GUIDES: DonationGuide[] = [
     title: "How often can I donate?",
     summary: "Safe recovery intervals",
     detail:
-      "Recovery intervals differ by local regulations and donation type (whole blood vs. platelets or plasma). Your authorised blood bank schedules your next eligible window so iron and cell counts replenish naturally.",
+      "In India, whole-blood donors wait at least 90 days (men) or 120 days (women) between donations. Platelet and plasma intervals are shorter; your blood bank schedules your next eligible window.",
   },
 ];
 
@@ -511,29 +487,6 @@ export const MYTHS_AND_FACTS: MythFact[] = [
   {
     myth: "\"Donating carries infection risk from equipment.\"",
     fact: "Authorised blood banks use strictly sterile, single-use sealed collection kits that are safely disposed of immediately after each donor.",
-  },
-];
-
-export const READINESS_CHECKS: ReadinessItem[] = [
-  {
-    id: "meal-water",
-    question: "Have you eaten a balanced meal and had extra water today?",
-    tip: "Hydration and steady nutrition keep blood pressure stable before and after donation.",
-  },
-  {
-    id: "feeling-well",
-    question: "Are you feeling well, rested, and free of fever or infection?",
-    tip: "Waiting until you are fully healthy protects both your recovery and recipients.",
-  },
-  {
-    id: "interval",
-    question: "Have you completed the required wait interval since any prior donation?",
-    tip: "Authorised blood centres verify exact whole-blood and platelet intervals on-site.",
-  },
-  {
-    id: "photo-id",
-    question: "Do you have valid photo identification ready for registration?",
-    tip: "Standard identity verification ensures safe donor tracking and follow-up.",
   },
 ];
 
