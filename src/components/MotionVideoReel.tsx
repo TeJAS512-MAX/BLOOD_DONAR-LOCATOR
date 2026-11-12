@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 interface MotionVideoReelProps {
   externalChapterRequest?: number | null;
@@ -47,7 +48,7 @@ export const REEL_CHAPTERS: ChapterInfo[] = [
     shortTitle: "Every Drop Connects",
     startSec: 18,
     endSec: 24,
-    caption: "One voluntary donation can separate into components that support multiple lives.",
+    caption: "One voluntary donation separates into components supporting multiple lives.",
   },
 ];
 
@@ -72,7 +73,9 @@ function formatTimecode(seconds: number): string {
 
 export function MotionVideoReel({ externalChapterRequest, onChapterChange }: MotionVideoReelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const threeLayerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
   const timeRef = useRef(0);
   const lastUiSyncRef = useRef(0);
   const lastChapterRef = useRef(0);
@@ -120,6 +123,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
     const target = REEL_CHAPTERS[externalChapterRequest];
     if (target) {
       timeRef.current = target.startSec + 0.08;
+      lastUiSyncRef.current = timeRef.current;
       setCurrentTime(timeRef.current);
       setIsPlaying(true);
     }
@@ -132,7 +136,6 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
     }
   }, [activeChapterIndex, onChapterChange]);
 
-  // Cleanup audio context on unmount
   useEffect(() => {
     return () => {
       if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
@@ -143,7 +146,9 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
   const toggleSound = () => {
     if (!soundEnabled) {
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (Ctx && !audioCtxRef.current) {
         audioCtxRef.current = new Ctx();
       }
@@ -158,8 +163,9 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    const threeHost = threeLayerRef.current;
     const container = containerRef.current;
-    if (!canvas || !container) return;
+    if (!canvas || !container || !threeHost) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -174,9 +180,90 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     syncCanvasSize();
-    window.addEventListener("resize", syncCanvasSize);
 
-    // Deterministic node network layout for chapters 2 & 3
+    // Live Three.js 3D Cinema Stage Layer beneath the broadcast 2D HUD
+    let renderer: THREE.WebGLRenderer | null = null;
+    let scene: THREE.Scene | null = null;
+    let camera: THREE.PerspectiveCamera | null = null;
+    let threeDisposables: { dispose: () => void }[] = [];
+    let coreOrb: THREE.Mesh | null = null;
+    let ringGroup: THREE.Group | null = null;
+    let cellSwarm: THREE.InstancedMesh | null = null;
+    let floorGrid: THREE.GridHelper | null = null;
+
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+      const hostW = threeHost.clientWidth || 720;
+      const hostH = threeHost.clientHeight || 405;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+      renderer.setSize(hostW, hostH);
+      renderer.domElement.style.display = "block";
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
+      threeHost.appendChild(renderer.domElement);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, hostW / hostH, 0.1, 60);
+      camera.position.set(0, 1.8, 7.5);
+
+      scene.add(new THREE.AmbientLight(0x3a1825, 1.8));
+      const keyL = new THREE.PointLight(0xff4d6d, 18, 20, 1.4);
+      keyL.position.set(2, 3, 4);
+      scene.add(keyL);
+      const blueL = new THREE.PointLight(0x38bdf8, 12, 20, 1.4);
+      blueL.position.set(-4, 2, -2);
+      scene.add(blueL);
+
+      floorGrid = new THREE.GridHelper(22, 26, 0xff4d6d, 0x1e293b);
+      floorGrid.position.y = -2.2;
+      scene.add(floorGrid);
+
+      const coreGeo = new THREE.IcosahedronGeometry(0.85, 3);
+      const coreMat = new THREE.MeshPhysicalMaterial({
+        color: 0xe11d48,
+        emissive: 0x4c0519,
+        roughness: 0.3,
+        clearcoat: 0.5,
+      });
+      coreOrb = new THREE.Mesh(coreGeo, coreMat);
+      scene.add(coreOrb);
+
+      ringGroup = new THREE.Group();
+      scene.add(ringGroup);
+
+      const ringColors = [0xff4d6d, 0xfbbf24, 0x34d399];
+      ringColors.forEach((col, idx) => {
+        const tGeo = new THREE.TorusGeometry(2.1 + idx * 0.65, 0.02, 12, 72);
+        const tMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.45 });
+        const tMesh = new THREE.Mesh(tGeo, tMat);
+        tMesh.rotation.set(1.1 + idx * 0.25, idx * 0.5, 0);
+        ringGroup?.add(tMesh);
+        threeDisposables.push(tGeo, tMat);
+      });
+
+      const cellGeo = new THREE.SphereGeometry(0.28, 22, 16);
+      cellGeo.scale(1.2, 0.48, 1.2);
+      const cellMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.5 });
+      cellSwarm = new THREE.InstancedMesh(cellGeo, cellMat, 24);
+      scene.add(cellSwarm);
+
+      threeDisposables.push(coreGeo, coreMat, cellGeo, cellMat);
+    } catch {
+      renderer = null;
+    }
+
+    const onResize = () => {
+      syncCanvasSize();
+      if (renderer && camera && threeHost) {
+        const nw = threeHost.clientWidth || 720;
+        const nh = threeHost.clientHeight || 405;
+        camera.aspect = nw / nh;
+        camera.updateProjectionMatrix();
+        renderer.setSize(nw, nh);
+      }
+    };
+    window.addEventListener("resize", onResize);
+
     const networkNodes = [
       { id: "O-", x: 260, y: 210, role: "donor" },
       { id: "A+", x: 380, y: 470, role: "donor" },
@@ -207,6 +294,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       osc.stop(now + 0.18);
     };
 
+    const dummy = new THREE.Object3D();
     let lastTimestamp = performance.now();
     let frameId = 0;
 
@@ -224,83 +312,84 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
       const t = timeRef.current;
       const chapter = Math.min(3, Math.floor(t / 6));
-      const localT = (t % 6) / 6; // 0..1 within chapter
+      const localT = (t % 6) / 6;
 
-      // Subtle heartbeat pulse trigger every 1.2s
       const beatIndex = Math.floor(t / 1.2);
       if (isPlayingRef.current && beatIndex !== lastBeatRef.current) {
         lastBeatRef.current = beatIndex;
         triggerHeartbeatSound();
       }
 
-      // Base cinematic midnight-slate & crimson studio gradient
-      const bgGrad = ctx.createRadialGradient(W * 0.54, H * 0.46, 40, W * 0.5, H * 0.5, W * 0.75);
-      bgGrad.addColorStop(0, "#24111c");
-      bgGrad.addColorStop(0.52, "#111622");
-      bgGrad.addColorStop(1, "#090d14");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
+      // Render Live 3D WebGL Cinema Stage Camera Moves
+      if (renderer && scene && camera) {
+        if (chapter === 0) {
+          camera.position.set(Math.sin(t * 0.4) * 2.2, 1.5, 7.8 - localT * 1.2);
+        } else if (chapter === 1) {
+          camera.position.set(Math.cos(t * 0.5) * 4.5, 2.2, Math.sin(t * 0.5) * 4.5);
+        } else if (chapter === 2) {
+          camera.position.set(0, 0.8 + Math.sin(localT * Math.PI) * 1.4, 7.2 - localT * 2.1);
+        } else {
+          camera.position.set(Math.sin(t * 0.35) * 1.8, 3.0, 6.2);
+        }
+        camera.lookAt(0, 0, 0);
 
-      // 3D depth-projected plasma stream motes
-      ctx.save();
-      for (let m = 0; m < 44; m += 1) {
-        const seed = (m * 73.17) % 1;
-        const angle = m * 2.39996;
-        const z = 1 - (((t * 0.22 + seed) % 1));
-        const scale = 0.25 / Math.max(0.08, z);
-        const sx = W * 0.5 + Math.cos(angle + t * 0.1) * 140 * scale;
-        const sy = H * 0.45 + Math.sin(angle + t * 0.1) * 84 * scale;
-        const radius = Math.min(5.5, 0.85 * scale);
-        ctx.beginPath();
-        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 128, 142, ${Math.min(0.45, (1 - z) * 0.45)})`;
-        ctx.fill();
-      }
-      ctx.restore();
-
-      // Perspective 3D studio floor grid
-      ctx.save();
-      ctx.strokeStyle = "rgba(250, 104, 119, 0.09)";
-      ctx.lineWidth = 1;
-      const horizonY = H * 0.64;
-      for (let i = -10; i <= 10; i += 1) {
-        ctx.beginPath();
-        ctx.moveTo(W * 0.5 + i * 36, horizonY);
-        ctx.lineTo(W * 0.5 + i * 170, H + 40);
-        ctx.stroke();
-      }
-      for (let r = 0; r < 8; r += 1) {
-        const progress = ((r / 8) + ((t * 0.18) % (1 / 8)));
-        const y = horizonY + Math.pow(progress, 1.8) * (H - horizonY + 30);
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(W, y);
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Subtle film grain / scanline overlay
-      ctx.fillStyle = "rgba(255, 255, 255, 0.015)";
-      for (let sy = 0; sy < H; sy += 4) {
-        ctx.fillRect(0, sy, W, 1);
+        if (coreOrb) {
+          const s = chapter >= 2 ? 1 + Math.sin(t * 3.5) * 0.08 : 0.45;
+          coreOrb.scale.setScalar(s);
+          coreOrb.rotation.y = t * 0.5;
+        }
+        if (ringGroup) {
+          ringGroup.visible = chapter >= 2;
+          ringGroup.rotation.y = t * 0.4;
+          ringGroup.rotation.z = t * 0.15;
+        }
+        if (cellSwarm) {
+          for (let i = 0; i < 24; i += 1) {
+            const angle = (i / 24) * Math.PI * 2 + t * 0.25;
+            const spread = chapter === 1 ? 4.4 : 3.1;
+            dummy.position.set(
+              Math.cos(angle) * spread,
+              Math.sin(t * 0.8 + i) * 1.6,
+              Math.sin(angle) * spread,
+            );
+            dummy.rotation.set(t + i, t * 0.7, i);
+            dummy.scale.setScalar(chapter === 3 ? 0.55 : 0.9);
+            dummy.updateMatrix();
+            cellSwarm.setMatrixAt(i, dummy.matrix);
+          }
+          cellSwarm.instanceMatrix.needsUpdate = true;
+        }
+        renderer.render(scene, camera);
       }
 
-      // CHAPTER 1: THE CRISIS (0s - 6s)
+      // Clear 2D Overlay & Draw Soft Scrim + Broadcast Motion Graphics
+      ctx.clearRect(0, 0, W, H);
+      if (!renderer) {
+        const bgGrad = ctx.createRadialGradient(W * 0.54, H * 0.46, 40, W * 0.5, H * 0.5, W * 0.75);
+        bgGrad.addColorStop(0, "#24111c");
+        bgGrad.addColorStop(0.52, "#111622");
+        bgGrad.addColorStop(1, "#090d14");
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+      } else {
+        ctx.fillStyle = "rgba(9, 13, 20, 0.42)";
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // CHAPTER 1: THE CRISIS
       if (chapter === 0) {
         const enter = easeOutCubic(Math.min(1, localT * 3.2));
         const pulseCycle = (t * 1.4) % 1;
 
-        // Radar urgency rings
         for (let i = 0; i < 4; i += 1) {
           const p = (pulseCycle + i * 0.25) % 1;
           ctx.beginPath();
           ctx.arc(W * 0.5, H * 0.45, 45 + p * 290, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(250, 104, 119, ${(1 - p) * 0.35})`;
+          ctx.strokeStyle = `rgba(250, 104, 119, ${(1 - p) * 0.38})`;
           ctx.lineWidth = 1.6;
           ctx.stroke();
         }
 
-        // Animated EKG / Arterial waveform
         ctx.save();
         ctx.beginPath();
         const waveY = H * 0.45;
@@ -317,50 +406,47 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           if (x === W * 0.1) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = "#fa6877";
-        ctx.lineWidth = 2.8;
-        ctx.shadowColor = "#ff455d";
+        ctx.strokeStyle = "#ff4d6d";
+        ctx.lineWidth = 3;
+        ctx.shadowColor = "#ff4d6d";
         ctx.shadowBlur = 16;
         ctx.stroke();
 
-        // Phosphor tip dot
         ctx.beginPath();
         ctx.arc(sweepX, waveY, 5.5, 0, Math.PI * 2);
-        ctx.fillStyle = "#fff8f5";
+        ctx.fillStyle = "#ffffff";
         ctx.fill();
         ctx.restore();
 
-        // Kinetic typography
         ctx.save();
         ctx.globalAlpha = enter;
-        ctx.fillStyle = "rgba(250, 104, 119, 0.92)";
+        ctx.fillStyle = "#fda4af";
         ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 165);
+        ctx.fillText("3D SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 165);
 
-        ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 58px "Outfit", sans-serif';
+        ctx.fillStyle = "#ffffff";
+        ctx.font = '700 56px "Outfit", sans-serif';
         ctx.fillText("When every minute matters,", W * 0.5, 232);
-        ctx.fillStyle = "#fa6877";
+        ctx.fillStyle = "#ff4d6d";
         ctx.fillText("matching donors shouldn't stall.", W * 0.5, 294);
 
-        ctx.fillStyle = "rgba(255, 240, 235, 0.7)";
+        ctx.fillStyle = "rgba(248, 250, 252, 0.82)";
         ctx.font = '400 20px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText("Surgeries, trauma & critical treatments demand rapid, trusted donor coordination.", W * 0.5, 535);
+        ctx.fillText("Surgeries, trauma & critical treatments demand rapid, trusted donor coordination.", W * 0.5, 540);
         ctx.restore();
       }
 
-      // CHAPTER 2: THE FRAGMENTATION (6s - 12s)
+      // CHAPTER 2: FRAGMENTATION
       if (chapter === 1) {
         const enter = easeOutCubic(Math.min(1, localT * 3.0));
         const drift = Math.sin(localT * Math.PI * 2);
 
-        // Broken dashed links between disconnected nodes
         ctx.save();
         ctx.setLineDash([7, 10]);
         ctx.lineDashOffset = -t * 28;
-        ctx.strokeStyle = "rgba(250, 104, 119, 0.25)";
-        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = "rgba(255, 77, 109, 0.32)";
+        ctx.lineWidth = 1.6;
         for (let i = 0; i < 5; i += 1) {
           const a = networkNodes[i];
           const b = networkNodes[5 + (i % 4)];
@@ -371,7 +457,6 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         }
         ctx.restore();
 
-        // Draw floating fragmented nodes
         networkNodes.forEach((node, idx) => {
           const dx = Math.sin(t * 0.9 + idx * 1.3) * 14;
           const dy = Math.cos(t * 0.7 + idx * 1.7) * 11;
@@ -381,13 +466,13 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.save();
           ctx.beginPath();
           ctx.arc(nx, ny, node.role === "hub" ? 28 : 22, 0, Math.PI * 2);
-          ctx.fillStyle = node.role === "donor" ? "rgba(38, 16, 22, 0.9)" : "rgba(56, 17, 28, 0.9)";
-          ctx.strokeStyle = node.role === "donor" ? "rgba(250, 104, 119, 0.55)" : "rgba(255, 212, 204, 0.35)";
-          ctx.lineWidth = 1.5;
+          ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
+          ctx.strokeStyle = node.role === "donor" ? "#ff4d6d" : "#38bdf8";
+          ctx.lineWidth = 1.8;
           ctx.fill();
           ctx.stroke();
 
-          ctx.fillStyle = "#fff8f5";
+          ctx.fillStyle = "#ffffff";
           ctx.font = '600 14px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
@@ -395,38 +480,28 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.restore();
         });
 
-        // Kinetic editorial callout box
         ctx.save();
         ctx.globalAlpha = enter;
-        ctx.fillStyle = "rgba(250, 104, 119, 0.9)";
+        ctx.fillStyle = "#7dd3fc";
         ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("SCENE 02  /  DISCONNECTED SIGNALS", W * 0.5, 116);
+        ctx.fillText("3D SCENE 02  /  DISCONNECTED SIGNALS", W * 0.5, 116);
 
-        ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 44px "Outfit", sans-serif';
+        ctx.fillStyle = "#ffffff";
+        ctx.font = '700 44px "Outfit", sans-serif';
         ctx.fillText("Willing donors exist.", W * 0.5, 590);
-        ctx.fillStyle = "rgba(255, 228, 224, 0.72)";
+        ctx.fillStyle = "#cbd5e1";
         ctx.font = '400 19px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText("Finding who is available, compatible, and verified shouldn't depend on guesswork.", W * 0.5, 632);
+        ctx.fillText("Finding compatible, verified donors shouldn't depend on manual phone trees.", W * 0.5, 632);
         ctx.restore();
       }
 
-      // CHAPTER 3: ENTER BLOODLINK (12s - 18s)
+      // CHAPTER 3: ENTER BLOODLINK
       if (chapter === 2) {
         const snapProgress = easeOutCubic(Math.min(1, localT * 1.45));
         const hubX = W * 0.5;
         const hubY = H * 0.46;
 
-        // Expanding coral wave from hub
-        const waveR = snapProgress * 490;
-        ctx.beginPath();
-        ctx.arc(hubX, hubY, waveR, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(250, 104, 119, ${Math.max(0, 0.55 - snapProgress * 0.45)})`;
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-
-        // Animated Bezier signal links snapping every node to the hub
         networkNodes.forEach((node, idx) => {
           if (node.role === "hub") return;
           const nodeDelay = Math.max(0, Math.min(1, (snapProgress - idx * 0.04) * 1.5));
@@ -434,40 +509,34 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
           const cx = (hubX + node.x) * 0.5;
           const cy = (hubY + node.y) * 0.5 - 45;
-          const curX = (1 - nodeDelay) * (1 - nodeDelay) * hubX + 2 * (1 - nodeDelay) * nodeDelay * cx + nodeDelay * nodeDelay * node.x;
-          const curY = (1 - nodeDelay) * (1 - nodeDelay) * hubY + 2 * (1 - nodeDelay) * nodeDelay * cy + nodeDelay * nodeDelay * node.y;
+          const curX =
+            (1 - nodeDelay) * (1 - nodeDelay) * hubX +
+            2 * (1 - nodeDelay) * nodeDelay * cx +
+            nodeDelay * nodeDelay * node.x;
+          const curY =
+            (1 - nodeDelay) * (1 - nodeDelay) * hubY +
+            2 * (1 - nodeDelay) * nodeDelay * cy +
+            nodeDelay * nodeDelay * node.y;
 
           ctx.save();
           ctx.beginPath();
           ctx.moveTo(hubX, hubY);
           ctx.quadraticCurveTo(cx, cy, curX, curY);
-          ctx.strokeStyle = node.role === "donor" ? "rgba(250, 104, 119, 0.78)" : "rgba(255, 224, 200, 0.68)";
-          ctx.lineWidth = 2;
-          ctx.shadowColor = "#fa6877";
-          ctx.shadowBlur = 10;
+          ctx.strokeStyle = node.role === "donor" ? "#ff4d6d" : "#38bdf8";
+          ctx.lineWidth = 2.2;
           ctx.stroke();
-
-          // Travelling pulse packet
-          const packetT = ((t * 0.9 + idx * 0.17) % 1) * nodeDelay;
-          const px = (1 - packetT) * (1 - packetT) * hubX + 2 * (1 - packetT) * packetT * cx + packetT * packetT * node.x;
-          const py = (1 - packetT) * (1 - packetT) * hubY + 2 * (1 - packetT) * packetT * cy + packetT * packetT * node.y;
-          ctx.beginPath();
-          ctx.arc(px, py, 3.8, 0, Math.PI * 2);
-          ctx.fillStyle = "#fff8f5";
-          ctx.fill();
           ctx.restore();
 
-          // Connected node badge
           ctx.save();
           ctx.beginPath();
           ctx.arc(node.x, node.y, 24, 0, Math.PI * 2);
-          ctx.fillStyle = nodeDelay > 0.9 ? "#d62c46" : "#2b1018";
-          ctx.strokeStyle = "#ff8c9a";
+          ctx.fillStyle = nodeDelay > 0.9 ? "#e11d48" : "#0f172a";
+          ctx.strokeStyle = "#fda4af";
           ctx.lineWidth = 2;
           ctx.fill();
           ctx.stroke();
 
-          ctx.fillStyle = "#fff8f5";
+          ctx.fillStyle = "#ffffff";
           ctx.font = '700 13px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
@@ -475,53 +544,29 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.restore();
         });
 
-        // Central BloodLink droplet emblem
         ctx.save();
-        ctx.translate(hubX, hubY);
-        ctx.beginPath();
-        ctx.moveTo(0, -34);
-        ctx.bezierCurveTo(24, -4, 30, 26, 0, 34);
-        ctx.bezierCurveTo(-30, 26, -24, -4, 0, -34);
-        ctx.fillStyle = "#fa6877";
-        ctx.shadowColor = "#ff4d67";
-        ctx.shadowBlur = 28;
-        ctx.fill();
-        ctx.restore();
-
-        ctx.save();
-        ctx.fillStyle = "rgba(255, 224, 214, 0.9)";
+        ctx.fillStyle = "#34d399";
         ctx.font = '500 15px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("SCENE 03  /  ENTER BLOODLINK", W * 0.5, 96);
+        ctx.fillText("3D SCENE 03  /  ENTER BLOODLINK", W * 0.5, 96);
 
-        ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 40px "Outfit", sans-serif';
+        ctx.fillStyle = "#ffffff";
+        ctx.font = '700 40px "Outfit", sans-serif';
         ctx.fillText("Donors, hospitals & blood banks — aligned.", W * 0.5, 622);
         ctx.restore();
       }
 
-      // CHAPTER 4: EVERY DROP CONNECTS A LIFE (18s - 24s)
+      // CHAPTER 4: COMPONENT SEPARATION
       if (chapter === 3) {
         const enter = easeOutCubic(Math.min(1, localT * 2.4));
         const cx = W * 0.5;
         const cy = H * 0.43;
 
-        // 3D projected rotating component orbits
         const components = [
           { label: "RED CELLS", sub: "Oxygen Delivery", color: "#ff4d6d", angle: t * 0.85 },
           { label: "PLASMA", sub: "Clotting Support", color: "#fbbf24", angle: t * 0.85 + (Math.PI * 2) / 3 },
           { label: "PLATELETS", sub: "Bleeding Shield", color: "#34d399", angle: t * 0.85 + (Math.PI * 4) / 3 },
         ];
-
-        ctx.save();
-        ctx.strokeStyle = "rgba(250, 104, 119, 0.28)";
-        ctx.lineWidth = 1.4;
-        for (let r = 1; r <= 3; r += 1) {
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, 110 + r * 72, 46 + r * 26, (r - 2) * 0.28, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-        ctx.restore();
 
         components.forEach((comp, idx) => {
           const rx = 250;
@@ -532,73 +577,58 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           const px = cx + ox * Math.cos(tilt) - oy * Math.sin(tilt);
           const py = cy + ox * Math.sin(tilt) + oy * Math.cos(tilt);
 
-          // Connecting prism line
           ctx.beginPath();
           ctx.moveTo(cx, cy);
           ctx.lineTo(px, py);
-          ctx.strokeStyle = `${comp.color}88`;
-          ctx.lineWidth = 1.6;
+          ctx.strokeStyle = `${comp.color}99`;
+          ctx.lineWidth = 2;
           ctx.stroke();
 
           ctx.beginPath();
           ctx.arc(px, py, 14, 0, Math.PI * 2);
           ctx.fillStyle = comp.color;
-          ctx.shadowColor = comp.color;
-          ctx.shadowBlur = 18;
           ctx.fill();
-          ctx.shadowBlur = 0;
 
-          ctx.fillStyle = "rgba(22, 8, 12, 0.9)";
-          ctx.strokeStyle = `${comp.color}88`;
-          ctx.lineWidth = 1;
+          ctx.fillStyle = "rgba(11, 15, 25, 0.92)";
+          ctx.strokeStyle = comp.color;
+          ctx.lineWidth = 1.2;
           ctx.fillRect(px - 68, py + 22, 136, 42);
           ctx.strokeRect(px - 68, py + 22, 136, 42);
 
-          ctx.fillStyle = "#fff8f5";
+          ctx.fillStyle = "#ffffff";
           ctx.font = '600 11px "JetBrains Mono", monospace';
           ctx.textAlign = "center";
           ctx.fillText(comp.label, px, py + 39);
-          ctx.fillStyle = "#b89fa2";
+          ctx.fillStyle = "#cbd5e1";
           ctx.font = '400 10px "Plus Jakarta Sans", sans-serif';
           ctx.fillText(comp.sub, px, py + 55);
         });
 
-        // Core sphere
-        const coreGrad = ctx.createRadialGradient(cx - 12, cy - 12, 6, cx, cy, 48);
-        coreGrad.addColorStop(0, "#ff8796");
-        coreGrad.addColorStop(0.6, "#c91e3c");
-        coreGrad.addColorStop(1, "#450d1b");
-        ctx.beginPath();
-        ctx.arc(cx, cy, 44, 0, Math.PI * 2);
-        ctx.fillStyle = coreGrad;
-        ctx.fill();
-
-        // Final wordmark reveal
         ctx.save();
         ctx.globalAlpha = enter;
-        ctx.fillStyle = "rgba(250, 104, 119, 0.92)";
+        ctx.fillStyle = "#fda4af";
         ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92);
+        ctx.fillText("3D SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92);
 
-        ctx.fillStyle = "#fff8f5";
-        ctx.font = '600 54px "Outfit", sans-serif';
+        ctx.fillStyle = "#ffffff";
+        ctx.font = '700 50px "Outfit", sans-serif';
         ctx.fillText("BloodLink — Every drop connects a life.", W * 0.5, 622);
         ctx.restore();
       }
 
-      // Top broadcast film overlay badge
+      // Broadcast timecode HUD
       ctx.save();
-      ctx.fillStyle = "rgba(255, 248, 245, 0.64)";
+      ctx.fillStyle = "rgba(248, 250, 252, 0.78)";
       ctx.font = '500 11px "JetBrains Mono", monospace';
       ctx.textAlign = "left";
       ctx.fillText(
-        `BLOODLINK MOTION FILM  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,
-        32,
-        36,
+        `LIVE 3D FILM  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,
+        28,
+        34,
       );
       ctx.textAlign = "right";
-      ctx.fillText(`${formatTimecode(t)}  /  00:24:00`, W - 32, 36);
+      ctx.fillText(`${formatTimecode(t)}  /  00:24:00`, W - 28, 34);
       ctx.restore();
 
       frameId = window.requestAnimationFrame(renderFrame);
@@ -607,7 +637,13 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
     frameId = window.requestAnimationFrame(renderFrame);
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", syncCanvasSize);
+      window.removeEventListener("resize", onResize);
+      floorGrid?.dispose();
+      threeDisposables.forEach((d) => d.dispose());
+      renderer?.dispose();
+      if (renderer && renderer.domElement.parentElement === threeHost) {
+        threeHost.removeChild(renderer.domElement);
+      }
     };
   }, []);
 
@@ -622,23 +658,24 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
   return (
     <div className="motion-reel-shell" ref={containerRef}>
       <div className="motion-stage">
+        <div ref={threeLayerRef} className="motion-3d-underlay" aria-hidden="true" />
         <canvas
           ref={canvasRef}
           className="motion-canvas"
           onClick={() => setIsPlaying((prev) => !prev)}
-          aria-label="BloodLink interactive motion graphics film explaining the problem statement and solution"
+          aria-label="BloodLink live 3D video motion graphics film"
         />
         <button
           type="button"
           className={`motion-center-play ${isPlaying ? "is-playing" : ""}`}
           onClick={() => setIsPlaying((prev) => !prev)}
-          aria-label={isPlaying ? "Pause motion film" : "Play motion film"}
+          aria-label={isPlaying ? "Pause 3D motion film" : "Play 3D motion film"}
         >
-          <span className="motion-play-icon">{isPlaying ? "II" : "▶"}</span>
+          <span>{isPlaying ? "II" : "▶"}</span>
         </button>
         <div className="motion-live-tag">
-          <span className="live-dot" />
-          <span>{isPlaying ? "MOTION GRAPHIC PLAYING" : "PAUSED"}</span>
+          <span className="pulse-dot" />
+          <span>{isPlaying ? "LIVE 3D VIDEO MOTION" : "PAUSED"}</span>
         </div>
       </div>
 
@@ -651,28 +688,23 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
             step={0.05}
             value={currentTime}
             onChange={(event) => handleScrub(Number(event.target.value))}
-            aria-label="Seek motion graphics timeline"
+            aria-label="Seek 3D motion film timeline"
             className="motion-range"
             style={{
-              background: `linear-gradient(90deg, #fa6877 ${progressPct}%, rgba(255,248,245,0.16) ${progressPct}%)`,
+              background: `linear-gradient(90deg, #ff4d6d ${progressPct}%, rgba(248,250,252,0.16) ${progressPct}%)`,
             }}
           />
         </div>
 
         <div className="motion-toolbar">
           <div className="motion-left-controls">
-            <button
-              type="button"
-              className="motion-btn"
-              onClick={() => setIsPlaying((prev) => !prev)}
-            >
+            <button type="button" className="motion-btn" onClick={() => setIsPlaying((prev) => !prev)}>
               {isPlaying ? "Pause" : "Play"}
             </button>
             <button
               type="button"
               className="motion-btn motion-btn-muted"
               onClick={() => setSpeed((prev) => (prev === 1 ? 1.5 : 1))}
-              title="Toggle playback speed"
             >
               {speed}x
             </button>
@@ -680,7 +712,6 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
               type="button"
               className={`motion-btn motion-btn-muted ${soundEnabled ? "is-active" : ""}`}
               onClick={toggleSound}
-              title="Toggle synthetic ambient pulse sound"
             >
               {soundEnabled ? "Pulse Audio: On" : "Audio: Off"}
             </button>
@@ -688,16 +719,13 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
               type="button"
               className={`motion-btn motion-btn-muted ${isFullscreen ? "is-active" : ""}`}
               onClick={toggleFullscreen}
-              title="Toggle cinema fullscreen mode"
             >
               {isFullscreen ? "Exit Full" : "Fullscreen"}
             </button>
-            <span className="motion-timecode">
-              {formatTimecode(currentTime)} / 00:24:00
-            </span>
+            <span className="motion-timecode">{formatTimecode(currentTime)} / 00:24:00</span>
           </div>
 
-          <div className="motion-chapters" role="tablist" aria-label="Motion film chapters">
+          <div className="motion-chapters" role="tablist" aria-label="3D Film chapters">
             {REEL_CHAPTERS.map((ch) => (
               <button
                 key={ch.label}
