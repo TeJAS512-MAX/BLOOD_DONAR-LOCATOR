@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
+import { LiveBiomedicalBg3D, type BgMotionMode } from "./components/LiveBiomedicalBg3D";
 import { MotionVideoReel } from "./components/MotionVideoReel";
 import { NetworkTopology3D } from "./components/NetworkTopology3D";
 import {
@@ -191,6 +192,8 @@ function App() {
   // Navigation, Toast & Hero 3D Network Grid
   const [menuOpen, setMenuOpen] = useState(false);
   const [heroBoost, setHeroBoost] = useState(false);
+  const [bgMotionMode, setBgMotionMode] = useState<BgMotionMode>("auto");
+  const [bgPulseCount, setBgPulseCount] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [impactVisible, setImpactVisible] = useState(false);
 
@@ -356,12 +359,14 @@ function App() {
       setBloodGroup(group);
       setIncludeCompatible(true);
       setShowDonorDrawer(true);
+      setBgPulseCount((c) => c + 1);
       showToast(`3D telemetry locked to ${group} — showing ${COMPATIBILITY_MAP[group].receiveRedCellsFrom.join(", ")} compatible donors.`);
     },
     [showToast],
   );
 
   const handleHeroSelectBank = useCallback(() => {
+    setBgPulseCount((c) => c + 1);
     showToast("Routing through NABH Regional Blood Centre — live component inventory synced below.");
   }, [showToast]);
 
@@ -477,6 +482,14 @@ function App() {
 
   return (
     <>
+      {/* Z-0: FULL-VIEWPORT LIVE 3D BIOMEDICAL VIDEO & SUBSURFACE BLOODSTREAM BACKGROUND */}
+      <LiveBiomedicalBg3D
+        mode={bgMotionMode}
+        boostFlow={heroBoost}
+        activeBloodGroup={bloodGroup}
+        pulseTriggerCount={bgPulseCount}
+      />
+
       {/* Z-50: STICKY GLASSMORPHISM NAVBAR */}
       <header className="sticky-navbar">
         <div className="max-container navbar-inner">
@@ -573,13 +586,36 @@ function App() {
                 </a>
               </div>
               <div className="hero-3d-controls">
-                <span>Drag 3D stage to orbit · Switch camera to Macro RBC or Top Radar</span>
+                <span>3D Background Motion:</span>
+                {(
+                  [
+                    { id: "auto", label: "Auto Scroll Flight" },
+                    { id: "arterial", label: "Arterial Stream" },
+                    { id: "helix", label: "ABO Double-Helix" },
+                    { id: "vortex", label: "Cryo Vortex" },
+                  ] as const
+                ).map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`mini-chip ${bgMotionMode === item.id ? "is-active" : ""}`}
+                    onClick={() => {
+                      setBgMotionMode(item.id);
+                      setBgPulseCount((c) => c + 1);
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
                 <button
                   type="button"
                   className={`mini-chip ${heroBoost ? "is-active" : ""}`}
-                  onClick={() => setHeroBoost((b) => !b)}
+                  onClick={() => {
+                    setHeroBoost((b) => !b);
+                    setBgPulseCount((c) => c + 1);
+                  }}
                 >
-                  {heroBoost ? "Arterial Flow: High (120 BPM)" : "Normal Flow (74 BPM)"}
+                  {heroBoost ? "Cardiac Rate: 120 BPM" : "Cardiac Rate: 74 BPM"}
                 </button>
               </div>
             </div>
