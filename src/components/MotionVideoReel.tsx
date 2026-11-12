@@ -421,23 +421,50 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "#fda4af";
-        ctx.font = '500 15px "JetBrains Mono", monospace';
+        ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("3D SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 165);
+        ctx.fillText("3D SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 138, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 56px "Outfit", sans-serif';
-        ctx.fillText("When every minute matters,", W * 0.5, 232);
+        ctx.font = '700 46px "Outfit", sans-serif';
+        ctx.fillText("When every minute matters,", W * 0.5, 198, W - 140);
         ctx.fillStyle = "#ff4d6d";
-        ctx.fillText("matching donors shouldn't stall.", W * 0.5, 294);
+        ctx.fillText("matching donors shouldn't stall.", W * 0.5, 254, W - 140);
 
-        ctx.fillStyle = "rgba(248, 250, 252, 0.82)";
-        ctx.font = '400 20px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText("Surgeries, trauma & critical treatments demand rapid, trusted donor coordination.", W * 0.5, 540);
+        // Elaborated live telemetry bars below ECG waveform
+        const metrics = [
+          { label: "DONOR DISCOVERY", val: "DELAYED BY MANUAL CALLS" },
+          { label: "BLOOD BANK STOCK", val: "UNVERIFIED AVAILABILITY" },
+          { label: "EMERGENCY COORDINATION", val: "FRAGMENTED CHANNELS" },
+        ];
+        metrics.forEach((m, i) => {
+          const bx = W * (0.24 + i * 0.26);
+          ctx.fillStyle = "rgba(15, 23, 42, 0.84)";
+          ctx.strokeStyle = "rgba(255, 77, 109, 0.45)";
+          ctx.lineWidth = 1;
+          ctx.fillRect(bx - 130, 520, 260, 56);
+          ctx.strokeRect(bx - 130, 520, 260, 56);
+
+          ctx.fillStyle = "#fda4af";
+          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.fillText(m.label, bx, 542, 240);
+          ctx.fillStyle = "#f8fafc";
+          ctx.font = '500 12px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText(m.val, bx, 562, 240);
+        });
+
+        ctx.fillStyle = "rgba(248, 250, 252, 0.85)";
+        ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(
+          "Surgeries, trauma & critical care demand rapid, verified donor coordination.",
+          W * 0.5,
+          622,
+          W - 140,
+        );
         ctx.restore();
       }
 
-      // CHAPTER 2: FRAGMENTATION
+      // CHAPTER 2: FRAGMENTATION (Elaborated Network Grid)
       if (chapter === 1) {
         const enter = easeOutCubic(Math.min(1, localT * 3.0));
         const drift = Math.sin(localT * Math.PI * 2);
@@ -445,8 +472,8 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.setLineDash([7, 10]);
         ctx.lineDashOffset = -t * 28;
-        ctx.strokeStyle = "rgba(255, 77, 109, 0.32)";
-        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = "rgba(255, 77, 109, 0.36)";
+        ctx.lineWidth = 1.8;
         for (let i = 0; i < 5; i += 1) {
           const a = networkNodes[i];
           const b = networkNodes[5 + (i % 4)];
@@ -464,11 +491,18 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           const ny = node.y + dy;
 
           ctx.save();
+          // Outer soft pulse halo
+          ctx.beginPath();
+          ctx.arc(nx, ny, (node.role === "hub" ? 36 : 28) + Math.sin(t * 3 + idx) * 3, 0, Math.PI * 2);
+          ctx.strokeStyle = node.role === "donor" ? "rgba(255, 77, 109, 0.24)" : "rgba(56, 189, 248, 0.24)";
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
           ctx.beginPath();
           ctx.arc(nx, ny, node.role === "hub" ? 28 : 22, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
+          ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
           ctx.strokeStyle = node.role === "donor" ? "#ff4d6d" : "#38bdf8";
-          ctx.lineWidth = 1.8;
+          ctx.lineWidth = 2;
           ctx.fill();
           ctx.stroke();
 
@@ -483,20 +517,25 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "#7dd3fc";
-        ctx.font = '500 15px "JetBrains Mono", monospace';
+        ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("3D SCENE 02  /  DISCONNECTED SIGNALS", W * 0.5, 116);
+        ctx.fillText("3D SCENE 02  /  DISCONNECTED DONOR & BANK TOPOLOGY", W * 0.5, 108, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 44px "Outfit", sans-serif';
-        ctx.fillText("Willing donors exist.", W * 0.5, 590);
+        ctx.font = '700 42px "Outfit", sans-serif';
+        ctx.fillText("Willing donors & blood banks exist.", W * 0.5, 588, W - 140);
         ctx.fillStyle = "#cbd5e1";
-        ctx.font = '400 19px "Plus Jakarta Sans", sans-serif';
-        ctx.fillText("Finding compatible, verified donors shouldn't depend on manual phone trees.", W * 0.5, 632);
+        ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(
+          "Without a live compatibility bridge, O-, A+, BK1 & H1 stay separated.",
+          W * 0.5,
+          630,
+          W - 140,
+        );
         ctx.restore();
       }
 
-      // CHAPTER 3: ENTER BLOODLINK
+      // CHAPTER 3: ENTER BLOODLINK (Live Lock-On Packets)
       if (chapter === 2) {
         const snapProgress = easeOutCubic(Math.min(1, localT * 1.45));
         const hubX = W * 0.5;
@@ -523,15 +562,30 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.moveTo(hubX, hubY);
           ctx.quadraticCurveTo(cx, cy, curX, curY);
           ctx.strokeStyle = node.role === "donor" ? "#ff4d6d" : "#38bdf8";
-          ctx.lineWidth = 2.2;
+          ctx.lineWidth = 2.4;
           ctx.stroke();
+
+          // Travelling bright signal packet along snapped arc
+          const packetT = ((t * 0.95 + idx * 0.16) % 1) * nodeDelay;
+          const px =
+            (1 - packetT) * (1 - packetT) * node.x +
+            2 * (1 - packetT) * packetT * cx +
+            packetT * packetT * hubX;
+          const py =
+            (1 - packetT) * (1 - packetT) * node.y +
+            2 * (1 - packetT) * packetT * cy +
+            packetT * packetT * hubY;
+          ctx.beginPath();
+          ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffffff";
+          ctx.fill();
           ctx.restore();
 
           ctx.save();
           ctx.beginPath();
           ctx.arc(node.x, node.y, 24, 0, Math.PI * 2);
           ctx.fillStyle = nodeDelay > 0.9 ? "#e11d48" : "#0f172a";
-          ctx.strokeStyle = "#fda4af";
+          ctx.strokeStyle = node.role === "donor" ? "#fda4af" : "#7dd3fc";
           ctx.lineWidth = 2;
           ctx.fill();
           ctx.stroke();
@@ -546,13 +600,13 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
         ctx.save();
         ctx.fillStyle = "#34d399";
-        ctx.font = '500 15px "JetBrains Mono", monospace';
+        ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("3D SCENE 03  /  ENTER BLOODLINK", W * 0.5, 96);
+        ctx.fillText("3D SCENE 03  /  COMPATIBILITY LOCK-ON & VERIFIED ROUTING", W * 0.5, 96, W - 120);
 
         ctx.fillStyle = "#ffffff";
         ctx.font = '700 40px "Outfit", sans-serif';
-        ctx.fillText("Donors, hospitals & blood banks — aligned.", W * 0.5, 622);
+        ctx.fillText("Donors, blood banks & H1 trauma hubs — aligned.", W * 0.5, 622, W - 140);
         ctx.restore();
       }
 
@@ -609,11 +663,11 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.fillStyle = "#fda4af";
         ctx.font = '500 14px "JetBrains Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText("3D SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92);
+        ctx.fillText("3D SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 50px "Outfit", sans-serif';
-        ctx.fillText("BloodLink — Every drop connects a life.", W * 0.5, 622);
+        ctx.font = '700 46px "Outfit", sans-serif';
+        ctx.fillText("BloodLink — Every drop connects a life.", W * 0.5, 622, W - 140);
         ctx.restore();
       }
 

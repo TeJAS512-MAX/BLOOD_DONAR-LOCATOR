@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { BloodstreamScrollUniverse3D } from "./components/BloodstreamScrollUniverse3D";
-import { HeroBloodstream3D } from "./components/HeroBloodstream3D";
-import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
+import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { MotionVideoReel } from "./components/MotionVideoReel";
 import { NetworkTopology3D } from "./components/NetworkTopology3D";
-import { Tilt3DCard } from "./components/Tilt3DCard";
 import {
   BLOOD_BANKS,
   BLOOD_GROUPS,
@@ -16,7 +13,6 @@ import {
   MYTHS_AND_FACTS,
   PROBLEM_SOLUTIONS,
   READINESS_CHECKS,
-  type BloodComponentStory,
   type BloodGroup,
   type BloodRequest,
   type DonorProfile,
@@ -145,30 +141,15 @@ function CountUpMetric({ end, suffix = "", prefix = "", trigger }: CountUpMetric
   );
 }
 
-const VASCULAR_STAGES = [
-  "01 · ARTERIAL ENTRY",
-  "02 · DONOR MATCHING",
-  "03 · URGENT DISPATCH",
-  "04 · 3D MOTION FILM",
-  "05 · BANK TOPOLOGY",
-  "06 · AWARENESS BENTO",
-  "07 · COMPONENT LAB",
-  "08 · LIFE CHAIN",
-];
-
 function App() {
   const finderSectionRef = useRef<HTMLElement>(null);
+  const networkSectionRef = useRef<HTMLElement>(null);
   const requestsCarouselRef = useRef<HTMLDivElement>(null);
   const impactStatsRef = useRef<HTMLDivElement>(null);
 
-  // Full-Site 3D Scroll Universe + Auto-Cinema Tour
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [autoCinemaTour, setAutoCinemaTour] = useState(false);
-
-  // Navigation, Toast & Hero 3D
+  // Navigation, Toast & Hero 3D Network Grid
   const [menuOpen, setMenuOpen] = useState(false);
   const [heroBoost, setHeroBoost] = useState(false);
-  const [pulseCount, setPulseCount] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [impactVisible, setImpactVisible] = useState(false);
 
@@ -198,10 +179,6 @@ function App() {
   const [filmModalOpen, setFilmModalOpen] = useState(false);
   const [requestedFilmChapter, setRequestedFilmChapter] = useState<number | null>(null);
 
-  // 3D Impact Component Orbit
-  const [selectedComponentId, setSelectedComponentId] = useState<BloodComponentStory["id"]>("red-cells");
-  const [donationCount, setDonationCount] = useState(1);
-
   // Auth / Registration / Brief
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
@@ -218,9 +195,6 @@ function App() {
     createRequestOpen ||
     activeRequest !== null ||
     activeDonor !== null;
-
-  const activeStageLabel =
-    VASCULAR_STAGES[Math.min(VASCULAR_STAGES.length - 1, Math.floor(scrollProgress * VASCULAR_STAGES.length))];
 
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
@@ -278,54 +252,6 @@ function App() {
     [selectedPartnerId],
   );
 
-  const selectedComponent = useMemo(
-    () => COMPONENT_STORIES.find((c) => c.id === selectedComponentId) ?? COMPONENT_STORIES[0],
-    [selectedComponentId],
-  );
-
-  // Track global scroll progress for 3D Vascular Camera Flight
-  useEffect(() => {
-    const updateScroll = () => {
-      const doc = document.documentElement;
-      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
-      setScrollProgress(Math.min(1, Math.max(0, window.scrollY / max)));
-    };
-    updateScroll();
-    window.addEventListener("scroll", updateScroll, { passive: true });
-    return () => window.removeEventListener("scroll", updateScroll);
-  }, []);
-
-  // Auto-Cinema Tour smooth vertical flight across entire 3D website
-  useEffect(() => {
-    if (!autoCinemaTour) return;
-
-    const stopTour = () => setAutoCinemaTour(false);
-    window.addEventListener("wheel", stopTour, { passive: true });
-    window.addEventListener("touchstart", stopTour, { passive: true });
-
-    let frameId = 0;
-    let lastTime = performance.now();
-    const step = (now: number) => {
-      const dt = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (window.scrollY >= maxScroll - 2) {
-        window.scrollTo({ top: 0, behavior: "auto" });
-      } else {
-        window.scrollBy(0, dt * 115);
-      }
-      frameId = window.requestAnimationFrame(step);
-    };
-    frameId = window.requestAnimationFrame(step);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      window.removeEventListener("wheel", stopTour);
-      window.removeEventListener("touchstart", stopTour);
-    };
-  }, [autoCinemaTour]);
-
-  // Scroll fade-in-up observer + Impact CountUp trigger
   useEffect(() => {
     const elements = document.querySelectorAll(".fade-in-up");
     const observer = new IntersectionObserver(
@@ -381,13 +307,19 @@ function App() {
     setActiveDonor(null);
   };
 
-  const handleHeroPulse = useCallback(() => {
-    setPulseCount((c) => c + 1);
-  }, []);
+  const handleHeroNodeSelectGroup = useCallback(
+    (group: BloodGroup) => {
+      setBloodGroup(group);
+      setIncludeCompatible(true);
+      setShowDonorDrawer(true);
+      showToast(`3D Signal synced to ${group} — compatible donors updated below.`);
+    },
+    [showToast],
+  );
 
-  const handleSelectComponent = useCallback((id: BloodComponentStory["id"]) => {
-    setSelectedComponentId(id);
-  }, []);
+  const handleHeroSelectBank = useCallback(() => {
+    showToast("Routing through Authorised Blood Bank node — click Blood Banks below to inspect.");
+  }, [showToast]);
 
   const handleSelectPartner = useCallback((id: string) => {
     setSelectedPartnerId(id);
@@ -497,13 +429,7 @@ function App() {
   };
 
   return (
-    <div className="universe-root">
-      {/* FULL-WEBSITE LIVE 3D SCROLLING VASCULAR UNIVERSE (z-0) */}
-      <BloodstreamScrollUniverse3D
-        scrollProgress={scrollProgress}
-        boostFlow={heroBoost || autoCinemaTour}
-      />
-
+    <>
       {/* Z-50: STICKY GLASSMORPHISM NAVBAR */}
       <header className="sticky-navbar">
         <div className="max-container navbar-inner">
@@ -517,7 +443,7 @@ function App() {
           <nav className={`desktop-nav ${menuOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             <a href="#find-blood" onClick={() => setMenuOpen(false)}>Find Blood</a>
             <a href="#requests" onClick={() => setMenuOpen(false)}>Urgent Requests</a>
-            <a href="#cinema-3d" onClick={() => setMenuOpen(false)}>3D Film</a>
+            <a href="#cinema-3d" onClick={() => setMenuOpen(false)}>3D Motion Film</a>
             <a href="#network" onClick={() => setMenuOpen(false)}>Blood Banks</a>
             <a href="#awareness" onClick={() => setMenuOpen(false)}>Awareness</a>
 
@@ -575,60 +501,48 @@ function App() {
         </div>
       </header>
 
-      <main className="page-foreground">
-        {/* B. HERO SECTION: 60% CONTENT / 40% LIVE 3D WEBGL STAGE */}
+      <main>
+        {/* B. HERO SECTION: 60% CONTENT / 40% INTERACTIVE 3D NETWORK & ECG GRID */}
         <section className="hero-section" id="top">
           <div className="hero-radial-glow" aria-hidden="true" />
           <div className="max-container hero-grid">
             <div className="hero-left">
               <span className="hero-badge">
-                <span className="pulse-dot" /> FULL-SITE 3D VASCULAR CINEMA · AI PROMPT BATTLE 2.0
+                <span className="pulse-dot" /> LIVE 3D NETWORK GRID &amp; ECG SIGNAL · CONCEPT PROTOTYPE
               </span>
               <h1>
                 Every Drop<br />
                 <span>Connects a Life.</span>
               </h1>
               <p className="hero-sub">
-                Fly through a living 3D bloodstream network as you discover compatible blood donors, locate verified blood banks, and coordinate urgent care in real time.
+                During medical emergencies, surgeries, and critical treatments, finding suitable blood donors and verified blood banks shouldn&apos;t stall. Click any node in our live 3D grid to trace compatible donor-to-hospital routes.
               </p>
               <div className="hero-cta-row">
                 <a className="btn-primary btn-lg" href="#find-blood">
                   Find a Donor <ArrowIcon />
                 </a>
-                <button
-                  type="button"
-                  className={`btn-outline-light btn-lg ${autoCinemaTour ? "is-touring" : ""}`}
-                  onClick={() => {
-                    setAutoCinemaTour((v) => !v);
-                    if (!autoCinemaTour) {
-                      showToast("Auto-Cinema 3D Flight started — scroll manually anytime to pause.");
-                    }
-                  }}
-                >
-                  {autoCinemaTour ? "⏸ Pause 3D Tour" : "▶ Auto-Cinema 3D Tour"}
-                </button>
+                <a className="btn-outline-light btn-lg" href="#cinema-3d">
+                  ▶ Watch 3D Motion Film
+                </a>
               </div>
               <div className="hero-3d-controls">
-                <span>Drag 3D network to orbit · Click to pulse{pulseCount > 0 ? ` (${pulseCount})` : ""}</span>
+                <span>Drag 3D grid to orbit · Click O-, BK1 or H1 to pulse</span>
                 <button
                   type="button"
                   className={`mini-chip ${heroBoost ? "is-active" : ""}`}
                   onClick={() => setHeroBoost((b) => !b)}
                 >
-                  {heroBoost ? "Signal Flow: Fast" : "Boost 3D Flow"}
+                  {heroBoost ? "Pulse Speed: Fast" : "Boost ECG & Signal"}
                 </button>
               </div>
             </div>
 
             <div className="hero-right">
-              <div className="hero-3d-frame">
-                <HeroBloodstream3D interactiveBoost={heroBoost} onPulse={handleHeroPulse} />
-                <div className="hero-3d-legend">
-                  <span><i className="dot-red" /> Donors</span>
-                  <span><i className="dot-blue" /> Blood Banks</span>
-                  <span><i className="dot-green" /> Hospitals</span>
-                </div>
-              </div>
+              <HeroNetworkGrid3D
+                boostFlow={heroBoost}
+                onSelectDonorGroup={handleHeroNodeSelectGroup}
+                onSelectBankView={handleHeroSelectBank}
+              />
             </div>
           </div>
         </section>
@@ -636,7 +550,7 @@ function App() {
         {/* C. FLOATING "FIND A DONOR" BRIDGE CARD (z-40, margin-top: -60px) */}
         <section className="floating-finder-wrap" id="find-blood" ref={finderSectionRef}>
           <div className="max-container">
-            <div className="floating-search-card glass-light">
+            <div className="floating-search-card">
               <form className="floating-search-row" onSubmit={handleSearchSubmit}>
                 <label className="search-field">
                   <span>Blood Group</span>
@@ -758,8 +672,8 @@ function App() {
           </div>
         </section>
 
-        {/* D. URGENT BLOOD REQUESTS (HORIZONTAL 3D-TILT CAROUSEL + SKELETON LOADER) */}
-        <section className="requests-carousel-section section-pad glass-band-light" id="requests">
+        {/* D. URGENT BLOOD REQUESTS (HORIZONTAL CAROUSEL + SKELETON LOADER) */}
+        <section className="requests-carousel-section section-pad" id="requests">
           <div className="max-container fade-in-up">
             <div className="carousel-header">
               <div>
@@ -802,62 +716,60 @@ function App() {
             ) : (
               <div className="requests-carousel-track" ref={requestsCarouselRef}>
                 {requestList.map((req) => (
-                  <Tilt3DCard key={req.id} className="request-tilt-slot" intensity={7}>
-                    <article className="request-card">
-                      <div className="request-card-top">
-                        <span className="request-scenario-chip">{req.scenario}</span>
-                        <span className="live-indicator">
-                          <span className="pulse-dot" /> {req.priority}
-                        </span>
+                  <article className="request-card" key={req.id}>
+                    <div className="request-card-top">
+                      <span className="request-scenario-chip">{req.scenario}</span>
+                      <span className="live-indicator">
+                        <span className="pulse-dot" /> {req.priority}
+                      </span>
+                    </div>
+
+                    <div className="request-card-blood">
+                      <span className="blood-drop-badge">
+                        <DropBadgeIcon />
+                        <strong>{req.group}</strong>
+                      </span>
+                      <div>
+                        <span className="request-units">{req.units} · {req.componentNeeded}</span>
+                        <span className="request-time">{req.updatedLabel} (Demo)</span>
                       </div>
+                    </div>
 
-                      <div className="request-card-blood">
-                        <span className="blood-drop-badge">
-                          <DropBadgeIcon />
-                          <strong>{req.group}</strong>
-                        </span>
-                        <div>
-                          <span className="request-units">{req.units} · {req.componentNeeded}</span>
-                          <span className="request-time">{req.updatedLabel} (Demo)</span>
-                        </div>
-                      </div>
+                    <h3>{req.hospital}</h3>
+                    <p className="request-city">{req.city} · {req.need}</p>
 
-                      <h3>{req.hospital}</h3>
-                      <p className="request-city">{req.city} · {req.need}</p>
-
-                      <button
-                        type="button"
-                        className="btn-primary request-accept-btn"
-                        onClick={() => setActiveRequest(req)}
-                      >
-                        Accept Request (Demo)
-                      </button>
-                    </article>
-                  </Tilt3DCard>
+                    <button
+                      type="button"
+                      className="btn-primary request-accept-btn"
+                      onClick={() => setActiveRequest(req)}
+                    >
+                      Accept Request (Demo)
+                    </button>
+                  </article>
                 ))}
               </div>
             )}
           </div>
         </section>
 
-        {/* INLINE LIVE 3D VIDEO MOTION CINEMA REEL (PROBLEM STATEMENT IN LIVE 3D) */}
-        <section className="cinema-band section-pad glass-band-dark" id="cinema-3d">
+        {/* SIGNATURE 3D MOTION FILM SHOWCASE (ELABORATED ECG + NETWORK GRID) */}
+        <section className="cinema-band section-pad" id="cinema-3d">
           <div className="max-container fade-in-up">
             <div className="cinema-header-row">
               <div>
-                <span className="eyebrow eyebrow-rose">LIVE 3D DIMENSION VIDEO MOTION</span>
-                <h2>Watch the Living Solution Story</h2>
+                <span className="eyebrow eyebrow-rose">3D MOTION GRAPHICS STORYTELLING</span>
+                <h2>Problem &amp; Live Signal Film</h2>
               </div>
               <p className="cinema-header-copy">
-                A dual-layer 60fps Three.js 3D camera flight and kinetic broadcast motion film explaining why rapid donor &amp; blood-bank coordination saves critical minutes.
+                Watch how BloodLink turns disconnected donor alerts and unverified bank availability into an aligned 3D heartbeat and routing network across four interactive chapters.
               </p>
             </div>
             <MotionVideoReel externalChapterRequest={requestedFilmChapter} />
           </div>
         </section>
 
-        {/* E. HOW IT WORKS (3-COLUMN GRID + DOTTED SVG CONNECTORS + 3D TILT) */}
-        <section className="how-section section-pad glass-band-white" id="how-it-works">
+        {/* E. HOW IT WORKS (3-COLUMN GRID + DOTTED SVG CONNECTORS) */}
+        <section className="how-section section-pad" id="how-it-works">
           <div className="max-container fade-in-up">
             <div className="centered-header">
               <span className="eyebrow">SOLVING THE CHALLENGE</span>
@@ -884,38 +796,32 @@ function App() {
               </svg>
 
               <div className="steps-grid">
-                <Tilt3DCard intensity={5}>
-                  <article className="step-card">
-                    <StepIllustration step={1} />
-                    <span className="step-index">STEP 01</span>
-                    <h3>Search Compatible Donors</h3>
-                    <p>
-                      Enter the required blood group and city to discover direct and ABO/Rh compatible voluntary donors without exposing private contact numbers.
-                    </p>
-                  </article>
-                </Tilt3DCard>
+                <article className="step-card">
+                  <StepIllustration step={1} />
+                  <span className="step-index">STEP 01</span>
+                  <h3>Search Compatible Donors</h3>
+                  <p>
+                    Enter the required blood group and city to discover direct and ABO/Rh compatible voluntary donors without exposing private contact numbers.
+                  </p>
+                </article>
 
-                <Tilt3DCard intensity={5}>
-                  <article className="step-card">
-                    <StepIllustration step={2} />
-                    <span className="step-index">STEP 02</span>
-                    <h3>Verify Hospital &amp; Bank</h3>
-                    <p>
-                      Inspect verified hospital requests and locate authorised blood banks with exact component capability (red cells, plasma, or platelets) in 3D.
-                    </p>
-                  </article>
-                </Tilt3DCard>
+                <article className="step-card">
+                  <StepIllustration step={2} />
+                  <span className="step-index">STEP 02</span>
+                  <h3>Verify Hospital &amp; Bank</h3>
+                  <p>
+                    Inspect verified hospital requests and locate authorised blood banks with exact component capability (red cells, plasma, or platelets) in 3D.
+                  </p>
+                </article>
 
-                <Tilt3DCard intensity={5}>
-                  <article className="step-card">
-                    <StepIllustration step={3} />
-                    <span className="step-index">STEP 03</span>
-                    <h3>Donate &amp; Multiply Impact</h3>
-                    <p>
-                      Confirm on-site readiness with clinicians and donate safely — one voluntary unit separates into components that can support up to three lives.
-                    </p>
-                  </article>
-                </Tilt3DCard>
+                <article className="step-card">
+                  <StepIllustration step={3} />
+                  <span className="step-index">STEP 03</span>
+                  <h3>Donate &amp; Multiply Impact</h3>
+                  <p>
+                    Confirm on-site readiness with clinicians and donate safely — one voluntary unit separates into components that can support up to three lives.
+                  </p>
+                </article>
               </div>
             </div>
 
@@ -930,8 +836,8 @@ function App() {
           </div>
         </section>
 
-        {/* F. BLOOD BANK & HOSPITAL NETWORK (MIDNIGHT BLUE 50/50 SPLIT + 3D MAP) */}
-        <section className="network-dark-section section-pad glass-band-dark" id="network">
+        {/* F. BLOOD BANK & HOSPITAL NETWORK (MIDNIGHT BLUE 50/50 SPLIT + 3D GRID MAP) */}
+        <section className="network-dark-section section-pad" id="network" ref={networkSectionRef}>
           <div className="max-container fade-in-up">
             <div className="network-header">
               <div>
@@ -1024,130 +930,122 @@ function App() {
           </div>
         </section>
 
-        {/* G. DONATION AWARENESS (4-COLUMN × 2-ROW BENTO BOX UI WITH 3D TILT) */}
-        <section className="awareness-section section-pad glass-band-white" id="awareness">
+        {/* G. DONATION AWARENESS (4-COLUMN × 2-ROW BENTO BOX UI) */}
+        <section className="awareness-section section-pad" id="awareness">
           <div className="max-container fade-in-up">
             <div className="centered-header">
               <span className="eyebrow">DONATION AWARENESS</span>
               <h2>Know Before You Donate</h2>
               <p>
-                Interactive eligibility guidance, myth-busting medical facts, preparation habits, and our 60fps 3D motion film in one clean Bento workspace.
+                Interactive eligibility guidance, myth-busting medical facts, preparation habits, and our 3D motion film in one clean Bento workspace.
               </p>
             </div>
 
             <div className="bento-grid">
-              <Tilt3DCard className="bento-span-2x2" intensity={3}>
-                <div className="bento-card bento-eligibility">
-                  <div className="bento-head">
-                    <span className="bento-tag">INTERACTIVE CHECKLIST</span>
-                    <span className="bento-counter">{checkedCount} / {READINESS_CHECKS.length} Ready</span>
-                  </div>
-                  <h3>Am I Ready to Donate?</h3>
-                  <p className="bento-sub">
-                    Review these four preparation indicators before visiting an authorised donation centre.
-                  </p>
-
-                  <div className="quiz-list">
-                    {READINESS_CHECKS.map((item) => {
-                      const checked = Boolean(checkedReadiness[item.id]);
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          className={`quiz-item ${checked ? "is-checked" : ""}`}
-                          onClick={() => toggleReadiness(item.id)}
-                          aria-pressed={checked}
-                        >
-                          <span className="quiz-check">{checked ? "✓" : ""}</span>
-                          <div>
-                            <strong>{item.question}</strong>
-                            <small>{item.tip}</small>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="quiz-footer-note">
-                    {checkedCount === READINESS_CHECKS.length
-                      ? "Prepared for check-in! On-site clinicians confirm official medical eligibility."
-                      : "Educational overview only — local blood bank clinicians always perform final screening."}
-                  </div>
+              <div className="bento-card bento-eligibility">
+                <div className="bento-head">
+                  <span className="bento-tag">INTERACTIVE CHECKLIST</span>
+                  <span className="bento-counter">{checkedCount} / {READINESS_CHECKS.length} Ready</span>
                 </div>
-              </Tilt3DCard>
+                <h3>Am I Ready to Donate?</h3>
+                <p className="bento-sub">
+                  Review these four preparation indicators before visiting an authorised donation centre.
+                </p>
 
-              <Tilt3DCard className="bento-span-2x1" intensity={4}>
-                <div className="bento-card bento-myths">
-                  <div className="bento-head">
-                    <span className="bento-tag">MYTH VS. MEDICAL FACT</span>
-                    <div className="slider-controls">
+                <div className="quiz-list">
+                  {READINESS_CHECKS.map((item) => {
+                    const checked = Boolean(checkedReadiness[item.id]);
+                    return (
                       <button
+                        key={item.id}
                         type="button"
-                        onClick={() => setMythIndex((i) => (i - 1 + MYTHS_AND_FACTS.length) % MYTHS_AND_FACTS.length)}
-                        aria-label="Previous myth"
+                        className={`quiz-item ${checked ? "is-checked" : ""}`}
+                        onClick={() => toggleReadiness(item.id)}
+                        aria-pressed={checked}
                       >
-                        ←
+                        <span className="quiz-check">{checked ? "✓" : ""}</span>
+                        <div>
+                          <strong>{item.question}</strong>
+                          <small>{item.tip}</small>
+                        </div>
                       </button>
-                      <span>0{mythIndex + 1} / 0{MYTHS_AND_FACTS.length}</span>
-                      <button
-                        type="button"
-                        onClick={() => setMythIndex((i) => (i + 1) % MYTHS_AND_FACTS.length)}
-                        aria-label="Next myth"
-                      >
-                        →
-                      </button>
-                    </div>
-                  </div>
-                  <h3>{currentMyth.myth}</h3>
-                  <p className="myth-answer">
-                    <strong>Fact:</strong> {currentMyth.fact}
-                  </p>
+                    );
+                  })}
                 </div>
-              </Tilt3DCard>
 
-              <Tilt3DCard intensity={5}>
-                <div className="bento-card bento-prep">
-                  <span className="bento-tag">QUICK PREP TIPS</span>
-                  <h3>4 Habits Before You Visit</h3>
-                  <ul className="prep-list">
-                    <li><span>💧</span> Drink 500ml water 2 hrs prior</li>
-                    <li><span>🥗</span> Eat an iron-rich balanced meal</li>
-                    <li><span>🪪</span> Carry valid government photo ID</li>
-                    <li><span>🛋️</span> Rest 15 mins after donating</li>
-                  </ul>
+                <div className="quiz-footer-note">
+                  {checkedCount === READINESS_CHECKS.length
+                    ? "Prepared for check-in! On-site clinicians confirm official medical eligibility."
+                    : "Educational overview only — local blood bank clinicians always perform final screening."}
                 </div>
-              </Tilt3DCard>
+              </div>
 
-              <Tilt3DCard intensity={6}>
-                <button
-                  type="button"
-                  className="bento-card bento-video-card"
-                  onClick={() => {
-                    setRequestedFilmChapter(0);
-                    setFilmModalOpen(true);
-                  }}
-                >
-                  <div className="video-thumb-overlay">
-                    <span className="video-play-circle">▶</span>
-                    <span className="bento-tag video-tag">THEATER MODAL</span>
+              <div className="bento-card bento-myths">
+                <div className="bento-head">
+                  <span className="bento-tag">MYTH VS. MEDICAL FACT</span>
+                  <div className="slider-controls">
+                    <button
+                      type="button"
+                      onClick={() => setMythIndex((i) => (i - 1 + MYTHS_AND_FACTS.length) % MYTHS_AND_FACTS.length)}
+                      aria-label="Previous myth"
+                    >
+                      ←
+                    </button>
+                    <span>0{mythIndex + 1} / 0{MYTHS_AND_FACTS.length}</span>
+                    <button
+                      type="button"
+                      onClick={() => setMythIndex((i) => (i + 1) % MYTHS_AND_FACTS.length)}
+                      aria-label="Next myth"
+                    >
+                      →
+                    </button>
                   </div>
-                  <div className="video-card-copy">
-                    <h3>Open 3D Cinema Film</h3>
-                    <small>Fullscreen 4-chapter 3D motion reel</small>
-                  </div>
-                </button>
-              </Tilt3DCard>
+                </div>
+                <h3>{currentMyth.myth}</h3>
+                <p className="myth-answer">
+                  <strong>Fact:</strong> {currentMyth.fact}
+                </p>
+              </div>
+
+              <div className="bento-card bento-prep">
+                <span className="bento-tag">QUICK PREP TIPS</span>
+                <h3>4 Habits Before You Visit</h3>
+                <ul className="prep-list">
+                  <li><span>💧</span> Drink 500ml water 2 hrs prior</li>
+                  <li><span>🥗</span> Eat an iron-rich balanced meal</li>
+                  <li><span>🪪</span> Carry valid government photo ID</li>
+                  <li><span>🛋️</span> Rest 15 mins after donating</li>
+                </ul>
+              </div>
+
+              <button
+                type="button"
+                className="bento-card bento-video-card"
+                onClick={() => {
+                  setRequestedFilmChapter(0);
+                  setFilmModalOpen(true);
+                }}
+              >
+                <div className="video-thumb-overlay">
+                  <span className="video-play-circle">▶</span>
+                  <span className="bento-tag video-tag">THEATER MODE</span>
+                </div>
+                <div className="video-card-copy">
+                  <h3>Fullscreen 3D Film</h3>
+                  <small>Open 4-chapter motion reel</small>
+                </div>
+              </button>
             </div>
           </div>
         </section>
 
-        {/* H. OUR IMPACT (4-COLUMN COUNTUP METRICS + 3D COMPONENT SEPARATION) */}
+        {/* H. OUR IMPACT (4-COLUMN COUNTUP METRICS + COMPONENT BREAKDOWN) */}
         <section
           className="impact-metrics-section section-pad"
           id="impact"
           style={{
             backgroundImage:
-              "linear-gradient(180deg, rgba(11, 15, 25, 0.86), rgba(34, 10, 22, 0.88)), url('./images/bloodlink-world.jpg')",
+              "linear-gradient(180deg, rgba(11, 15, 25, 0.9), rgba(34, 10, 22, 0.92)), url('./images/bloodlink-world.jpg')",
           }}
         >
           <div className="max-container impact-container fade-in-up">
@@ -1186,67 +1084,25 @@ function App() {
               </div>
             </div>
 
-            <div className="impact-3d-split">
-              <div className="impact-3d-info">
-                <span className="eyebrow eyebrow-rose">INTERACTIVE 3D SEPARATION</span>
-                <h3>Explore Separated Components</h3>
-                <div className="component-tabs">
-                  {COMPONENT_STORIES.map((comp) => (
-                    <button
-                      key={comp.id}
-                      type="button"
-                      className={`comp-tab ${selectedComponentId === comp.id ? "is-active" : ""}`}
-                      onClick={() => setSelectedComponentId(comp.id)}
-                    >
-                      <span className="comp-dot" style={{ background: comp.color }} />
-                      {comp.title}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="comp-detail-box">
-                  <div className="comp-meta">
-                    <span>{selectedComponent.subtitle}</span>
-                    <span>{selectedComponent.shelfLife}</span>
+            <div className="components-3-grid">
+              {COMPONENT_STORIES.map((comp) => (
+                <article className="component-clean-card" key={comp.id}>
+                  <div className="component-clean-top">
+                    <span className="comp-dot" style={{ background: comp.color }} />
+                    <span>{comp.subtitle}</span>
+                    <small>{comp.shelfLife}</small>
                   </div>
-                  <h4>{selectedComponent.title}</h4>
-                  <p>{selectedComponent.description}</p>
-                  <small>Clinical focus: {selectedComponent.useCase}</small>
-                </div>
-
-                <div className="sim-box">
-                  <div className="sim-top">
-                    <label htmlFor="impact-slider">
-                      Donation Simulator: <strong>{donationCount}</strong>{" "}
-                      {donationCount === 1 ? "unit" : "units"}
-                    </label>
-                    <span>Up to ~{donationCount * 3} care pathways</span>
-                  </div>
-                  <input
-                    id="impact-slider"
-                    type="range"
-                    min={1}
-                    max={50}
-                    value={donationCount}
-                    onChange={(e) => setDonationCount(Number(e.target.value))}
-                    className="impact-range"
-                  />
-                </div>
-              </div>
-
-              <div className="impact-3d-stage-col">
-                <ImpactOrbit3D
-                  selectedId={selectedComponentId}
-                  donationCount={donationCount}
-                  onSelectComponent={handleSelectComponent}
-                />
-              </div>
+                  <h3>{comp.title}</h3>
+                  <p>{comp.description}</p>
+                  <span className="component-clean-focus">{comp.useCase}</span>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
         {/* I. PRE-FOOTER CALL TO ACTION */}
-        <section className="prefooter-section section-pad glass-band-white">
+        <section className="prefooter-section section-pad">
           <div className="max-container fade-in-up">
             <div className="prefooter-card">
               <span className="prefooter-tag">EVERY DROP CONNECTS A LIFE</span>
@@ -1270,7 +1126,7 @@ function App() {
       </main>
 
       {/* J. 4-COLUMN FOOTER */}
-      <footer className="site-footer page-foreground">
+      <footer className="site-footer">
         <div className="max-container footer-4-grid">
           <div className="footer-col">
             <a className="brand" href="#top">
@@ -1288,7 +1144,7 @@ function App() {
             <h4>Quick Links</h4>
             <a href="#find-blood">Find a Donor</a>
             <a href="#requests">Urgent Requests</a>
-            <a href="#cinema-3d">3D Cinema Film</a>
+            <a href="#cinema-3d">3D Motion Film</a>
             <a href="#network">Blood Bank Network</a>
           </div>
 
@@ -1345,19 +1201,6 @@ function App() {
           </div>
         </div>
       </footer>
-
-      {/* FLOATING 3D DIRECTOR HUD */}
-      <div className="director-hud" aria-label="3D motion flight indicator">
-        <span className="pulse-dot" />
-        <span className="director-stage">{activeStageLabel}</span>
-        <button
-          type="button"
-          className={`director-btn ${autoCinemaTour ? "is-active" : ""}`}
-          onClick={() => setAutoCinemaTour((v) => !v)}
-        >
-          {autoCinemaTour ? "⏸ Pause Tour" : "▶ 3D Tour"}
-        </button>
-      </div>
 
       {/* Z-50 TOAST ALERT */}
       {toastMessage && (
@@ -1571,18 +1414,18 @@ function App() {
             ) : briefOpen ? (
               <>
                 <p className="eyebrow">AI PROMPT BATTLE 2.0 · ARCHITECTURE BRIEF</p>
-                <h2 id="modal-title">BloodLink — Full 3D Motion Universe</h2>
+                <h2 id="modal-title">BloodLink — 3D Network &amp; Signal Architecture</h2>
                 <p className="modal-intro">
-                  Combines a continuous scroll-driven 3D vascular camera flight, dual-layer 3D + kinetic cinema reel, compatibility-aware matching, and 3D network/component stages.
+                  Unified around our live 3D perspective network grid, glowing ECG waveform, interactive donor/bank/hospital routing nodes, and 4-chapter motion film.
                 </p>
                 <div className="request-detail-list">
                   <div>
-                    <span>Full-Site 3D</span>
-                    <strong>Fixed WebGL vascular corridor synced to page scroll + Auto-Tour</strong>
+                    <span>Hero 3D Grid</span>
+                    <strong>Interactive O-/O+/A+/B-/BK1/BK2/H1 3D nodes + live ECG trace</strong>
                   </div>
                   <div>
-                    <span>3D Film Engine</span>
-                    <strong>Three.js dynamic camera cuts + 60fps broadcast canvas HUD</strong>
+                    <span>Motion Film</span>
+                    <strong>4-chapter 3D WebGL + broadcast HUD with zero clipping</strong>
                   </div>
                   <div>
                     <span>Repository</span>
@@ -1602,7 +1445,7 @@ function App() {
           </section>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
