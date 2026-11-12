@@ -9,6 +9,7 @@ import {
   BLOOD_GROUPS,
   COMPATIBILITY_MAP,
   COMPONENT_STORIES,
+  DONATION_GUIDES,
   DONOR_PROFILES,
   INITIAL_URGENT_REQUESTS,
   MYTHS_AND_FACTS,
@@ -203,13 +204,21 @@ function App() {
   const [urgencyLevel, setUrgencyLevel] = useState<"any" | "emergency" | "same-day" | "scheduled">("any");
   const [includeCompatible, setIncludeCompatible] = useState(true);
   const [showDonorDrawer, setShowDonorDrawer] = useState(true);
+  const [expandedDonorId, setExpandedDonorId] = useState<string | null>("BL-8841");
   const [activeDonor, setActiveDonor] = useState<DonorProfile | null>(null);
 
   // Urgent Requests Carousel + Skeleton Loader
   const [requestList, setRequestList] = useState<BloodRequest[]>(INITIAL_URGENT_REQUESTS);
+  const [scenarioFilter, setScenarioFilter] = useState<"all" | BloodRequest["scenario"]>("all");
+  const [expandedRequestId, setExpandedRequestId] = useState<string | null>("REQ-2049");
   const [requestsLoading, setRequestsLoading] = useState(false);
   const [activeRequest, setActiveRequest] = useState<BloodRequest | null>(null);
   const [createRequestOpen, setCreateRequestOpen] = useState(false);
+
+  // Interactive Step Cards & Clinical Guide Pop-Down Accordion State
+  const [expandedStep, setExpandedStep] = useState<1 | 2 | 3 | null>(1);
+  const [openGuideIndex, setOpenGuideIndex] = useState<number | null>(0);
+  const [telemetryDockOpen, setTelemetryDockOpen] = useState(false);
 
   // Blood Bank & Hospital Network + Skeleton Loader
   const [directoryQuery, setDirectoryQuery] = useState("");
@@ -299,6 +308,14 @@ function App() {
   const activeComponentStory = useMemo(
     () => COMPONENT_STORIES.find((c) => c.id === activeComponentId) ?? COMPONENT_STORIES[0],
     [activeComponentId],
+  );
+
+  const filteredRequests = useMemo(
+    () =>
+      scenarioFilter === "all"
+        ? requestList
+        : requestList.filter((req) => req.scenario === scenarioFilter),
+    [requestList, scenarioFilter],
   );
 
   useEffect(() => {
@@ -718,12 +735,11 @@ function App() {
                     <div className="donor-drawer-grid">
                       {matches.slice(0, 6).map((profile) => {
                         const isDirect = bloodGroup === "all" || profile.group === bloodGroup;
+                        const isExpanded = expandedDonorId === profile.id;
                         return (
-                          <button
+                          <article
                             key={profile.id}
-                            type="button"
-                            className="donor-mini-card"
-                            onClick={() => setActiveDonor(profile)}
+                            className={`donor-mini-card glass-frost-card ${isExpanded ? "is-expanded" : ""}`}
                           >
                             <div className="donor-mini-top">
                               <span className="donor-pill-group">{profile.group}</span>
@@ -741,7 +757,55 @@ function App() {
                               <span className="donor-eta-badge">{profile.availability} · {profile.responseWindow}</span>
                               <span>Last: {profile.lastDonated}</span>
                             </div>
-                          </button>
+
+                            <div className="card-pop-actions">
+                              <button
+                                type="button"
+                                className="pop-toggle-btn"
+                                aria-expanded={isExpanded}
+                                onClick={() =>
+                                  setExpandedDonorId((cur) => (cur === profile.id ? null : profile.id))
+                                }
+                              >
+                                <span>{isExpanded ? "Hide Clinical Vitals" : "Pop-Down Clinical Vitals"}</span>
+                                <span className={`chevron-indicator ${isExpanded ? "is-open" : ""}`}>▾</span>
+                              </button>
+                              <button
+                                type="button"
+                                className="pop-modal-btn"
+                                onClick={() => setActiveDonor(profile)}
+                              >
+                                Pop-Up Profile ↗
+                              </button>
+                            </div>
+
+                            <div className={`pop-down-drawer ${isExpanded ? "is-open" : ""}`}>
+                              <div className="pop-down-inner">
+                                <div className="pop-kv">
+                                  <span>Hemoglobin &amp; Units</span>
+                                  <strong>{profile.hemoglobin} · {profile.donationsLogged} units</strong>
+                                </div>
+                                <div className="pop-kv">
+                                  <span>Screened By</span>
+                                  <strong>{profile.verifiedBy}</strong>
+                                </div>
+                                <div className="pop-kv">
+                                  <span>PRBC Recipients</span>
+                                  <strong>{COMPATIBILITY_MAP[profile.group].donateRedCellsTo.join(", ")}</strong>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="btn-primary pop-dispatch-btn"
+                                  onClick={() => {
+                                    setBgPulseCount((c) => c + 1);
+                                    showToast(`Encrypted dispatch ping sent to ${profile.name} (${profile.id}).`);
+                                  }}
+                                >
+                                  Send Instant Dispatch Ping <ArrowIcon />
+                                </button>
+                              </div>
+                            </div>
+                          </article>
                         );
                       })}
                     </div>
@@ -765,6 +829,20 @@ function App() {
                 <h2>Urgent Blood Requests</h2>
               </div>
               <div className="carousel-actions">
+                <div className="scenario-slide-pills" role="tablist" aria-label="Filter requisitions by clinical scenario">
+                  {(["all", "Emergency Trauma", "Critical Care", "Planned Surgery"] as const).map((sc) => (
+                    <button
+                      key={sc}
+                      type="button"
+                      role="tab"
+                      aria-selected={scenarioFilter === sc}
+                      className={`filter-pill ${scenarioFilter === sc ? "is-active" : ""}`}
+                      onClick={() => setScenarioFilter(sc)}
+                    >
+                      {sc === "all" ? "All Requisitions" : sc}
+                    </button>
+                  ))}
+                </div>
                 <button type="button" className="btn-secondary-outline" onClick={simulateRequestsRefresh}>
                   Sync Feed
                 </button>
@@ -799,39 +877,83 @@ function App() {
               </div>
             ) : (
               <div className="requests-carousel-track" ref={requestsCarouselRef}>
-                {requestList.map((req) => (
-                  <article className="request-card" key={req.id}>
-                    <div className="request-card-top">
-                      <span className="request-scenario-chip">{req.scenario}</span>
-                      <span className="live-indicator">
-                        <span className="pulse-dot" /> {req.priority}
-                      </span>
-                    </div>
-
-                    <div className="request-card-blood">
-                      <span className="blood-drop-badge">
-                        <DropBadgeIcon />
-                        <strong>{req.group}</strong>
-                      </span>
-                      <div>
-                        <span className="request-units">{req.units} · {req.componentNeeded}</span>
-                        <span className="request-time">{req.id} · {req.updatedLabel}</span>
-                      </div>
-                    </div>
-
-                    <h3>{req.hospital}</h3>
-                    <p className="request-city">{req.department} · {req.city}</p>
-                    <p className="request-clinical-note">{req.need} — {req.crossMatchNote}</p>
-
-                    <button
-                      type="button"
-                      className="btn-primary request-accept-btn"
-                      onClick={() => setActiveRequest(req)}
+                {filteredRequests.map((req) => {
+                  const isReqExpanded = expandedRequestId === req.id;
+                  return (
+                    <article
+                      className={`request-card glass-frost-card ${isReqExpanded ? "is-expanded" : ""}`}
+                      key={req.id}
                     >
-                      Match &amp; Dispatch Donors
-                    </button>
-                  </article>
-                ))}
+                      <div className="request-card-top">
+                        <span className="request-scenario-chip">{req.scenario}</span>
+                        <span className="live-indicator">
+                          <span className="pulse-dot" /> {req.priority}
+                        </span>
+                      </div>
+
+                      <div className="request-card-blood">
+                        <span className="blood-drop-badge">
+                          <DropBadgeIcon />
+                          <strong>{req.group}</strong>
+                        </span>
+                        <div>
+                          <span className="request-units">{req.units} · {req.componentNeeded}</span>
+                          <span className="request-time">{req.id} · {req.updatedLabel}</span>
+                        </div>
+                      </div>
+
+                      <h3>{req.hospital}</h3>
+                      <p className="request-city">{req.department} · {req.city}</p>
+                      <p className="request-clinical-note">{req.need}</p>
+
+                      <div className="card-pop-actions">
+                        <button
+                          type="button"
+                          className="pop-toggle-btn"
+                          aria-expanded={isReqExpanded}
+                          onClick={() =>
+                            setExpandedRequestId((cur) => (cur === req.id ? null : req.id))
+                          }
+                        >
+                          <span>{isReqExpanded ? "Hide Lab Protocol" : "Pop-Down Lab Protocol"}</span>
+                          <span className={`chevron-indicator ${isReqExpanded ? "is-open" : ""}`}>▾</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="pop-modal-btn"
+                          onClick={() => setActiveRequest(req)}
+                        >
+                          Pop-Up Desk ↗
+                        </button>
+                      </div>
+
+                      <div className={`pop-down-drawer ${isReqExpanded ? "is-open" : ""}`}>
+                        <div className="pop-down-inner">
+                          <div className="pop-kv">
+                            <span>Cross-Match Status</span>
+                            <strong>{req.crossMatchNote}</strong>
+                          </div>
+                          <div className="pop-kv">
+                            <span>Attending Officer</span>
+                            <strong>{req.attendingDesk}</strong>
+                          </div>
+                          <div className="pop-kv">
+                            <span>Compatible Groups</span>
+                            <strong>{COMPATIBILITY_MAP[req.group].receiveRedCellsFrom.join(", ")}</strong>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-primary request-accept-btn"
+                        onClick={() => acceptRequestDemo(req)}
+                      >
+                        Match &amp; Slide to Donors <ArrowIcon />
+                      </button>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -840,8 +962,8 @@ function App() {
         {/* E. HOW IT WORKS & INTERACTIVE ABO/RH COMPATIBILITY MATRIX */}
         <section className="how-section section-pad" id="how-it-works">
           <div className="max-container fade-in-up">
-            <div className="centered-header">
-              <span className="eyebrow">CLINICAL DISPATCH PROTOCOL</span>
+            <div className="centered-header centered-light">
+              <span className="eyebrow eyebrow-rose">CLINICAL DISPATCH PROTOCOL</span>
               <h2>From Requisition to Cross-Match in Minutes</h2>
               <p>
                 BloodLink replaces unverified social forwards with automated ABO/Rh compatibility matching, live NABH blood bank stock telemetry, and privacy-shielded donor dispatch.
@@ -865,31 +987,100 @@ function App() {
               </svg>
 
               <div className="steps-grid">
-                <article className="step-card">
+                <article
+                  className={`step-card glass-frost-card ${expandedStep === 1 ? "is-expanded" : ""}`}
+                  onClick={() => setExpandedStep((s) => (s === 1 ? null : 1))}
+                >
                   <StepIllustration step={1} />
                   <span className="step-index">STEP 01</span>
                   <h3>Search Compatible Donors</h3>
                   <p>
                     Enter the required blood group and city to discover direct and ABO/Rh compatible voluntary donors without exposing private contact numbers.
                   </p>
+                  <button
+                    type="button"
+                    className="step-pop-trigger"
+                    aria-expanded={expandedStep === 1}
+                  >
+                    <span>{expandedStep === 1 ? "Hide Technical Spec" : "Pop-Down Technical Spec"}</span>
+                    <span className={`chevron-indicator ${expandedStep === 1 ? "is-open" : ""}`}>▾</span>
+                  </button>
+                  <div className={`pop-down-drawer ${expandedStep === 1 ? "is-open" : ""}`}>
+                    <div className="pop-down-inner">
+                      <div className="pop-kv">
+                        <span>Compatibility Engine</span>
+                        <strong>Auto-includes O− &amp; Rh-compatible erythrocytes</strong>
+                      </div>
+                      <div className="pop-kv">
+                        <span>Privacy Layer</span>
+                        <strong>Zero phone number exposure · Relay tokens</strong>
+                      </div>
+                    </div>
+                  </div>
                 </article>
 
-                <article className="step-card">
+                <article
+                  className={`step-card glass-frost-card ${expandedStep === 2 ? "is-expanded" : ""}`}
+                  onClick={() => setExpandedStep((s) => (s === 2 ? null : 2))}
+                >
                   <StepIllustration step={2} />
                   <span className="step-index">STEP 02</span>
                   <h3>Verify Hospital &amp; Bank</h3>
                   <p>
                     Inspect verified hospital requests and locate authorised blood banks with exact component capability (red cells, plasma, or platelets) in 3D.
                   </p>
+                  <button
+                    type="button"
+                    className="step-pop-trigger"
+                    aria-expanded={expandedStep === 2}
+                  >
+                    <span>{expandedStep === 2 ? "Hide Technical Spec" : "Pop-Down Technical Spec"}</span>
+                    <span className={`chevron-indicator ${expandedStep === 2 ? "is-open" : ""}`}>▾</span>
+                  </button>
+                  <div className={`pop-down-drawer ${expandedStep === 2 ? "is-open" : ""}`}>
+                    <div className="pop-down-inner">
+                      <div className="pop-kv">
+                        <span>Accreditation Check</span>
+                        <strong>NABH &amp; NACO license IDs verified live</strong>
+                      </div>
+                      <div className="pop-kv">
+                        <span>Cold-Chain Telemetry</span>
+                        <strong>PRBC (2–6°C), FFP (-30°C), SDP (22°C agitation)</strong>
+                      </div>
+                    </div>
+                  </div>
                 </article>
 
-                <article className="step-card">
+                <article
+                  className={`step-card glass-frost-card ${expandedStep === 3 ? "is-expanded" : ""}`}
+                  onClick={() => setExpandedStep((s) => (s === 3 ? null : 3))}
+                >
                   <StepIllustration step={3} />
                   <span className="step-index">STEP 03</span>
                   <h3>Donate &amp; Multiply Impact</h3>
                   <p>
                     Confirm on-site readiness with clinicians and donate safely — one voluntary unit separates into components that can support up to three lives.
                   </p>
+                  <button
+                    type="button"
+                    className="step-pop-trigger"
+                    aria-expanded={expandedStep === 3}
+                  >
+                    <span>{expandedStep === 3 ? "Hide Technical Spec" : "Pop-Down Technical Spec"}</span>
+                    <span className={`chevron-indicator ${expandedStep === 3 ? "is-open" : ""}`}>▾</span>
+                  </button>
+                  <div className={`pop-down-drawer ${expandedStep === 3 ? "is-open" : ""}`}>
+                    <div className="pop-down-inner">
+                      <div className="pop-kv">
+                        <span>Component Yield</span>
+                        <strong>220 mL PRBC + 180 mL FFP + 50 mL Platelets</strong>
+                      </div>
+                      <div className="pop-kv">
+                        <span>Recovery Window</span>
+                        <strong>Plasma 24–48 hrs · Red cells 90-day cycle</strong>
+                      </div>
+                    </div>
+                  </div>
                 </article>
               </div>
             </div>
@@ -1190,8 +1381,8 @@ function App() {
         {/* G. DONATION AWARENESS (4-COLUMN × 2-ROW BENTO BOX UI) */}
         <section className="awareness-section section-pad" id="awareness">
           <div className="max-container fade-in-up">
-            <div className="centered-header">
-              <span className="eyebrow">CLINICAL DONOR READINESS</span>
+            <div className="centered-header centered-light">
+              <span className="eyebrow eyebrow-rose">CLINICAL DONOR READINESS</span>
               <h2>Pre-Donation Screening &amp; Medical Facts</h2>
               <p>
                 Verify your pre-donation readiness checklist, review evidence-based transfusion medicine facts, and check safe recovery intervals before visiting a blood centre.
@@ -1262,6 +1453,19 @@ function App() {
                 <p className="myth-answer">
                   <strong>Fact:</strong> {currentMyth.fact}
                 </p>
+                <div className="myth-slide-dots" role="tablist" aria-label="Myth slide indicator">
+                  {MYTHS_AND_FACTS.map((m, idx) => (
+                    <button
+                      key={m.myth}
+                      type="button"
+                      role="tab"
+                      aria-selected={mythIndex === idx}
+                      aria-label={`Slide ${idx + 1}`}
+                      className={`slide-dot ${mythIndex === idx ? "is-active" : ""}`}
+                      onClick={() => setMythIndex(idx)}
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className="bento-card bento-prep">
@@ -1297,6 +1501,37 @@ function App() {
                   </li>
                 </ul>
               </div>
+            </div>
+
+            {/* Interactive Pop-Down Clinical FAQ Accordion */}
+            <div className="clinical-faq-grid">
+              {DONATION_GUIDES.map((guide, idx) => {
+                const isOpen = openGuideIndex === idx;
+                return (
+                  <div
+                    key={guide.title}
+                    className={`faq-frost-card glass-frost-card ${isOpen ? "is-open" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className="faq-frost-trigger"
+                      aria-expanded={isOpen}
+                      onClick={() => setOpenGuideIndex((cur) => (cur === idx ? null : idx))}
+                    >
+                      <div>
+                        <span className="faq-summary-tag">{guide.summary}</span>
+                        <h4>{guide.title}</h4>
+                      </div>
+                      <span className={`chevron-indicator ${isOpen ? "is-open" : ""}`}>▾</span>
+                    </button>
+                    <div className={`pop-down-drawer ${isOpen ? "is-open" : ""}`}>
+                      <div className="pop-down-inner">
+                        <p className="faq-detail-copy">{guide.detail}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -1402,6 +1637,68 @@ function App() {
           <span>{toastMessage}</span>
         </div>
       )}
+
+      {/* Z-40 FLOATING POP-UP / POP-DOWN 3D TELEMETRY CONTROL DOCK */}
+      <aside className={`floating-3d-dock ${telemetryDockOpen ? "is-open" : ""}`} aria-label="Live 3D background controls">
+        <button
+          type="button"
+          className="dock-toggle-pill"
+          aria-expanded={telemetryDockOpen}
+          onClick={() => setTelemetryDockOpen((o) => !o)}
+        >
+          <span className="pulse-dot" />
+          <span>3D Live Stream: {bgMotionMode.toUpperCase()}</span>
+          <span className={`chevron-indicator ${telemetryDockOpen ? "is-open" : ""}`}>▴</span>
+        </button>
+
+        <div className={`dock-pop-up-card ${telemetryDockOpen ? "is-open" : ""}`}>
+          <div className="dock-head">
+            <span>LIVE 3D BACKGROUND ENGINE</span>
+            <strong>{heroBoost ? "120 BPM Surge" : "74 BPM Normal"}</strong>
+          </div>
+          <div className="dock-mode-grid">
+            {(
+              [
+                { id: "auto", label: "Auto Scroll" },
+                { id: "arterial", label: "Arterial" },
+                { id: "helix", label: "ABO Helix" },
+                { id: "vortex", label: "Cryo Vortex" },
+              ] as const
+            ).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                className={`dock-chip ${bgMotionMode === m.id ? "is-active" : ""}`}
+                onClick={() => {
+                  setBgMotionMode(m.id);
+                  setBgPulseCount((c) => c + 1);
+                }}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <div className="dock-bottom-actions">
+            <button
+              type="button"
+              className="dock-action-btn"
+              onClick={() => {
+                setHeroBoost((b) => !b);
+                setBgPulseCount((c) => c + 1);
+              }}
+            >
+              {heroBoost ? "Set 74 BPM" : "Boost 120 BPM"}
+            </button>
+            <button
+              type="button"
+              className="dock-action-btn is-ruby"
+              onClick={() => setBgPulseCount((c) => c + 1)}
+            >
+              Systolic Wave
+            </button>
+          </div>
+        </div>
+      </aside>
 
       {/* Z-50 MODALS */}
       {modalOpen && (
