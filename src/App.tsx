@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { HospitalRadar2D } from "./components/HospitalRadar2D";
 import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
@@ -106,7 +106,7 @@ function DropIcon() {
 
 function ArrowIcon({ direction = "right" }: { direction?: "left" | "right" }) {
   return (
-    <svg aria-hidden="true" className="icon" viewBox="0 0 20 20">
+    <svg aria-hidden="true" className="icon icon-arrow" viewBox="0 0 20 20">
       <path d={direction === "right" ? "M3.5 10h12m-5-5 5 5-5 5" : "M16.5 10h-12m5-5-5 5 5 5"} />
     </svg>
   );
@@ -243,6 +243,27 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  // Drives the scroll progress line under the header.
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      document.documentElement.style.setProperty("--scroll", max > 0 ? String(Math.min(1, window.scrollY / max)) : "0");
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   useEffect(() => {
     if (!modalOpen) return undefined;
     const onKey = (event: KeyboardEvent) => {
@@ -287,6 +308,8 @@ function App() {
     () => requests.filter((request) => scenarioFilter === "all" || request.scenario === scenarioFilter),
     [requests, scenarioFilter],
   );
+
+  const requestCities = useMemo(() => new Set(requests.map((request) => request.city)).size, [requests]);
 
   const filteredBanks = useMemo(() => {
     const query = bankQuery.trim().toLowerCase();
@@ -465,6 +488,7 @@ function App() {
             <span />
           </button>
         </div>
+        <span className="scroll-progress" aria-hidden="true" />
       </header>
 
       <main id="top">
@@ -473,7 +497,7 @@ function App() {
             <div className="hero-copy">
               <span className="hero-badge">
                 <span className="pulse-dot" />
-                Emergency blood coordination
+                Live · {requests.length} urgent requests in {requestCities} cities
               </span>
               <h1 className="hero-title">
                 Every drop
@@ -501,9 +525,20 @@ function App() {
               <p className="hero-hint">Drag to rotate · tap a node to trace its route</p>
             </div>
           </div>
+          <div className="ticker" aria-hidden="true">
+            <div className="ticker-track">
+              {[...requests, ...requests].map((request, index) => (
+                <span key={`${request.id}-${index}`} className={`ticker-item is-${request.priority.toLowerCase()}`}>
+                  <span className="ticker-dot" />
+                  <b>{request.group}</b>
+                  {request.units} · {shortHospital(request.hospital)} · {request.city}
+                </span>
+              ))}
+            </div>
+          </div>
         </section>
 
-        <section className="section problem-section" id="problem">
+        <section className="section theme-light problem-section" id="problem">
           <div className="container reveal">
             <div className="section-head is-center">
               <div className="section-head-copy">
@@ -535,7 +570,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section finder-section" id="find-blood">
+        <section className="section theme-light finder-section" id="find-blood">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -791,7 +826,10 @@ function App() {
 
             <div className="request-track" ref={requestsTrackRef}>
               {filteredRequests.map((request) => (
-                <article key={request.id} className="request-card glass glass-lift">
+                <article
+                  key={request.id}
+                  className={`request-card glass glass-lift is-${request.priority.toLowerCase()}`}
+                >
                   <div className="request-top">
                     <span className={`priority-tag is-${request.priority.toLowerCase()}`}>
                       <span className="pulse-dot" />
@@ -865,7 +903,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section banks-section" id="banks">
+        <section className="section theme-light banks-section" id="banks">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -926,6 +964,7 @@ function App() {
                           <span
                             key={group}
                             className={`stock-chip ${units <= 5 ? "is-low" : ""} ${group === bloodGroup ? "is-focus" : ""}`}
+                            style={{ "--level": `${Math.min(100, Math.round((units / 40) * 100))}%` } as CSSProperties}
                           >
                             <b>{group}</b>
                             {units}
@@ -1029,7 +1068,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section donate-section" id="donate">
+        <section className="section theme-light donate-section" id="donate">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -1172,6 +1211,9 @@ function App() {
             <a href="#impact">Impact</a>
           </nav>
         </div>
+        <div className="container footer-wordmark" aria-hidden="true">
+          BloodLink
+        </div>
         <div className="container footer-bottom">
           <span>© 2026 BloodLink</span>
           <span>Hackathon prototype · sample data, not connected to live hospital systems.</span>
@@ -1193,7 +1235,7 @@ function App() {
             if (event.target === event.currentTarget) closeModals();
           }}
         >
-          <section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <section className="modal theme-light" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button ref={modalCloseRef} type="button" className="modal-close" aria-label="Close" onClick={closeModals}>
               <CloseIcon />
             </button>

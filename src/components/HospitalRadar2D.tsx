@@ -49,15 +49,15 @@ const KIND_LABEL: Record<ContactKind, string> = {
 };
 
 const COLOR = {
-  donor: "#ff2a4b",
+  donor: "#ff3a52",
   donorDim: "#64748b",
-  bank: "#00f5d4",
-  van: "#ffb703",
-  ring: "rgba(0, 245, 212, 0.2)",
-  ringOuter: "rgba(0, 245, 212, 0.5)",
-  label: "rgba(203, 213, 225, 0.7)",
-  labelStrong: "rgba(241, 245, 249, 0.95)",
-  sweep: "rgba(114, 239, 221, 0.95)",
+  bank: "#2ee6c9",
+  van: "#f2a20c",
+  ring: "rgba(46, 230, 201, 0.18)",
+  ringOuter: "rgba(46, 230, 201, 0.48)",
+  label: "rgba(211, 201, 195, 0.72)",
+  labelStrong: "rgba(247, 241, 236, 0.95)",
+  sweep: "rgba(120, 240, 222, 0.95)",
 };
 
 function bearingFromId(id: string): number {
@@ -268,9 +268,9 @@ export function HospitalRadar2D({
 
       // Scope face
       const face = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-      face.addColorStop(0, "rgba(0, 70, 64, 0.55)");
-      face.addColorStop(0.65, "rgba(3, 26, 30, 0.84)");
-      face.addColorStop(1, "rgba(2, 10, 14, 0.95)");
+      face.addColorStop(0, "rgba(8, 58, 52, 0.6)");
+      face.addColorStop(0.65, "rgba(10, 22, 22, 0.86)");
+      face.addColorStop(1, "rgba(10, 9, 9, 0.96)");
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fillStyle = face;
