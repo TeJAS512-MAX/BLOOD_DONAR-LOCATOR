@@ -438,12 +438,12 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "#fda4af";
-        ctx.font = '500 14px "JetBrains Mono", monospace';
+        ctx.font = '600 15px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("3D SCENE 01  /  THE REAL-WORLD CHALLENGE", W * 0.5, 138, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 46px "Outfit", sans-serif';
+        ctx.font = '700 46px "Syne", sans-serif';
         ctx.fillText("When every minute matters,", W * 0.5, 198, W - 140);
         ctx.fillStyle = "#ff4d6d";
         ctx.fillText("matching donors shouldn't stall.", W * 0.5, 254, W - 140);
@@ -463,15 +463,15 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.strokeRect(bx - 130, 520, 260, 56);
 
           ctx.fillStyle = "#fda4af";
-          ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.font = '600 11px "IBM Plex Mono", monospace';
           ctx.fillText(m.label, bx, 542, 240);
           ctx.fillStyle = "#f8fafc";
-          ctx.font = '500 12px "Plus Jakarta Sans", sans-serif';
+          ctx.font = '600 13px "DM Sans", sans-serif';
           ctx.fillText(m.val, bx, 562, 240);
         });
 
         ctx.fillStyle = "rgba(248, 250, 252, 0.85)";
-        ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+        ctx.font = '500 19px "DM Sans", sans-serif';
         ctx.fillText(
           "Surgeries, trauma & critical care demand rapid, verified donor coordination.",
           W * 0.5,
@@ -524,7 +524,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.stroke();
 
           ctx.fillStyle = "#ffffff";
-          ctx.font = '600 14px "JetBrains Mono", monospace';
+          ctx.font = '600 14px "IBM Plex Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(node.id, nx, ny);
@@ -534,15 +534,15 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "#7dd3fc";
-        ctx.font = '500 14px "JetBrains Mono", monospace';
+        ctx.font = '600 15px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("3D SCENE 02  /  DISCONNECTED DONOR & BANK TOPOLOGY", W * 0.5, 108, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 42px "Outfit", sans-serif';
+        ctx.font = '700 42px "Syne", sans-serif';
         ctx.fillText("Willing donors & blood banks exist.", W * 0.5, 588, W - 140);
         ctx.fillStyle = "#cbd5e1";
-        ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+        ctx.font = '500 19px "DM Sans", sans-serif';
         ctx.fillText(
           "Without a live compatibility bridge, O-, A+, BK1 & H1 stay separated.",
           W * 0.5,
@@ -608,7 +608,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.stroke();
 
           ctx.fillStyle = "#ffffff";
-          ctx.font = '700 13px "JetBrains Mono", monospace';
+          ctx.font = '700 13px "IBM Plex Mono", monospace';
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(node.id, node.x, node.y);
@@ -617,12 +617,12 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
         ctx.save();
         ctx.fillStyle = "#34d399";
-        ctx.font = '500 14px "JetBrains Mono", monospace';
+        ctx.font = '600 15px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("3D SCENE 03  /  COMPATIBILITY LOCK-ON & VERIFIED ROUTING", W * 0.5, 96, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 40px "Outfit", sans-serif';
+        ctx.font = '700 40px "Syne", sans-serif';
         ctx.fillText("Donors, blood banks & H1 trauma hubs — aligned.", W * 0.5, 622, W - 140);
         ctx.restore();
       }
@@ -667,23 +667,23 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
           ctx.strokeRect(px - 68, py + 22, 136, 42);
 
           ctx.fillStyle = "#ffffff";
-          ctx.font = '600 11px "JetBrains Mono", monospace';
+          ctx.font = '600 12px "IBM Plex Mono", monospace';
           ctx.textAlign = "center";
           ctx.fillText(comp.label, px, py + 39);
           ctx.fillStyle = "#cbd5e1";
-          ctx.font = '400 10px "Plus Jakarta Sans", sans-serif';
+          ctx.font = '500 11px "DM Sans", sans-serif';
           ctx.fillText(comp.sub, px, py + 55);
         });
 
         ctx.save();
         ctx.globalAlpha = enter;
         ctx.fillStyle = "#fda4af";
-        ctx.font = '500 14px "JetBrains Mono", monospace';
+        ctx.font = '600 15px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText("3D SCENE 04  /  ONE DONATION, MULTIPLE LIVES TOUCHED", W * 0.5, 92, W - 120);
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 46px "Outfit", sans-serif';
+        ctx.font = '700 46px "Syne", sans-serif';
         ctx.fillText("BloodLink — Every drop connects a life.", W * 0.5, 622, W - 140);
         ctx.restore();
       }
@@ -691,7 +691,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       // Broadcast timecode HUD
       ctx.save();
       ctx.fillStyle = "rgba(248, 250, 252, 0.78)";
-      ctx.font = '500 11px "JetBrains Mono", monospace';
+      ctx.font = '600 12px "IBM Plex Mono", monospace';
       ctx.textAlign = "left";
       ctx.fillText(
         `3D TELEMETRY SIMULATION  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,

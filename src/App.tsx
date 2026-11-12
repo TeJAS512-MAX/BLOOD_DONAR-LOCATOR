@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
+import { HospitalRadar3D } from "./components/HospitalRadar3D";
 import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
 import { LiveBiomedicalBg3D, type BgMotionMode } from "./components/LiveBiomedicalBg3D";
 import { MotionVideoReel } from "./components/MotionVideoReel";
@@ -219,6 +220,8 @@ function App() {
   const [expandedStep, setExpandedStep] = useState<1 | 2 | 3 | null>(1);
   const [openGuideIndex, setOpenGuideIndex] = useState<number | null>(0);
   const [telemetryDockOpen, setTelemetryDockOpen] = useState(false);
+  const [crossMatchDonor, setCrossMatchDonor] = useState<BloodGroup>("O-");
+  const [crossMatchRecipient, setCrossMatchRecipient] = useState<BloodGroup>("A+");
 
   // Blood Bank & Hospital Network + Skeleton Loader
   const [directoryQuery, setDirectoryQuery] = useState("");
@@ -316,6 +319,11 @@ function App() {
         ? requestList
         : requestList.filter((req) => req.scenario === scenarioFilter),
     [requestList, scenarioFilter],
+  );
+
+  const crossMatchCompatible = useMemo(
+    () => COMPATIBILITY_MAP[crossMatchRecipient].receiveRedCellsFrom.includes(crossMatchDonor),
+    [crossMatchDonor, crossMatchRecipient],
   );
 
   useEffect(() => {
@@ -520,6 +528,7 @@ function App() {
           <nav className={`desktop-nav ${menuOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             <a href="#find-blood" onClick={() => setMenuOpen(false)}>Find Blood</a>
             <a href="#requests" onClick={() => setMenuOpen(false)}>Urgent Requests</a>
+            <a href="#hospital-radar" onClick={() => setMenuOpen(false)}>3D Hospital Radar</a>
             <a href="#network" onClick={() => setMenuOpen(false)}>3D Blood Banks</a>
             <a href="#impact" onClick={() => setMenuOpen(false)}>3D Lab &amp; Impact</a>
             <a href="#awareness" onClick={() => setMenuOpen(false)}>Awareness</a>
@@ -550,6 +559,18 @@ function App() {
           </nav>
 
           <div className="navbar-actions">
+            <button
+              type="button"
+              className={`sos-nav-btn ${heroBoost ? "is-active" : ""}`}
+              onClick={() => {
+                setHeroBoost(true);
+                setBgMotionMode("arterial");
+                setBgPulseCount((c) => c + 1);
+                showToast("SOS Golden-Hour Protocol engaged — 120 BPM arterial surge & Doppler radar active.");
+              }}
+            >
+              <span className="pulse-dot" /> SOS Golden-Hour
+            </button>
             <button type="button" className="btn-ghost" onClick={() => setLoginOpen(true)}>
               {signedInUser ? `Dr. ${signedInUser}` : "Clinical Sign In"}
             </button>
@@ -589,7 +610,7 @@ function App() {
               </span>
               <h1>
                 Every Drop<br />
-                <span>Connects a Life.</span>
+                <span><em>Connects</em> a Life.</span>
               </h1>
               <p className="hero-sub">
                 Rapid ABO/Rh compatible donor discovery, live NABH blood bank component inventory, and 3D emergency hospital dispatch. Click any node in the live 3D stage to inspect blood routing in real time.
@@ -598,8 +619,8 @@ function App() {
                 <a className="btn-primary btn-lg" href="#find-blood">
                   Find a Donor <ArrowIcon />
                 </a>
-                <a className="btn-outline-light btn-lg" href="#network">
-                  Inspect 3D Blood Banks
+                <a className="btn-outline-light btn-lg" href="#hospital-radar">
+                  Open 3D Hospital Radar
                 </a>
               </div>
               <div className="hero-3d-controls">
@@ -959,12 +980,39 @@ function App() {
           </div>
         </section>
 
+        {/* D2. 3D HOSPITAL DOPPLER RADAR & GREEN-CORRIDOR DISPATCH COMMAND */}
+        <section className="radar-command-section section-pad" id="hospital-radar">
+          <div className="max-container fade-in-up">
+            <div className="centered-header centered-light">
+              <span className="eyebrow eyebrow-teal">360° GEODESIC DOPPLER TELEMETRY</span>
+              <h2>Hospital Emergency <em>Radar</em> &amp; Green Corridor</h2>
+              <p>
+                Real-time 3D perimeter sweep tracking verified compatible donors, regional NABH blood banks, and in-transit cryo-ambulances around major trauma centers.
+              </p>
+            </div>
+
+            <HospitalRadar3D
+              donors={DONOR_PROFILES}
+              partners={BLOOD_BANKS}
+              activeBloodGroup={bloodGroup}
+              onSelectBloodGroup={(grp) => {
+                setBloodGroup(grp);
+                setBgPulseCount((c) => c + 1);
+              }}
+              onDispatchLocked={(msg) => {
+                setBgPulseCount((c) => c + 1);
+                showToast(msg);
+              }}
+            />
+          </div>
+        </section>
+
         {/* E. HOW IT WORKS & INTERACTIVE ABO/RH COMPATIBILITY MATRIX */}
         <section className="how-section section-pad" id="how-it-works">
           <div className="max-container fade-in-up">
             <div className="centered-header centered-light">
               <span className="eyebrow eyebrow-rose">CLINICAL DISPATCH PROTOCOL</span>
-              <h2>From Requisition to Cross-Match in Minutes</h2>
+              <h2>From Requisition to <em>Cross-Match</em> in Minutes</h2>
               <p>
                 BloodLink replaces unverified social forwards with automated ABO/Rh compatibility matching, live NABH blood bank stock telemetry, and privacy-shielded donor dispatch.
               </p>
@@ -1135,6 +1183,73 @@ function App() {
                   </div>
                 </div>
               )}
+
+              {/* Interactive Donor -> Recipient Serology Cross-Match Simulator */}
+              <div className="crossmatch-sim-bar">
+                <div className="crossmatch-selectors">
+                  <div className="cm-col">
+                    <span>DONOR UNIT PHENOTYPE</span>
+                    <div className="cm-pills">
+                      {BLOOD_GROUPS.map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          className={`cm-pill ${crossMatchDonor === g ? "is-active" : ""}`}
+                          onClick={() => setCrossMatchDonor(g)}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="cm-arrow-badge" aria-hidden="true">→</div>
+
+                  <div className="cm-col">
+                    <span>PATIENT RECIPIENT PHENOTYPE</span>
+                    <div className="cm-pills">
+                      {BLOOD_GROUPS.map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          className={`cm-pill ${crossMatchRecipient === g ? "is-active" : ""}`}
+                          onClick={() => setCrossMatchRecipient(g)}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`crossmatch-verdict ${crossMatchCompatible ? "is-safe" : "is-danger"}`}>
+                  <div className="verdict-copy">
+                    <span className="verdict-tag">
+                      {crossMatchCompatible
+                        ? "SEROLOGY VERDICT: SAFE PRBC TRANSFUSION (0% AGGLUTINATION)"
+                        : "SEROLOGY ALERT: HEMOLYTIC INCOMPATIBILITY DETECTED"}
+                    </span>
+                    <strong>
+                      {crossMatchDonor} Donor Red Cells → {crossMatchRecipient} Patient Recipient:{" "}
+                      {crossMatchCompatible ? "Clinically Compatible" : "Do Not Transfuse"}
+                    </strong>
+                    <small>
+                      {crossMatchCompatible
+                        ? `${crossMatchRecipient} plasma carries no antibodies against ${crossMatchDonor} erythrocyte antigens.`
+                        : `Recipient ${crossMatchRecipient} antibodies will agglutinate ${crossMatchDonor} red cells. Safe alternatives for ${crossMatchRecipient}: ${COMPATIBILITY_MAP[crossMatchRecipient].receiveRedCellsFrom.join(", ")}.`}
+                    </small>
+                  </div>
+                  {!crossMatchCompatible && (
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={() => setCrossMatchDonor("O-")}
+                    >
+                      Auto-Switch to O− Universal
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
