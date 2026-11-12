@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { NetworkPartner } from "../data/bloodlinkData";
 
@@ -6,6 +6,18 @@ interface NetworkTopology3DProps {
   partners: NetworkPartner[];
   selectedPartnerId: string | null;
   onSelectPartner: (id: string) => void;
+}
+
+interface ProjectedPartnerTag {
+  id: string;
+  city: string;
+  shortName: string;
+  isBank: boolean;
+  oNegUnits: number;
+  platelets: number;
+  x: number;
+  y: number;
+  visible: boolean;
 }
 
 export function NetworkTopology3D({
@@ -16,6 +28,7 @@ export function NetworkTopology3D({
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedRef = useRef<string | null>(selectedPartnerId);
   selectedRef.current = selectedPartnerId;
+  const [projectedTags, setProjectedTags] = useState<ProjectedPartnerTag[]>([]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -52,13 +65,13 @@ export function NetworkTopology3D({
     scene.add(mapGroup);
 
     // Architectural topographic grid base
-    const gridHelper = new THREE.GridHelper(6.8, 16, 0x334155, 0x1e293b);
+    const gridHelper = new THREE.GridHelper(7.4, 20, 0x334155, 0x172033);
     gridHelper.position.y = -0.02;
     mapGroup.add(gridHelper);
 
     const baseRingGeo = new THREE.RingGeometry(2.65, 2.7, 72);
     const baseRingMat = new THREE.MeshBasicMaterial({
-      color: 0xff4d6d,
+      color: 0x38bdf8,
       transparent: true,
       opacity: 0.25,
       side: THREE.DoubleSide,
@@ -67,21 +80,26 @@ export function NetworkTopology3D({
     baseRing.rotation.x = -Math.PI / 2;
     mapGroup.add(baseRing);
 
-    const beaconGeo = new THREE.SphereGeometry(0.14, 24, 24);
-    const pillarGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.65, 12);
-    const ringMarkerGeo = new THREE.RingGeometry(0.2, 0.24, 32);
+    const bankTowerGeo = new THREE.CylinderGeometry(0.14, 0.18, 0.55, 6);
+    const hospTowerGeo = new THREE.BoxGeometry(0.26, 0.52, 0.26);
+    const beaconGeo = new THREE.SphereGeometry(0.13, 24, 24);
+    const pillarGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.72, 12);
+    const ringMarkerGeo = new THREE.RingGeometry(0.24, 0.29, 36);
 
     const disposables: { dispose: () => void }[] = [
       baseRingGeo,
       baseRingMat,
+      bankTowerGeo,
+      hospTowerGeo,
       beaconGeo,
       pillarGeo,
       ringMarkerGeo,
     ];
 
     const partnerNodes: {
-      id: string;
+      partner: NetworkPartner;
       beacon: THREE.Mesh;
+      tower: THREE.Mesh;
       ring: THREE.Mesh;
       worldPos: THREE.Vector3;
       beaconMat: THREE.MeshStandardMaterial;
@@ -95,28 +113,40 @@ export function NetworkTopology3D({
       const beaconMat = new THREE.MeshStandardMaterial({
         color: isBank ? 0x38bdf8 : 0xff4d6d,
         emissive: isBank ? 0x0284c7 : 0xe11d48,
-        emissiveIntensity: 0.78,
+        emissiveIntensity: 0.85,
         roughness: 0.25,
+      });
+      const towerMat = new THREE.MeshPhysicalMaterial({
+        color: isBank ? 0x0f2942 : 0x3b0a18,
+        emissive: isBank ? 0x075985 : 0x881337,
+        emissiveIntensity: 0.55,
+        roughness: 0.3,
+        clearcoat: 0.7,
       });
       const pillarMat = new THREE.MeshBasicMaterial({
         color: isBank ? 0x38bdf8 : 0xff4d6d,
         transparent: true,
-        opacity: 0.45,
+        opacity: 0.4,
       });
       const ringMat = new THREE.MeshBasicMaterial({
         color: isBank ? 0x38bdf8 : 0xff4d6d,
         transparent: true,
-        opacity: 0.44,
+        opacity: 0.52,
         side: THREE.DoubleSide,
       });
-      disposables.push(beaconMat, pillarMat, ringMat);
+      disposables.push(beaconMat, towerMat, pillarMat, ringMat);
+
+      const tower = new THREE.Mesh(isBank ? bankTowerGeo : hospTowerGeo, towerMat);
+      tower.position.set(px, 0.26, pz);
+      tower.userData = { partnerId: p.id };
+      mapGroup.add(tower);
 
       const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-      pillar.position.set(px, 0.32, pz);
+      pillar.position.set(px, 0.45, pz);
       mapGroup.add(pillar);
 
       const beacon = new THREE.Mesh(beaconGeo, beaconMat);
-      beacon.position.set(px, 0.72, pz);
+      beacon.position.set(px, 0.88, pz);
       beacon.userData = { partnerId: p.id };
       mapGroup.add(beacon);
 
@@ -126,10 +156,11 @@ export function NetworkTopology3D({
       mapGroup.add(ring);
 
       partnerNodes.push({
-        id: p.id,
+        partner: p,
         beacon,
+        tower,
         ring,
-        worldPos: new THREE.Vector3(px, 0.72, pz),
+        worldPos: new THREE.Vector3(px, 0.88, pz),
         beaconMat,
       });
     });
@@ -152,15 +183,14 @@ export function NetworkTopology3D({
       const b = partnerNodes[bIdx].worldPos;
       const mid = new THREE.Vector3((a.x + b.x) * 0.5, 1.35 + (idx % 2) * 0.35, (a.z + b.z) * 0.5);
       const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
-      const pts = curve.getPoints(32);
-      const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
-      const lineMat = new THREE.LineBasicMaterial({
-        color: 0xfa6877,
+      const tubeGeo = new THREE.TubeGeometry(curve, 28, 0.014, 8, false);
+      const tubeMat = new THREE.MeshBasicMaterial({
+        color: idx % 2 === 0 ? 0x38bdf8 : 0xff4d6d,
         transparent: true,
-        opacity: 0.32,
+        opacity: 0.3,
       });
-      disposables.push(lineGeo, lineMat);
-      mapGroup.add(new THREE.Line(lineGeo, lineMat));
+      disposables.push(tubeGeo, tubeMat);
+      mapGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
 
       const pMesh = new THREE.Mesh(packetGeo, packetMat);
       mapGroup.add(pMesh);
@@ -171,6 +201,7 @@ export function NetworkTopology3D({
     const pointer = new THREE.Vector2();
     let pointerOffsetX = 0;
     let pointerOffsetY = 0;
+    const pickTargets = partnerNodes.flatMap((n) => [n.beacon, n.tower]);
 
     const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
@@ -180,16 +211,17 @@ export function NetworkTopology3D({
       pointerOffsetY = pointer.y * 0.14;
 
       raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(partnerNodes.map((n) => n.beacon), false);
+      const hits = raycaster.intersectObjects(pickTargets, false);
       container.style.cursor = hits.length > 0 ? "pointer" : "default";
     };
 
     const handlePointerDown = (e: PointerEvent) => {
+      if ((e.target as HTMLElement)?.closest("button")) return;
       const rect = container.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObjects(partnerNodes.map((n) => n.beacon), false);
+      const hits = raycaster.intersectObjects(pickTargets, false);
       if (hits.length > 0) {
         const partnerId = hits[0].object.userData.partnerId as string;
         onSelectPartner(partnerId);
@@ -210,7 +242,9 @@ export function NetworkTopology3D({
 
     const clock = new THREE.Clock();
     const tempPt = new THREE.Vector3();
+    const projVec = new THREE.Vector3();
     const targetScaleVec = new THREE.Vector3();
+    let lastSync = 0;
     let frameId = 0;
 
     const animate = () => {
@@ -218,18 +252,18 @@ export function NetworkTopology3D({
       const elapsed = reducedMotion ? 1.2 : clock.getElapsedTime();
 
       const activeId = selectedRef.current;
-      const selectedNode = partnerNodes.find((n) => n.id === activeId);
+      const selectedNode = partnerNodes.find((n) => n.partner.id === activeId);
       const panYaw = selectedNode ? -selectedNode.worldPos.x * 0.16 : 0;
 
       mapGroup.rotation.y += (Math.sin(elapsed * 0.2) * 0.18 + pointerOffsetX + panYaw - mapGroup.rotation.y) * 0.06;
       mapGroup.rotation.x += (pointerOffsetY * 0.26 - mapGroup.rotation.x) * 0.06;
 
       partnerNodes.forEach((node, idx) => {
-        const isSelected = activeId === node.id;
+        const isSelected = activeId === node.partner.id;
         const targetScale = isSelected ? 1.55 : 1.0 + Math.sin(elapsed * 2 + idx) * 0.08;
         targetScaleVec.setScalar(targetScale);
         node.beacon.scale.lerp(targetScaleVec, 0.12);
-        node.beaconMat.emissiveIntensity = isSelected ? 1.35 : 0.6;
+        node.beaconMat.emissiveIntensity = isSelected ? 1.45 : 0.65;
         node.ring.scale.setScalar(isSelected ? 1.45 + Math.sin(elapsed * 4) * 0.15 : 1.0);
       });
 
@@ -240,6 +274,29 @@ export function NetworkTopology3D({
       });
 
       renderer.render(scene, camera);
+
+      if (elapsed - lastSync > 0.05) {
+        lastSync = elapsed;
+        const cw = container.clientWidth || width;
+        const ch = container.clientHeight || height;
+        setProjectedTags(
+          partnerNodes.map((n) => {
+            n.beacon.getWorldPosition(projVec);
+            projVec.project(camera);
+            return {
+              id: n.partner.id,
+              city: n.partner.city,
+              shortName: n.partner.name.split("—")[0].split(" ").slice(0, 2).join(" "),
+              isBank: n.partner.type === "Blood bank",
+              oNegUnits: n.partner.inventory["O-"],
+              platelets: n.partner.plateletsUnits,
+              x: (projVec.x * 0.5 + 0.5) * cw,
+              y: (-projVec.y * 0.5 + 0.5) * ch - 26,
+              visible: projVec.z < 1,
+            };
+          }),
+        );
+      }
     };
     animate();
 
@@ -262,11 +319,33 @@ export function NetworkTopology3D({
       <div className="network-3d-header">
         <div>
           <span className="console-pulse" />
-          <span>SPATIAL NETWORK TOPOLOGY (DEMO)</span>
+          <span>LIVE 3D COLD-CHAIN &amp; FACILITY TOPOLOGY</span>
         </div>
-        <span>CLICK A 3D BEACON TO INSPECT</span>
+        <span>CLICK ANY 3D TOWER TO INSPECT INVENTORY</span>
       </div>
-      <div ref={containerRef} className="network-3d-canvas" aria-label="Interactive 3D topology of illustrative BloodLink partner hospitals and blood banks" />
+      <div
+        ref={containerRef}
+        className="network-3d-canvas"
+        aria-label="Interactive 3D topology of BloodLink partner hospitals and blood banks"
+      >
+        <div className="network-projected-layer">
+          {projectedTags.map(
+            (tag) =>
+              tag.visible && (
+                <button
+                  key={tag.id}
+                  type="button"
+                  className={`network-3d-tag ${tag.isBank ? "is-bank" : "is-hosp"} ${selectedPartnerId === tag.id ? "is-selected" : ""}`}
+                  style={{ left: `${tag.x}px`, top: `${tag.y}px` }}
+                  onClick={() => onSelectPartner(tag.id)}
+                >
+                  <strong>{tag.city}</strong>
+                  <span>O− {tag.oNegUnits}u · SDP {tag.platelets}u</span>
+                </button>
+              ),
+          )}
+        </div>
+      </div>
     </div>
   );
 }

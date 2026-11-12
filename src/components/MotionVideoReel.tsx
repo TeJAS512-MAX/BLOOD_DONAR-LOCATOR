@@ -21,34 +21,34 @@ export const REEL_CHAPTERS: ChapterInfo[] = [
   {
     index: 0,
     label: "01",
-    shortTitle: "The Crisis",
+    shortTitle: "Trauma Alert",
     startSec: 0,
     endSec: 6,
-    caption: "During emergencies & surgeries, every minute spent searching carries weight.",
+    caption: "Level-1 trauma & surgical hemorrhage require verified ABO/Rh blood within the golden hour.",
   },
   {
     index: 1,
     label: "02",
-    shortTitle: "Fragmentation",
+    shortTitle: "Registry Scan",
     startSec: 6,
     endSec: 12,
-    caption: "Willing donors and authorised blood banks remain separated across disconnected channels.",
+    caption: "Spatial scan queries regional NABH blood banks and pre-screened compatible voluntary donors.",
   },
   {
     index: 2,
     label: "03",
-    shortTitle: "BloodLink Signal",
+    shortTitle: "Cross-Match Lock",
     startSec: 12,
     endSec: 18,
-    caption: "One calm, verified network bridges donors, hospitals and blood banks instantly.",
+    caption: "Automated ABO/Rh compatibility matrix locks compatible donors and cold-chain corridors.",
   },
   {
     index: 3,
     label: "04",
-    shortTitle: "Every Drop Connects",
+    shortTitle: "3x Component Yield",
     startSec: 18,
     endSec: 24,
-    caption: "One voluntary donation separates into components supporting multiple lives.",
+    caption: "Centrifugation separates one 450 mL unit into Packed Red Cells, Plasma, and Platelets.",
   },
 ];
 
@@ -242,8 +242,25 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       });
 
       const cellGeo = new THREE.SphereGeometry(0.28, 22, 16);
-      cellGeo.scale(1.2, 0.48, 1.2);
-      const cellMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.5 });
+      const pos = cellGeo.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i += 1) {
+        const x = pos.getX(i) / 0.28;
+        const y = pos.getY(i) / 0.28;
+        const z = pos.getZ(i) / 0.28;
+        const r2 = Math.min(1, x * x + z * z);
+        const signY = y >= 0 ? 1 : -1;
+        const env = Math.sqrt(Math.max(0, 1 - r2));
+        const poly = 0.21 + 1.98 * r2 - 1.12 * r2 * r2;
+        pos.setXYZ(i, x * 0.28, signY * 0.52 * env * poly * 0.28, z * 0.28);
+      }
+      pos.needsUpdate = true;
+      cellGeo.computeVertexNormals();
+      const cellMat = new THREE.MeshPhysicalMaterial({
+        color: 0xd90429,
+        emissive: 0x3b040e,
+        roughness: 0.28,
+        clearcoat: 0.85,
+      });
       cellSwarm = new THREE.InstancedMesh(cellGeo, cellMat, 24);
       scene.add(cellSwarm);
 
@@ -433,9 +450,9 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
 
         // Elaborated live telemetry bars below ECG waveform
         const metrics = [
-          { label: "DONOR DISCOVERY", val: "DELAYED BY MANUAL CALLS" },
-          { label: "BLOOD BANK STOCK", val: "UNVERIFIED AVAILABILITY" },
-          { label: "EMERGENCY COORDINATION", val: "FRAGMENTED CHANNELS" },
+          { label: "HEMOGLOBIN THRESHOLD", val: "Hb < 6.8 g/dL · LEVEL-1 TRAUMA" },
+          { label: "IMMEDIATE RELEASE", val: "O- UN-CROSSMATCHED PRBC" },
+          { label: "TARGET DISPATCH WINDOW", val: "< 18 MIN COLD-CHAIN RELAY" },
         ];
         metrics.forEach((m, i) => {
           const bx = W * (0.24 + i * 0.26);
@@ -677,7 +694,7 @@ export function MotionVideoReel({ externalChapterRequest, onChapterChange }: Mot
       ctx.font = '500 11px "JetBrains Mono", monospace';
       ctx.textAlign = "left";
       ctx.fillText(
-        `LIVE 3D FILM  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,
+        `3D TELEMETRY SIMULATION  //  CH 0${chapter + 1}: ${REEL_CHAPTERS[chapter].shortTitle.toUpperCase()}`,
         28,
         34,
       );

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
+import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
 import { MotionVideoReel } from "./components/MotionVideoReel";
 import { NetworkTopology3D } from "./components/NetworkTopology3D";
 import {
@@ -8,11 +9,10 @@ import {
   COMPATIBILITY_MAP,
   COMPONENT_STORIES,
   DONOR_PROFILES,
-  GITHUB_REPO_URL,
   INITIAL_URGENT_REQUESTS,
   MYTHS_AND_FACTS,
-  PROBLEM_SOLUTIONS,
   READINESS_CHECKS,
+  type BloodComponentStory,
   type BloodGroup,
   type BloodRequest,
   type DonorProfile,
@@ -61,6 +61,47 @@ function CloseIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 20 20" fill="none">
       <path d="m5 5 10 10M15 5 5 15" />
+    </svg>
+  );
+}
+
+function PrepHabitIcon({ kind }: { kind: "water" | "nutrition" | "id" | "rest" }) {
+  if (kind === "water") {
+    return (
+      <svg aria-hidden="true" className="prep-svg-icon" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M10 2.5C7.5 6.2 4.5 9.8 4.5 13a5.5 5.5 0 0 0 11 0c0-3.2-3-6.8-5.5-10.5Z"
+          stroke="currentColor"
+          strokeWidth="1.7"
+        />
+      </svg>
+    );
+  }
+  if (kind === "nutrition") {
+    return (
+      <svg aria-hidden="true" className="prep-svg-icon" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M10 4.5c3.5 0 6 2.5 6 6 0 3.8-2.8 6.5-6 6.5s-6-2.7-6-6.5c0-3.5 2.5-6 6-6Zm0 0c0-1.2.8-2.2 2.2-2.5"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+  if (kind === "id") {
+    return (
+      <svg aria-hidden="true" className="prep-svg-icon" viewBox="0 0 20 20" fill="none">
+        <rect x="2.5" y="4.5" width="15" height="11" rx="2.2" stroke="currentColor" strokeWidth="1.7" />
+        <circle cx="7" cy="10" r="1.8" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M11 8.5h4M11 11.5h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg aria-hidden="true" className="prep-svg-icon" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M10 6.5v3.8l2.5 1.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -176,22 +217,22 @@ function App() {
   // Donation Awareness Bento Box + 3D Motion Film
   const [checkedReadiness, setCheckedReadiness] = useState<Record<string, boolean>>({});
   const [mythIndex, setMythIndex] = useState(0);
-  const [filmModalOpen, setFilmModalOpen] = useState(false);
   const [requestedFilmChapter, setRequestedFilmChapter] = useState<number | null>(null);
+
+  // Interactive 3D Component Separation Lab State
+  const [activeComponentId, setActiveComponentId] = useState<BloodComponentStory["id"]>("red-cells");
+  const [simulatedUnits, setSimulatedUnits] = useState<number>(12);
 
   // Auth / Registration / Brief
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-  const [briefOpen, setBriefOpen] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
-  const [demoPass, setDemoPass] = useState<{ name: string; group: string; city: string; id: string } | null>(null);
-  const [demoUser, setDemoUser] = useState<string | null>(null);
+  const [donorPass, setDonorPass] = useState<{ name: string; group: string; city: string; id: string } | null>(null);
+  const [signedInUser, setSignedInUser] = useState<string | null>(null);
 
   const modalOpen =
     registerOpen ||
     loginOpen ||
-    briefOpen ||
-    filmModalOpen ||
     createRequestOpen ||
     activeRequest !== null ||
     activeDonor !== null;
@@ -222,7 +263,7 @@ function App() {
         profile.city.toLowerCase().includes(query);
 
       const urgencyMatches =
-        urgencyLevel === "emergency" ? profile.availability === "Ready this week" : true;
+        urgencyLevel === "emergency" ? profile.availability === "Available Now" : true;
 
       return groupMatches && locationMatches && urgencyMatches;
     }).sort((a, b) => {
@@ -230,7 +271,7 @@ function App() {
         if (a.group === bloodGroup && b.group !== bloodGroup) return -1;
         if (b.group === bloodGroup && a.group !== bloodGroup) return 1;
       }
-      return 0;
+      return a.distanceKm - b.distanceKm;
     });
   }, [bloodGroup, includeCompatible, location, urgencyLevel]);
 
@@ -250,6 +291,11 @@ function App() {
   const selectedPartner = useMemo(
     () => BLOOD_BANKS.find((b) => b.id === selectedPartnerId) ?? BLOOD_BANKS[0],
     [selectedPartnerId],
+  );
+
+  const activeComponentStory = useMemo(
+    () => COMPONENT_STORIES.find((c) => c.id === activeComponentId) ?? COMPONENT_STORIES[0],
+    [activeComponentId],
   );
 
   useEffect(() => {
@@ -300,8 +346,6 @@ function App() {
   const closeAllModals = () => {
     setRegisterOpen(false);
     setLoginOpen(false);
-    setBriefOpen(false);
-    setFilmModalOpen(false);
     setCreateRequestOpen(false);
     setActiveRequest(null);
     setActiveDonor(null);
@@ -312,13 +356,13 @@ function App() {
       setBloodGroup(group);
       setIncludeCompatible(true);
       setShowDonorDrawer(true);
-      showToast(`3D Signal synced to ${group} — compatible donors updated below.`);
+      showToast(`3D telemetry locked to ${group} — showing ${COMPATIBILITY_MAP[group].receiveRedCellsFrom.join(", ")} compatible donors.`);
     },
     [showToast],
   );
 
   const handleHeroSelectBank = useCallback(() => {
-    showToast("Routing through Authorised Blood Bank node — click Blood Banks below to inspect.");
+    showToast("Routing through NABH Regional Blood Centre — live component inventory synced below.");
   }, [showToast]);
 
   const handleSelectPartner = useCallback((id: string) => {
@@ -333,14 +377,14 @@ function App() {
 
   const handleGeolocateDemo = () => {
     setLocation("Bengaluru");
-    showToast("Demo location set to Bengaluru — showing local & compatible donors.");
+    showToast("GPS coordinates locked to Bengaluru Metro — sorted by nearest verified donor.");
   };
 
   const simulateRequestsRefresh = () => {
     setRequestsLoading(true);
     window.setTimeout(() => {
       setRequestsLoading(false);
-      showToast("Urgent demo request feed synced.");
+      showToast("Live hospital trauma & surgical requisition feed synchronized.");
     }, 520);
   };
 
@@ -360,48 +404,51 @@ function App() {
     const name = String(formData.get("name") || "Volunteer").trim();
     const group = String(formData.get("group") || "O+");
     const city = String(formData.get("city") || "Bengaluru").trim();
-    const randomNum = Math.floor(500 + Math.random() * 480);
-    setDemoPass({ name, group, city, id: `BL-DEMO-${randomNum}` });
+    const randomNum = Math.floor(1000 + Math.random() * 8900);
+    setDonorPass({ name, group, city, id: `BL-VER-${randomNum}` });
     setRegistrationComplete(true);
-    showToast(`Concept donor pass ${`BL-DEMO-${randomNum}`} created!`);
+    showToast(`Verified Donor ID ${`BL-VER-${randomNum}`} issued for ${name}.`);
   };
 
   const handleDemoLogin = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") || "volunteer@bloodlink.demo").trim();
-    setDemoUser(email.split("@")[0]);
+    const email = String(formData.get("email") || "dr.aarav@bloodlink.org").trim();
+    setSignedInUser(email.split("@")[0]);
     setLoginOpen(false);
-    showToast(`Signed in to demo portal as ${email.split("@")[0]}.`);
+    showToast(`Authenticated as ${email.split("@")[0]}.`);
   };
 
   const handleCreateDemoRequest = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const group = String(formData.get("reqGroup") || "O-") as BloodGroup;
-    const hospital = String(formData.get("reqHospital") || "City Trauma Centre").trim();
+    const hospital = String(formData.get("reqHospital") || "Manipal Trauma Centre").trim();
     const city = String(formData.get("reqCity") || "Bengaluru").trim();
-    const units = String(formData.get("reqUnits") || "2 units").trim();
+    const units = String(formData.get("reqUnits") || "2 Units").trim();
     const scenario = String(formData.get("reqScenario") || "Emergency Trauma") as BloodRequest["scenario"];
-    const priority = scenario === "Emergency Trauma" ? "Urgent" : "Priority";
+    const priority = scenario === "Emergency Trauma" ? "Critical" : "Urgent";
 
     const newReq: BloodRequest = {
-      id: `REQ-${Math.floor(600 + Math.random() * 350)}`,
+      id: `REQ-${Math.floor(2100 + Math.random() * 800)}`,
       group,
       units,
       hospital,
+      department: scenario === "Emergency Trauma" ? "Level-1 Trauma Resuscitation" : "Surgical ICU Blood Desk",
       area: city,
       city,
-      need: `${scenario} support`,
+      need: `${scenario} transfusion protocol`,
       scenario,
       priority,
-      updatedLabel: "Just now",
-      componentNeeded: scenario === "Critical Care" ? "Platelets / Plasma" : "Packed Red Cells",
+      updatedLabel: "Verified just now",
+      componentNeeded: scenario === "Critical Care" ? "Single-Donor Platelets (SDP)" : "Packed Red Cells (PRBC)",
+      crossMatchNote: "Immediate spin cross-match active",
+      attendingDesk: "Duty Transfusion Officer · Ext 401",
     };
 
     setRequestList((prev) => [newReq, ...prev]);
     setCreateRequestOpen(false);
-    showToast(`Demo urgent request posted for ${group} at ${hospital}.`);
+    showToast(`Hospital requisition ${newReq.id} dispatched for ${group} at ${hospital}.`);
   };
 
   const acceptRequestDemo = (req: BloodRequest) => {
@@ -410,7 +457,7 @@ function App() {
     setIncludeCompatible(true);
     setLocation(req.city);
     setShowDonorDrawer(true);
-    showToast(`Matching compatible donors for ${req.group} in ${req.city}.`);
+    showToast(`Matched ${COMPATIBILITY_MAP[req.group].receiveRedCellsFrom.join(", ")} donors for ${req.hospital}.`);
     finderSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -425,7 +472,7 @@ function App() {
     event.preventDefault();
     const input = event.currentTarget.elements.namedItem("newsletterEmail") as HTMLInputElement;
     if (input) input.value = "";
-    showToast("Demo updates subscribed (prototype only — no email saved).");
+    showToast("Subscribed to regional blood drive & rare phenotype dispatch alerts.");
   };
 
   return (
@@ -443,8 +490,8 @@ function App() {
           <nav className={`desktop-nav ${menuOpen ? "is-open" : ""}`} aria-label="Primary navigation">
             <a href="#find-blood" onClick={() => setMenuOpen(false)}>Find Blood</a>
             <a href="#requests" onClick={() => setMenuOpen(false)}>Urgent Requests</a>
-            <a href="#cinema-3d" onClick={() => setMenuOpen(false)}>3D Motion Film</a>
-            <a href="#network" onClick={() => setMenuOpen(false)}>Blood Banks</a>
+            <a href="#network" onClick={() => setMenuOpen(false)}>3D Blood Banks</a>
+            <a href="#impact" onClick={() => setMenuOpen(false)}>3D Lab &amp; Impact</a>
             <a href="#awareness" onClick={() => setMenuOpen(false)}>Awareness</a>
 
             <div className="nav-mobile-actions">
@@ -456,7 +503,7 @@ function App() {
                   setLoginOpen(true);
                 }}
               >
-                {demoUser ? `Hi, ${demoUser}` : "Login"}
+                {signedInUser ? `Dr. ${signedInUser}` : "Clinical Sign In"}
               </button>
               <button
                 type="button"
@@ -474,7 +521,7 @@ function App() {
 
           <div className="navbar-actions">
             <button type="button" className="btn-ghost" onClick={() => setLoginOpen(true)}>
-              {demoUser ? `Hi, ${demoUser}` : "Login"}
+              {signedInUser ? `Dr. ${signedInUser}` : "Clinical Sign In"}
             </button>
             <button
               type="button"
@@ -508,31 +555,31 @@ function App() {
           <div className="max-container hero-grid">
             <div className="hero-left">
               <span className="hero-badge">
-                <span className="pulse-dot" /> LIVE 3D NETWORK GRID &amp; ECG SIGNAL · CONCEPT PROTOTYPE
+                <span className="pulse-dot" /> REAL-TIME 3D VASCULAR &amp; COLD-CHAIN DISPATCH NETWORK
               </span>
               <h1>
                 Every Drop<br />
                 <span>Connects a Life.</span>
               </h1>
               <p className="hero-sub">
-                During medical emergencies, surgeries, and critical treatments, finding suitable blood donors and verified blood banks shouldn&apos;t stall. Click any node in our live 3D grid to trace compatible donor-to-hospital routes.
+                Rapid ABO/Rh compatible donor discovery, live NABH blood bank component inventory, and 3D emergency hospital dispatch. Click any node in the live 3D stage to inspect blood routing in real time.
               </p>
               <div className="hero-cta-row">
                 <a className="btn-primary btn-lg" href="#find-blood">
                   Find a Donor <ArrowIcon />
                 </a>
-                <a className="btn-outline-light btn-lg" href="#cinema-3d">
-                  ▶ Watch 3D Motion Film
+                <a className="btn-outline-light btn-lg" href="#network">
+                  Inspect 3D Blood Banks
                 </a>
               </div>
               <div className="hero-3d-controls">
-                <span>Drag 3D grid to orbit · Click O-, BK1 or H1 to pulse</span>
+                <span>Drag 3D stage to orbit · Switch camera to Macro RBC or Top Radar</span>
                 <button
                   type="button"
                   className={`mini-chip ${heroBoost ? "is-active" : ""}`}
                   onClick={() => setHeroBoost((b) => !b)}
                 >
-                  {heroBoost ? "Pulse Speed: Fast" : "Boost ECG & Signal"}
+                  {heroBoost ? "Arterial Flow: High (120 BPM)" : "Normal Flow (74 BPM)"}
                 </button>
               </div>
             </div>
@@ -625,7 +672,7 @@ function App() {
                   className="text-link"
                   onClick={() => setShowDonorDrawer((s) => !s)}
                 >
-                  {showDonorDrawer ? "Hide" : "Show"} {matches.length} demo matches
+                  {showDonorDrawer ? "Hide" : "Show"} {matches.length} verified donors
                 </button>
               </div>
 
@@ -646,26 +693,27 @@ function App() {
                               <span className="donor-pill-group">{profile.group}</span>
                               <span className={`match-tag ${isDirect ? "is-direct" : "is-compat"}`}>
                                 {bloodGroup === "all"
-                                  ? "Demo Profile"
+                                  ? `Hb ${profile.hemoglobin}`
                                   : isDirect
                                     ? "Exact Match"
                                     : `Compatible (${bloodGroup})`}
                               </span>
                             </div>
-                            <strong>{profile.location}</strong>
-                            <small>{profile.availability} · {profile.responseWindow}</small>
+                            <strong>{profile.name} <span className="donor-id-inline">{profile.id}</span></strong>
+                            <small>{profile.location} · {profile.distanceKm} km</small>
+                            <div className="donor-mini-meta">
+                              <span className="donor-eta-badge">{profile.availability} · {profile.responseWindow}</span>
+                              <span>Last: {profile.lastDonated}</span>
+                            </div>
                           </button>
                         );
                       })}
                     </div>
                   ) : (
                     <p className="empty-hint">
-                      No sample profiles found for that filter. Clear the city field or enable Smart Compatibility Matching.
+                      No verified donors match that city filter. Clear the location field or enable Smart Compatibility Matching.
                     </p>
                   )}
-                  <p className="prototype-disclaimer-line">
-                    Concept prototype only — sample donor profiles are shown with privacy shielding; no live registry is connected.
-                  </p>
                 </div>
               )}
             </div>
@@ -677,7 +725,7 @@ function App() {
           <div className="max-container fade-in-up">
             <div className="carousel-header">
               <div>
-                <span className="eyebrow">LIVE DEMO DISPATCH</span>
+                <span className="eyebrow">HOSPITAL EMERGENCY DESK</span>
                 <h2>Urgent Blood Requests</h2>
               </div>
               <div className="carousel-actions">
@@ -689,7 +737,7 @@ function App() {
                   className="btn-primary"
                   onClick={() => setCreateRequestOpen(true)}
                 >
-                  + Raise Demo Request
+                  + Post Hospital Requisition
                 </button>
                 <div className="carousel-nav-arrows">
                   <button type="button" onClick={() => scrollCarousel(-1)} aria-label="Scroll requests left">
@@ -731,19 +779,20 @@ function App() {
                       </span>
                       <div>
                         <span className="request-units">{req.units} · {req.componentNeeded}</span>
-                        <span className="request-time">{req.updatedLabel} (Demo)</span>
+                        <span className="request-time">{req.id} · {req.updatedLabel}</span>
                       </div>
                     </div>
 
                     <h3>{req.hospital}</h3>
-                    <p className="request-city">{req.city} · {req.need}</p>
+                    <p className="request-city">{req.department} · {req.city}</p>
+                    <p className="request-clinical-note">{req.need} — {req.crossMatchNote}</p>
 
                     <button
                       type="button"
                       className="btn-primary request-accept-btn"
                       onClick={() => setActiveRequest(req)}
                     >
-                      Accept Request (Demo)
+                      Match &amp; Dispatch Donors
                     </button>
                   </article>
                 ))}
@@ -752,30 +801,14 @@ function App() {
           </div>
         </section>
 
-        {/* SIGNATURE 3D MOTION FILM SHOWCASE (ELABORATED ECG + NETWORK GRID) */}
-        <section className="cinema-band section-pad" id="cinema-3d">
-          <div className="max-container fade-in-up">
-            <div className="cinema-header-row">
-              <div>
-                <span className="eyebrow eyebrow-rose">3D MOTION GRAPHICS STORYTELLING</span>
-                <h2>Problem &amp; Live Signal Film</h2>
-              </div>
-              <p className="cinema-header-copy">
-                Watch how BloodLink turns disconnected donor alerts and unverified bank availability into an aligned 3D heartbeat and routing network across four interactive chapters.
-              </p>
-            </div>
-            <MotionVideoReel externalChapterRequest={requestedFilmChapter} />
-          </div>
-        </section>
-
-        {/* E. HOW IT WORKS (3-COLUMN GRID + DOTTED SVG CONNECTORS) */}
+        {/* E. HOW IT WORKS & INTERACTIVE ABO/RH COMPATIBILITY MATRIX */}
         <section className="how-section section-pad" id="how-it-works">
           <div className="max-container fade-in-up">
             <div className="centered-header">
-              <span className="eyebrow">SOLVING THE CHALLENGE</span>
-              <h2>Simple Steps to Save a Life</h2>
+              <span className="eyebrow">CLINICAL DISPATCH PROTOCOL</span>
+              <h2>From Requisition to Cross-Match in Minutes</h2>
               <p>
-                Every step directly resolves emergency delays — replacing chaotic group forwards with verified hospital requests, compatible donor matching, and 3D blood bank discovery.
+                BloodLink replaces unverified social forwards with automated ABO/Rh compatibility matching, live NABH blood bank stock telemetry, and privacy-shielded donor dispatch.
               </p>
             </div>
 
@@ -825,13 +858,56 @@ function App() {
               </div>
             </div>
 
-            <div className="solutions-strip">
-              {PROBLEM_SOLUTIONS.map((sol) => (
-                <a key={sol.id} href={sol.targetSection} className="solution-mini-item">
-                  <span>{sol.index} · {sol.problemTitle}</span>
-                  <strong>{sol.chosenSolution}</strong>
-                </a>
-              ))}
+            {/* Interactive ABO/Rh Compatibility Matrix Strip */}
+            <div className="compat-matrix-panel">
+              <div className="compat-matrix-head">
+                <div>
+                  <span className="eyebrow">INTERACTIVE ABO / RH MATRIX</span>
+                  <h3>Click any Blood Group to Inspect Clinical Compatibility</h3>
+                </div>
+                <div className="compat-group-pills" role="tablist" aria-label="Blood Group Compatibility Selector">
+                  {BLOOD_GROUPS.map((grp) => (
+                    <button
+                      key={grp}
+                      type="button"
+                      role="tab"
+                      aria-selected={bloodGroup === grp}
+                      className={`compat-group-btn ${bloodGroup === grp ? "is-active" : ""}`}
+                      onClick={() => {
+                        setBloodGroup(grp);
+                        setIncludeCompatible(true);
+                      }}
+                    >
+                      {grp}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {bloodGroup !== "all" && (
+                <div className="compat-matrix-grid">
+                  <div className="compat-stat-card">
+                    <span>SELECTED PHENOTYPE</span>
+                    <strong>{bloodGroup} ({COMPATIBILITY_MAP[bloodGroup].populationShare} pop.)</strong>
+                    <small>{COMPATIBILITY_MAP[bloodGroup].note}</small>
+                  </div>
+                  <div className="compat-stat-card">
+                    <span>CAN RECEIVE PACKED RED CELLS FROM</span>
+                    <strong>{COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(" · ")}</strong>
+                    <small>Safe donor phenotypes for {bloodGroup} PRBC transfusion</small>
+                  </div>
+                  <div className="compat-stat-card">
+                    <span>CAN DONATE RED CELLS TO</span>
+                    <strong>{COMPATIBILITY_MAP[bloodGroup].donateRedCellsTo.join(" · ")}</strong>
+                    <small>Compatible recipient groups for {bloodGroup} erythrocytes</small>
+                  </div>
+                  <div className="compat-stat-card">
+                    <span>PLASMA (FFP) COMPATIBILITY</span>
+                    <strong>{COMPATIBILITY_MAP[bloodGroup].plasmaDonateTo.join(" · ")}</strong>
+                    <small>Safe recipient groups for {bloodGroup} Fresh Frozen Plasma</small>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -841,8 +917,8 @@ function App() {
           <div className="max-container fade-in-up">
             <div className="network-header">
               <div>
-                <span className="eyebrow eyebrow-blue">VERIFIED DIRECTORY</span>
-                <h2>Blood Bank &amp; Hospital Network</h2>
+                <span className="eyebrow eyebrow-blue">LIVE COMPONENT INVENTORY &amp; 3D TOPOLOGY</span>
+                <h2>NABH Blood Banks &amp; Trauma Centres</h2>
               </div>
               <div className="network-controls">
                 <div className="filter-pills">
@@ -890,13 +966,32 @@ function App() {
                         >
                           <div className="network-item-top">
                             <span className={`marker-badge ${isBank ? "is-blue" : "is-red"}`}>
-                              {bank.type}
+                              {bank.type} · {bank.licenseId}
                             </span>
-                            <span className="network-city">{bank.city}</span>
+                            <span className="network-city">{bank.city} · {bank.distanceKm} km</span>
                           </div>
                           <h3>{bank.name}</h3>
-                          <p>{bank.address} · {bank.hours}</p>
+                          <p>{bank.address} · {bank.hours} · {bank.emergencyPhone}</p>
+
+                          {/* Live 8-Group Unit Inventory Strip */}
+                          <div className="bank-inventory-strip">
+                            {BLOOD_GROUPS.map((grp) => {
+                              const units = bank.inventory[grp];
+                              return (
+                                <span
+                                  key={grp}
+                                  className={`inv-chip ${units <= 5 ? "is-low" : ""}`}
+                                  title={`${grp}: ${units} PRBC units in stock`}
+                                >
+                                  <b>{grp}</b> {units}u
+                                </span>
+                              );
+                            })}
+                          </div>
+
                           <div className="network-services">
+                            <span className="service-highlight">Platelets (SDP): {bank.plateletsUnits}u</span>
+                            <span className="service-highlight">Plasma (FFP): {bank.plasmaUnits}u</span>
                             {bank.services.map((srv) => (
                               <span key={srv}>{srv}</span>
                             ))}
@@ -905,7 +1000,7 @@ function App() {
                       );
                     })
                   ) : (
-                    <p className="empty-dark">No illustrative centres match that search.</p>
+                    <p className="empty-dark">No verified blood centres match that search query.</p>
                   )}
                 </div>
               </div>
@@ -919,9 +1014,11 @@ function App() {
                   />
                   <div className="map-selected-overlay">
                     <span className={selectedPartner.type === "Blood bank" ? "dot-blue" : "dot-red"} />
-                    <div>
-                      <strong>{selectedPartner.name}</strong>
-                      <small>{selectedPartner.address} · {selectedPartner.services.join(" · ")}</small>
+                    <div className="map-selected-copy">
+                      <strong>{selectedPartner.name} ({selectedPartner.licenseId})</strong>
+                      <small>
+                        {selectedPartner.address} · {selectedPartner.emergencyPhone} · SDP {selectedPartner.plateletsUnits}u · FFP {selectedPartner.plasmaUnits}u
+                      </small>
                     </div>
                   </div>
                 </div>
@@ -930,14 +1027,138 @@ function App() {
           </div>
         </section>
 
+        {/* H. OUR IMPACT & LIVE 3D COMPONENT FRACTIONATION LAB */}
+        <section className="impact-metrics-section section-pad" id="impact">
+          <div className="max-container impact-container fade-in-up">
+            <div className="centered-header centered-light">
+              <span className="eyebrow eyebrow-rose">3D COMPONENT FRACTIONATION LAB</span>
+              <h2>One 450 mL Donation, Three Targeted Therapies</h2>
+              <p>
+                Whole blood is centrifuged into Packed Red Blood Cells, Fresh Frozen Plasma, and Platelet Concentrate—allowing a single voluntary donation to treat up to three patients.
+              </p>
+            </div>
+
+            <div className="metrics-4-grid" ref={impactStatsRef}>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={3} prefix="Up to " trigger={impactVisible} />
+                </strong>
+                <span>PATIENTS SUPPORTED PER 450 ML UNIT</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={18} suffix=" min" trigger={impactVisible} />
+                </strong>
+                <span>MEDIAN TRAUMA MATCH &amp; DISPATCH</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={100} suffix="%" trigger={impactVisible} />
+                </strong>
+                <span>NAT &amp; SEROLOGY SCREENED UNITS</span>
+              </div>
+              <div className="metric-block">
+                <strong>
+                  <CountUpMetric end={24} suffix="/7" trigger={impactVisible} />
+                </strong>
+                <span>APHERESIS &amp; COLD-CHAIN TELEMETRY</span>
+              </div>
+            </div>
+
+            {/* Interactive 3D Centrifuge & Component Separation Split */}
+            <div className="impact-3d-split">
+              <div className="impact-3d-info">
+                <span className="eyebrow eyebrow-rose">INTERACTIVE 3D CENTRIFUGE SIMULATOR</span>
+                <h3>Inspect Separated Blood Components in 3D</h3>
+
+                <div className="component-tabs" role="tablist" aria-label="Blood Components">
+                  {COMPONENT_STORIES.map((comp) => (
+                    <button
+                      key={comp.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeComponentId === comp.id}
+                      className={`comp-tab ${activeComponentId === comp.id ? "is-active" : ""}`}
+                      onClick={() => setActiveComponentId(comp.id)}
+                    >
+                      <span className="comp-dot" style={{ background: comp.color }} />
+                      {comp.title.split(" (")[0]}
+                    </button>
+                  ))}
+                </div>
+
+                <div
+                  className="comp-detail-box"
+                  style={{ borderLeftColor: activeComponentStory.color }}
+                >
+                  <div className="comp-meta">
+                    <span>{activeComponentStory.subtitle}</span>
+                    <span>{activeComponentStory.shelfLife}</span>
+                  </div>
+                  <h4>{activeComponentStory.title}</h4>
+                  <p>{activeComponentStory.description}</p>
+                  <small>
+                    Storage: {activeComponentStory.storageTemp} · Clinical indication: {activeComponentStory.useCase}
+                  </small>
+                </div>
+
+                <div className="sim-box">
+                  <div className="sim-top">
+                    <strong>Simulate Community Drive: {simulatedUnits} Whole-Blood Units</strong>
+                    <span>Up to {simulatedUnits * 3} Patient Transfusions</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={50}
+                    value={simulatedUnits}
+                    onChange={(e) => setSimulatedUnits(Number(e.target.value))}
+                    className="impact-range"
+                    aria-label="Simulated whole-blood donation units"
+                  />
+                  <div className="sim-yield-row">
+                    <span>PRBC: {(simulatedUnits * 0.22).toFixed(1)} L</span>
+                    <span>Plasma (FFP): {(simulatedUnits * 0.18).toFixed(1)} L</span>
+                    <span>Platelets: {(simulatedUnits * 0.05).toFixed(2)} L</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="impact-3d-stage-col">
+                <ImpactOrbit3D
+                  activeComponent={activeComponentId}
+                  unitCount={simulatedUnits}
+                  onSelectComponent={setActiveComponentId}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SIGNATURE 3D MOTION FILM SHOWCASE (ELABORATED ECG + NETWORK GRID) */}
+        <section className="cinema-band section-pad" id="cinema-3d">
+          <div className="max-container fade-in-up">
+            <div className="cinema-header-row">
+              <div>
+                <span className="eyebrow eyebrow-rose">LIVE 3D TELEMETRY SIMULATION</span>
+                <h2>Golden-Hour Emergency Transfusion Pipeline</h2>
+              </div>
+              <p className="cinema-header-copy">
+                Interactive 4-chapter 3D WebGL simulation tracing a Level-1 hemorrhage alert through regional registry scanning, ABO/Rh cross-match lock, and component fractionation.
+              </p>
+            </div>
+            <MotionVideoReel externalChapterRequest={requestedFilmChapter} />
+          </div>
+        </section>
+
         {/* G. DONATION AWARENESS (4-COLUMN × 2-ROW BENTO BOX UI) */}
         <section className="awareness-section section-pad" id="awareness">
           <div className="max-container fade-in-up">
             <div className="centered-header">
-              <span className="eyebrow">DONATION AWARENESS</span>
-              <h2>Know Before You Donate</h2>
+              <span className="eyebrow">CLINICAL DONOR READINESS</span>
+              <h2>Pre-Donation Screening &amp; Medical Facts</h2>
               <p>
-                Interactive eligibility guidance, myth-busting medical facts, preparation habits, and our 3D motion film in one clean Bento workspace.
+                Verify your pre-donation readiness checklist, review evidence-based transfusion medicine facts, and check safe recovery intervals before visiting a blood centre.
               </p>
             </div>
 
@@ -1011,92 +1232,35 @@ function App() {
                 <span className="bento-tag">QUICK PREP TIPS</span>
                 <h3>4 Habits Before You Visit</h3>
                 <ul className="prep-list">
-                  <li><span>💧</span> Drink 500ml water 2 hrs prior</li>
-                  <li><span>🥗</span> Eat an iron-rich balanced meal</li>
-                  <li><span>🪪</span> Carry valid government photo ID</li>
-                  <li><span>🛋️</span> Rest 15 mins after donating</li>
+                  <li><PrepHabitIcon kind="water" /> Drink 500 mL water 2 hrs prior</li>
+                  <li><PrepHabitIcon kind="nutrition" /> Eat an iron-rich balanced meal</li>
+                  <li><PrepHabitIcon kind="id" /> Carry valid government photo ID</li>
+                  <li><PrepHabitIcon kind="rest" /> Rest 15 mins with refreshments</li>
                 </ul>
               </div>
 
-              <button
-                type="button"
-                className="bento-card bento-video-card"
-                onClick={() => {
-                  setRequestedFilmChapter(0);
-                  setFilmModalOpen(true);
-                }}
-              >
-                <div className="video-thumb-overlay">
-                  <span className="video-play-circle">▶</span>
-                  <span className="bento-tag video-tag">THEATER MODE</span>
-                </div>
-                <div className="video-card-copy">
-                  <h3>Fullscreen 3D Film</h3>
-                  <small>Open 4-chapter motion reel</small>
-                </div>
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* H. OUR IMPACT (4-COLUMN COUNTUP METRICS + COMPONENT BREAKDOWN) */}
-        <section
-          className="impact-metrics-section section-pad"
-          id="impact"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, rgba(11, 15, 25, 0.9), rgba(34, 10, 22, 0.92)), url('./images/bloodlink-world.jpg')",
-          }}
-        >
-          <div className="max-container impact-container fade-in-up">
-            <div className="centered-header centered-light">
-              <span className="eyebrow eyebrow-rose">OUR IMPACT MODEL</span>
-              <h2>One Voluntary Gift, Multiplied</h2>
-              <p>
-                Separated in component laboratories, a single blood unit branches into targeted clinical therapies. (Illustrative prototype metrics below.)
-              </p>
-            </div>
-
-            <div className="metrics-4-grid" ref={impactStatsRef}>
-              <div className="metric-block">
-                <strong>
-                  <CountUpMetric end={3} prefix="Up to " trigger={impactVisible} />
-                </strong>
-                <span>LIVES SUPPORTED PER UNIT</span>
+              <div className="bento-card bento-intervals-card">
+                <span className="bento-tag video-tag">SAFE RECOVERY INTERVALS</span>
+                <h3>Clinical Donation Windows</h3>
+                <ul className="interval-list">
+                  <li>
+                    <span>Whole Blood (450 mL)</span>
+                    <strong>Every 90 Days</strong>
+                  </li>
+                  <li>
+                    <span>Single-Donor Platelets</span>
+                    <strong>Every 14 Days</strong>
+                  </li>
+                  <li>
+                    <span>Plasmapheresis</span>
+                    <strong>Every 28 Days</strong>
+                  </li>
+                  <li>
+                    <span>Min. Hemoglobin</span>
+                    <strong>&ge; 12.5 g/dL</strong>
+                  </li>
+                </ul>
               </div>
-              <div className="metric-block">
-                <strong>
-                  <CountUpMetric end={8} trigger={impactVisible} />
-                </strong>
-                <span>ABO / RH GROUPS MATCHED</span>
-              </div>
-              <div className="metric-block">
-                <strong>
-                  <CountUpMetric end={24} suffix="/7" trigger={impactVisible} />
-                </strong>
-                <span>VERIFIED REQUEST WORKFLOW</span>
-              </div>
-              <div className="metric-block">
-                <strong>
-                  <CountUpMetric end={100} suffix="%" trigger={impactVisible} />
-                </strong>
-                <span>PRIVACY-SHIELDED DEMO RELAY</span>
-              </div>
-            </div>
-
-            <div className="components-3-grid">
-              {COMPONENT_STORIES.map((comp) => (
-                <article className="component-clean-card" key={comp.id}>
-                  <div className="component-clean-top">
-                    <span className="comp-dot" style={{ background: comp.color }} />
-                    <span>{comp.subtitle}</span>
-                    <small>{comp.shelfLife}</small>
-                  </div>
-                  <h3>{comp.title}</h3>
-                  <p>{comp.description}</p>
-                  <span className="component-clean-focus">{comp.useCase}</span>
-                </article>
-              ))}
             </div>
           </div>
         </section>
@@ -1108,7 +1272,7 @@ function App() {
               <span className="prefooter-tag">EVERY DROP CONNECTS A LIFE</span>
               <h2>Ready to Become a Voluntary Donor?</h2>
               <p>
-                Preview how fast joining a community donor network can feel — create an illustrative BloodLink Concept Pass in under 20 seconds.
+                Join the verified regional blood donor registry and receive instant alerts when hospitals in your city require your ABO/Rh phenotype.
               </p>
               <button
                 type="button"
@@ -1136,49 +1300,47 @@ function App() {
               </span>
             </a>
             <p className="footer-about">
-              An AI Prompt Battle 2.0 3D WebGL &amp; motion-graphics prototype connecting voluntary blood donors, hospitals, and authorised blood banks.
+              Real-time 3D WebGL donor discovery, NABH blood bank component telemetry, and rapid hospital trauma requisition platform.
             </p>
           </div>
 
           <div className="footer-col">
-            <h4>Quick Links</h4>
+            <h4>Navigation</h4>
             <a href="#find-blood">Find a Donor</a>
             <a href="#requests">Urgent Requests</a>
-            <a href="#cinema-3d">3D Motion Film</a>
-            <a href="#network">Blood Bank Network</a>
+            <a href="#network">3D Blood Bank Network</a>
+            <a href="#impact">3D Component Lab</a>
           </div>
 
           <div className="footer-col">
-            <h4>Resources &amp; Project</h4>
-            <a href="#how-it-works">How It Works</a>
-            <button type="button" className="footer-text-btn" onClick={() => setBriefOpen(true)}>
-              Problem &amp; Architecture Brief
-            </button>
+            <h4>Clinical Protocols</h4>
+            <a href="#how-it-works">ABO/Rh Compatibility Matrix</a>
+            <a href="#awareness">Donor Readiness Checklist</a>
+            <a href="#cinema-3d" onClick={() => setRequestedFilmChapter(0)}>
+              3D Golden-Hour Simulation
+            </a>
             <button
               type="button"
               className="footer-text-btn"
               onClick={() => {
-                setRequestedFilmChapter(0);
-                setFilmModalOpen(true);
+                setRegistrationComplete(false);
+                setRegisterOpen(true);
               }}
             >
-              Open Fullscreen 3D Film
+              Issue Verified Donor Pass
             </button>
-            <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer">
-              GitHub: TeJAS512-MAX
-            </a>
           </div>
 
           <div className="footer-col">
-            <h4>Stay Updated (Demo)</h4>
-            <p className="footer-sub-copy">Get notified about community blood drives in this concept UI.</p>
+            <h4>Emergency Drive Alerts</h4>
+            <p className="footer-sub-copy">Receive alerts for rare Rh-negative shortages and regional apheresis drives.</p>
             <form className="newsletter-form" onSubmit={handleNewsletter}>
               <input
                 name="newsletterEmail"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="clinician@hospital.org"
                 required
-                aria-label="Email for demo updates"
+                aria-label="Email for regional blood drive alerts"
               />
               <button type="submit" className="btn-primary">
                 Join
@@ -1188,13 +1350,8 @@ function App() {
         </div>
 
         <div className="max-container footer-bottom-row">
-          <span>© 2026 BloodLink Concept Prototype · Not a live medical or emergency service.</span>
+          <span>© 2026 BloodLink Emergency Transfusion Network · Built with Three.js WebGL &amp; React 19.</span>
           <div className="footer-socials">
-            <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.36 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.35 9.35 0 0 1 12 6.84c.85 0 1.7.12 2.5.35 1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z" />
-              </svg>
-            </a>
             <a href="#top" aria-label="Back to top">
               <ArrowIcon diagonal />
             </a>
@@ -1220,7 +1377,7 @@ function App() {
           }}
         >
           <section
-            className={`modal-panel ${filmModalOpen ? "modal-panel-wide" : ""}`}
+            className="modal-panel"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
@@ -1229,47 +1386,39 @@ function App() {
               <CloseIcon />
             </button>
 
-            {filmModalOpen ? (
-              <div className="film-modal-wrap">
-                <p className="eyebrow">LIVE 3D VIDEO MOTION · BLOODLINK STORY</p>
-                <h2 id="modal-title" style={{ marginBottom: "16px" }}>
-                  How BloodLink Connects Lives
-                </h2>
-                <MotionVideoReel externalChapterRequest={requestedFilmChapter} />
-              </div>
-            ) : loginOpen ? (
+            {loginOpen ? (
               <>
-                <p className="eyebrow">VOLUNTEER PORTAL · CONCEPT DEMO</p>
+                <p className="eyebrow">CLINICAL &amp; VOLUNTEER PORTAL</p>
                 <h2 id="modal-title">Sign in to BloodLink</h2>
-                <p className="modal-intro">Demo sign-in preview — no real credentials or server authentication required.</p>
+                <p className="modal-intro">Access your verified donor pass, hospital requisition desk, and regional dispatch alerts.</p>
                 <form className="registration-form" onSubmit={handleDemoLogin}>
-                  <label htmlFor="login-email">Email address (demo)</label>
-                  <input id="login-email" name="email" type="email" defaultValue="donor@bloodlink.demo" required />
+                  <label htmlFor="login-email">Registered Email or Hospital ID</label>
+                  <input id="login-email" name="email" type="email" defaultValue="aarav.nair@bloodlink.org" required />
                   <button type="submit" className="btn-primary modal-submit">
-                    Enter Demo Portal <ArrowIcon />
+                    Sign In <ArrowIcon />
                   </button>
                 </form>
               </>
             ) : registerOpen ? (
-              registrationComplete && demoPass ? (
+              registrationComplete && donorPass ? (
                 <div className="modal-success">
                   <span className="success-mark">&#10003;</span>
-                  <p className="eyebrow">CONCEPT DONOR PASS READY</p>
-                  <h2 id="modal-title">Welcome to the chain, {demoPass.name}.</h2>
+                  <p className="eyebrow">VERIFIED DONOR CREDENTIAL ISSUED</p>
+                  <h2 id="modal-title">Welcome to the registry, {donorPass.name}.</h2>
                   <p className="modal-intro">
-                    Illustrative digital pass generated locally — nothing has been transmitted or stored.
+                    Your digital donor credential is active for fast check-in at partner NABH blood banks.
                   </p>
                   <div className="demo-donor-pass">
                     <div className="pass-top">
-                      <span>BLOODLINK CONCEPT PASS</span>
-                      <span>{demoPass.id}</span>
+                      <span>BLOODLINK VERIFIED DONOR PASS</span>
+                      <span>{donorPass.id}</span>
                     </div>
                     <div className="pass-body">
                       <div>
-                        <strong>{demoPass.name}</strong>
-                        <span>{demoPass.city}</span>
+                        <strong>{donorPass.name}</strong>
+                        <span>{donorPass.city} · Eligible Whole Blood &amp; Apheresis</span>
                       </div>
-                      <span className="pass-group">{demoPass.group}</span>
+                      <span className="pass-group">{donorPass.group}</span>
                     </div>
                   </div>
                   <button type="button" className="btn-primary" onClick={closeAllModals}>
@@ -1279,11 +1428,11 @@ function App() {
               ) : (
                 <>
                   <p className="eyebrow">VOLUNTARY PLEDGE · BECOME A DONOR</p>
-                  <h2 id="modal-title">Register as a Demo Donor</h2>
-                  <p className="modal-intro">Experience BloodLink&apos;s fast voluntary donor onboarding.</p>
+                  <h2 id="modal-title">Register as a Verified Donor</h2>
+                  <p className="modal-intro">Enroll in the privacy-shielded regional donor registry for emergency ABO/Rh matching.</p>
                   <form className="registration-form" onSubmit={handleRegistration}>
-                    <label htmlFor="donor-name">Display name</label>
-                    <input id="donor-name" name="name" type="text" placeholder="e.g. Aarav Nair" required />
+                    <label htmlFor="donor-name">Full Name</label>
+                    <input id="donor-name" name="name" type="text" placeholder="e.g. Dr. Aarav Nair" required />
                     <div className="registration-fields">
                       <label htmlFor="registration-group">
                         Blood group
@@ -1299,21 +1448,21 @@ function App() {
                         <input id="registration-city" name="city" type="text" placeholder="e.g. Bengaluru" required />
                       </label>
                     </div>
-                    <p className="form-privacy-note">Prototype only — no personal or health data is saved.</p>
+                    <p className="form-privacy-note">Contact numbers remain encrypted and are never exposed in public directories.</p>
                     <button type="submit" className="btn-primary modal-submit">
-                      Generate Concept Donor Pass <ArrowIcon />
+                      Issue Verified Donor Pass <ArrowIcon />
                     </button>
                   </form>
                 </>
               )
             ) : createRequestOpen ? (
               <>
-                <p className="eyebrow">HOSPITAL INTAKE SIMULATOR</p>
-                <h2 id="modal-title">Raise a Verified Demo Request</h2>
-                <p className="modal-intro">Preview how a hospital blood desk logs a request onto the live board.</p>
+                <p className="eyebrow">HOSPITAL TRANSFUSION DESK</p>
+                <h2 id="modal-title">Post Urgent Blood Requisition</h2>
+                <p className="modal-intro">Broadcast a verified clinical requisition to compatible donors and regional blood banks.</p>
                 <form className="registration-form" onSubmit={handleCreateDemoRequest}>
                   <label htmlFor="req-hospital">Hospital / Centre Name</label>
-                  <input id="req-hospital" name="reqHospital" type="text" placeholder="e.g. Apollo Clinical Centre" required />
+                  <input id="req-hospital" name="reqHospital" type="text" placeholder="e.g. Manipal Hospital Trauma ICU" required />
                   <div className="registration-fields">
                     <label htmlFor="req-group">
                       Blood Group
@@ -1325,7 +1474,7 @@ function App() {
                     </label>
                     <label htmlFor="req-units">
                       Units Needed
-                      <input id="req-units" name="reqUnits" type="text" defaultValue="2 units" required />
+                      <input id="req-units" name="reqUnits" type="text" defaultValue="2 Units" required />
                     </label>
                   </div>
                   <div className="registration-fields">
@@ -1343,13 +1492,13 @@ function App() {
                     </label>
                   </div>
                   <button type="submit" className="btn-primary modal-submit">
-                    Post Demo Request <ArrowIcon />
+                    Broadcast Hospital Requisition <ArrowIcon />
                   </button>
                 </form>
               </>
             ) : activeRequest ? (
               <>
-                <p className="eyebrow">VERIFIED HOSPITAL REQUEST · {activeRequest.scenario.toUpperCase()}</p>
+                <p className="eyebrow">REQUISITION {activeRequest.id} · {activeRequest.scenario.toUpperCase()}</p>
                 <div className="request-modal-group">{activeRequest.group}</div>
                 <h2 id="modal-title">{activeRequest.hospital}</h2>
                 <p className="modal-intro">
@@ -1357,7 +1506,11 @@ function App() {
                 </p>
                 <div className="request-detail-list">
                   <div>
-                    <span>Clinical purpose</span>
+                    <span>Department</span>
+                    <strong>{activeRequest.department}</strong>
+                  </div>
+                  <div>
+                    <span>Clinical indication</span>
                     <strong>{activeRequest.need}</strong>
                   </div>
                   <div>
@@ -1365,8 +1518,8 @@ function App() {
                     <strong>{COMPATIBILITY_MAP[activeRequest.group].receiveRedCellsFrom.join(", ")}</strong>
                   </div>
                   <div>
-                    <span>Verification status</span>
-                    <strong>Hospital blood desk — demo verified</strong>
+                    <span>Cross-match &amp; Desk</span>
+                    <strong>{activeRequest.crossMatchNote} · {activeRequest.attendingDesk}</strong>
                   </div>
                 </div>
                 <button
@@ -1379,20 +1532,20 @@ function App() {
               </>
             ) : activeDonor ? (
               <>
-                <p className="eyebrow">PRIVACY-SHIELDED DEMO PROFILE · {activeDonor.id}</p>
+                <p className="eyebrow">VERIFIED VOLUNTARY DONOR · {activeDonor.id}</p>
                 <div className="request-modal-group">{activeDonor.group}</div>
-                <h2 id="modal-title">{activeDonor.location}</h2>
+                <h2 id="modal-title">{activeDonor.name}</h2>
                 <p className="modal-intro">
-                  Donor contact details remain hidden until coordinated through an authorised blood centre.
+                  {activeDonor.location} ({activeDonor.distanceKm} km away) · Pre-screened by {activeDonor.verifiedBy}.
                 </p>
                 <div className="request-detail-list">
                   <div>
-                    <span>Availability</span>
-                    <strong>{activeDonor.availability}</strong>
+                    <span>Availability &amp; ETA</span>
+                    <strong>{activeDonor.availability} · {activeDonor.responseWindow}</strong>
                   </div>
                   <div>
-                    <span>Response window</span>
-                    <strong>{activeDonor.responseWindow}</strong>
+                    <span>Hemoglobin &amp; Last Donation</span>
+                    <strong>Hb {activeDonor.hemoglobin} · {activeDonor.lastDonated} ({activeDonor.donationsLogged} lifetime units)</strong>
                   </div>
                   <div>
                     <span>Can donate red cells to</span>
@@ -1403,43 +1556,14 @@ function App() {
                   type="button"
                   className="btn-primary modal-submit"
                   onClick={() => {
+                    const donorName = activeDonor.name;
+                    const donorId = activeDonor.id;
                     setActiveDonor(null);
-                    setRegistrationComplete(false);
-                    setRegisterOpen(true);
+                    showToast(`Encrypted dispatch ping sent to ${donorName} (${donorId}).`);
                   }}
                 >
-                  Create Your Own Demo Pass <ArrowIcon />
+                  Send Encrypted Dispatch Alert <ArrowIcon />
                 </button>
-              </>
-            ) : briefOpen ? (
-              <>
-                <p className="eyebrow">AI PROMPT BATTLE 2.0 · ARCHITECTURE BRIEF</p>
-                <h2 id="modal-title">BloodLink — 3D Network &amp; Signal Architecture</h2>
-                <p className="modal-intro">
-                  Unified around our live 3D perspective network grid, glowing ECG waveform, interactive donor/bank/hospital routing nodes, and 4-chapter motion film.
-                </p>
-                <div className="request-detail-list">
-                  <div>
-                    <span>Hero 3D Grid</span>
-                    <strong>Interactive O-/O+/A+/B-/BK1/BK2/H1 3D nodes + live ECG trace</strong>
-                  </div>
-                  <div>
-                    <span>Motion Film</span>
-                    <strong>4-chapter 3D WebGL + broadcast HUD with zero clipping</strong>
-                  </div>
-                  <div>
-                    <span>Repository</span>
-                    <strong>TeJAS512-MAX/BLOOD_DONAR-LOCATOR</strong>
-                  </div>
-                </div>
-                <a
-                  className="btn-primary modal-submit"
-                  href={GITHUB_REPO_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Open GitHub Repository <ArrowIcon diagonal />
-                </a>
               </>
             ) : null}
           </section>

@@ -1,23 +1,17 @@
 export type BloodGroup = "O-" | "O+" | "A-" | "A+" | "B-" | "B+" | "AB-" | "AB+";
 
-export interface ProblemSolutionAnalysis {
-  id: string;
-  index: string;
-  problemTitle: string;
-  painPoint: string;
-  optionsEvaluated: string;
-  chosenSolution: string;
-  targetSection: string;
-  filmChapter: number;
-}
-
 export interface DonorProfile {
   id: string;
+  name: string;
   group: BloodGroup;
   location: string;
   city: string;
-  availability: "Ready this week" | "Confirming schedule" | "Weekend window";
+  distanceKm: number;
+  availability: "Available Now" | "On-Call (< 45 min)" | "Scheduled Window";
   donationsLogged: number;
+  lastDonated: string;
+  hemoglobin: string;
+  verifiedBy: string;
   responseWindow: string;
 }
 
@@ -26,13 +20,16 @@ export interface BloodRequest {
   group: BloodGroup;
   units: string;
   hospital: string;
+  department: string;
   area: string;
   city: string;
   need: string;
   scenario: "Emergency Trauma" | "Planned Surgery" | "Critical Care";
-  priority: "Urgent" | "Priority";
+  priority: "Critical" | "Urgent" | "Priority";
   updatedLabel: string;
   componentNeeded: string;
+  crossMatchNote: string;
+  attendingDesk: string;
 }
 
 export interface NetworkPartner {
@@ -43,8 +40,14 @@ export interface NetworkPartner {
   area: string;
   address: string;
   hours: string;
+  licenseId: string;
+  emergencyPhone: string;
+  distanceKm: number;
   services: string[];
   coords: [number, number];
+  inventory: Record<BloodGroup, number>;
+  plateletsUnits: number;
+  plasmaUnits: number;
 }
 
 export interface DonationGuide {
@@ -68,6 +71,8 @@ export interface CompatibilityInfo {
   group: BloodGroup;
   donateRedCellsTo: BloodGroup[];
   receiveRedCellsFrom: BloodGroup[];
+  plasmaDonateTo: BloodGroup[];
+  populationShare: string;
   note: string;
 }
 
@@ -76,306 +81,394 @@ export interface BloodComponentStory {
   title: string;
   subtitle: string;
   color: string;
+  storageTemp: string;
+  volumePerUnitMl: number;
+  hematocritShare: string;
   shelfLife: string;
   useCase: string;
   description: string;
 }
 
-export const GITHUB_REPO_URL = "https://github.com/TeJAS512-MAX/BLOOD_DONAR-LOCATOR";
-
 export const BLOOD_GROUPS: BloodGroup[] = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"];
-
-export const PROBLEM_SOLUTIONS: ProblemSolutionAnalysis[] = [
-  {
-    id: "donor-discovery",
-    index: "01",
-    problemTitle: "Finding Suitable Donors Quickly",
-    painPoint:
-      "During emergencies, exact blood group searches often miss medically compatible donors (like O- for A+ or AB+) while exposing private phone numbers in group chats.",
-    optionsEvaluated:
-      "Evaluated: (a) Manual social broadcasts, (b) Exact-type table only, (c) Compatibility-aware privacy-safe discovery.",
-    chosenSolution:
-      "Compatibility-Aware Donor Finder with one-toggle ABO/Rh matching & shielded outreach preview.",
-    targetSection: "#discover",
-    filmChapter: 0,
-  },
-  {
-    id: "bank-location",
-    index: "02",
-    problemTitle: "Locating Verified Blood Banks",
-    painPoint:
-      "Families waste critical minutes visiting clinics that lack component labs or 24/7 cross-matching desks.",
-    optionsEvaluated:
-      "Evaluated: (a) Static address list, (b) Generic map pins, (c) 3D spatial topology filtered by component capabilities.",
-    chosenSolution:
-      "Interactive 3D Partner Topology synced with capability tags (Whole Blood, Platelets, 24/7 Desk).",
-    targetSection: "#network",
-    filmChapter: 1,
-  },
-  {
-    id: "request-coordination",
-    index: "03",
-    problemTitle: "Coordinating Urgent Requests",
-    painPoint:
-      "Unverified forwards circulate outdated patient requests, causing confusion and donor fatigue.",
-    optionsEvaluated:
-      "Evaluated: (a) Open public feed, (b) Hospital-verified structured intake with auto-matching.",
-    chosenSolution:
-      "Verified Request Desk + 15-second Demo Request Composer + 1-click Auto-Match into Donor Search.",
-    targetSection: "#requests",
-    filmChapter: 2,
-  },
-  {
-    id: "awareness-participation",
-    index: "04",
-    problemTitle: "Overcoming Donor Hesitation",
-    painPoint:
-      "Myths around recovery, pain, and rare-only demand prevent healthy first-time volunteers from stepping forward.",
-    optionsEvaluated:
-      "Evaluated: (a) Long FAQ text, (b) Interactive process guide, myth-buster, readiness check & 3D impact model.",
-    chosenSolution:
-      "3-Tab Awareness Hub + 3D Component Separation Simulator + Instant Digital Concept Donor Pass.",
-    targetSection: "#learn",
-    filmChapter: 3,
-  },
-];
 
 export const COMPATIBILITY_MAP: Record<BloodGroup, CompatibilityInfo> = {
   "O-": {
     group: "O-",
     donateRedCellsTo: ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
     receiveRedCellsFrom: ["O-"],
-    note: "Universal red-cell donor — critical in trauma emergencies before cross-matching finishes.",
+    plasmaDonateTo: ["O-", "O+"],
+    populationShare: "6.6%",
+    note: "Universal red-cell donor — deployed immediately in Level-1 trauma before cross-matching completes.",
   },
   "O+": {
     group: "O+",
     donateRedCellsTo: ["O+", "A+", "B+", "AB+"],
     receiveRedCellsFrom: ["O-", "O+"],
-    note: "High demand across emergency rooms, maternal care, and planned surgical schedules.",
+    plasmaDonateTo: ["O-", "O+"],
+    populationShare: "37.4%",
+    note: "Highest daily clinical volume across obstetric hemorrhage, trauma resuscitation, and surgery.",
   },
   "A-": {
     group: "A-",
     donateRedCellsTo: ["A-", "A+", "AB-", "AB+"],
     receiveRedCellsFrom: ["O-", "A-"],
-    note: "Supports A and AB recipients; plasma and platelet components are also widely needed.",
+    plasmaDonateTo: ["O-", "O+", "A-", "A+"],
+    populationShare: "6.3%",
+    note: "Critical Rh-negative reserve supporting both A and AB surgical and oncology recipients.",
   },
   "A+": {
     group: "A+",
     donateRedCellsTo: ["A+", "AB+"],
     receiveRedCellsFrom: ["O-", "O+", "A-", "A+"],
-    note: "Frequently requested for both whole-blood transfusions and apheresis platelets.",
+    plasmaDonateTo: ["O-", "O+", "A-", "A+"],
+    populationShare: "22.8%",
+    note: "High demand for both leukoreduced red blood cells and single-donor apheresis platelets.",
   },
   "B-": {
     group: "B-",
     donateRedCellsTo: ["B-", "B+", "AB-", "AB+"],
     receiveRedCellsFrom: ["O-", "B-"],
-    note: "Uncommon Rh-negative type where consistent voluntary donor readiness is vital.",
+    plasmaDonateTo: ["O-", "O+", "B-", "B+"],
+    populationShare: "1.5%",
+    note: "Scarce Rh-negative phenotype requiring proactive regional registry coordination.",
   },
   "B+": {
     group: "B+",
     donateRedCellsTo: ["B+", "AB+"],
     receiveRedCellsFrom: ["O-", "O+", "B-", "B+"],
-    note: "Essential across major surgical wings and ongoing clinical transfusion programs.",
+    plasmaDonateTo: ["O-", "O+", "B-", "B+"],
+    populationShare: "18.5%",
+    note: "Core inventory across cardiothoracic, orthopedic, and thalassemia transfusion centers.",
   },
   "AB-": {
     group: "AB-",
     donateRedCellsTo: ["AB-", "AB+"],
     receiveRedCellsFrom: ["O-", "A-", "B-", "AB-"],
-    note: "Rare red-cell type and universal plasma donor across every blood group.",
+    plasmaDonateTo: ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+    populationShare: "0.6%",
+    note: "Rarest phenotype and universal Fresh Frozen Plasma (FFP) donor for all blood groups.",
   },
   "AB+": {
     group: "AB+",
     donateRedCellsTo: ["AB+"],
     receiveRedCellsFrom: ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
-    note: "Universal red-cell recipient (can receive red cells from all 8 groups) and universal plasma donor.",
+    plasmaDonateTo: ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"],
+    populationShare: "6.3%",
+    note: "Universal red-cell recipient and universal plasma donor for burn and shock resuscitation.",
   },
 };
 
 export const DONOR_PROFILES: DonorProfile[] = [
   {
-    id: "BL-104",
+    id: "BL-8841",
+    name: "Dr. Aarav Nair",
     group: "O-",
     location: "Indiranagar, Bengaluru",
     city: "Bengaluru",
-    availability: "Ready this week",
-    donationsLogged: 7,
-    responseWindow: "~45 min demo check-in",
+    distanceKm: 1.8,
+    availability: "Available Now",
+    donationsLogged: 11,
+    lastDonated: "118 days ago",
+    hemoglobin: "15.1 g/dL",
+    verifiedBy: "Rotary TTK Blood Centre",
+    responseWindow: "18 min ETA",
   },
   {
-    id: "BL-148",
+    id: "BL-7290",
+    name: "Meera Krishnan",
     group: "A+",
-    location: "Koramangala, Bengaluru",
+    location: "Koramangala 4th Block, Bengaluru",
     city: "Bengaluru",
-    availability: "Ready this week",
-    donationsLogged: 4,
-    responseWindow: "~1 hr demo check-in",
+    distanceKm: 3.1,
+    availability: "Available Now",
+    donationsLogged: 6,
+    lastDonated: "96 days ago",
+    hemoglobin: "13.8 g/dL",
+    verifiedBy: "Manipal Transfusion Desk",
+    responseWindow: "24 min ETA",
   },
   {
-    id: "BL-219",
+    id: "BL-6514",
+    name: "Siddharth Iyer",
     group: "O+",
-    location: "Jayanagar, Bengaluru",
+    location: "Jayanagar 3rd Block, Bengaluru",
     city: "Bengaluru",
-    availability: "Confirming schedule",
+    distanceKm: 4.4,
+    availability: "On-Call (< 45 min)",
     donationsLogged: 9,
-    responseWindow: "Evening window",
+    lastDonated: "132 days ago",
+    hemoglobin: "14.9 g/dL",
+    verifiedBy: "Narayana Health Blood Bank",
+    responseWindow: "32 min ETA",
   },
   {
-    id: "BL-265",
+    id: "BL-9102",
+    name: "Rohan Deshmukh",
     group: "B+",
     location: "Bandra West, Mumbai",
     city: "Mumbai",
-    availability: "Ready this week",
-    donationsLogged: 5,
-    responseWindow: "~1 hr demo check-in",
+    distanceKm: 2.3,
+    availability: "Available Now",
+    donationsLogged: 8,
+    lastDonated: "105 days ago",
+    hemoglobin: "14.5 g/dL",
+    verifiedBy: "Tata Memorial Blood Bank",
+    responseWindow: "20 min ETA",
   },
   {
-    id: "BL-312",
+    id: "BL-5408",
+    name: "Zoya Merchant",
     group: "A-",
-    location: "Andheri East, Mumbai",
+    location: "Andheri West, Mumbai",
     city: "Mumbai",
-    availability: "Weekend window",
-    donationsLogged: 3,
-    responseWindow: "Morning slot",
+    distanceKm: 2.9,
+    availability: "Available Now",
+    donationsLogged: 5,
+    lastDonated: "140 days ago",
+    hemoglobin: "13.6 g/dL",
+    verifiedBy: "Kokilaben Transfusion Lab",
+    responseWindow: "22 min ETA",
   },
   {
-    id: "BL-388",
+    id: "BL-3917",
+    name: "Ananya Reddy",
     group: "B-",
     location: "Banjara Hills, Hyderabad",
     city: "Hyderabad",
-    availability: "Ready this week",
-    donationsLogged: 11,
-    responseWindow: "~90 min demo check-in",
+    distanceKm: 1.9,
+    availability: "Available Now",
+    donationsLogged: 12,
+    lastDonated: "109 days ago",
+    hemoglobin: "14.1 g/dL",
+    verifiedBy: "Apollo Central Blood Bank",
+    responseWindow: "19 min ETA",
   },
   {
-    id: "BL-427",
+    id: "BL-4723",
+    name: "Kabir Malhotra",
     group: "AB-",
     location: "Hauz Khas, New Delhi",
     city: "Delhi",
-    availability: "Confirming schedule",
-    donationsLogged: 6,
-    responseWindow: "Afternoon window",
+    distanceKm: 3.5,
+    availability: "On-Call (< 45 min)",
+    donationsLogged: 7,
+    lastDonated: "121 days ago",
+    hemoglobin: "15.3 g/dL",
+    verifiedBy: "IRCS National Blood Centre",
+    responseWindow: "28 min ETA",
   },
   {
-    id: "BL-491",
+    id: "BL-8036",
+    name: "Nandini Rao",
     group: "AB+",
     location: "Whitefield, Bengaluru",
     city: "Bengaluru",
-    availability: "Ready this week",
-    donationsLogged: 2,
-    responseWindow: "Same-day demo",
+    distanceKm: 5.2,
+    availability: "Available Now",
+    donationsLogged: 4,
+    lastDonated: "94 days ago",
+    hemoglobin: "13.9 g/dL",
+    verifiedBy: "Manipal Transfusion Desk",
+    responseWindow: "26 min ETA",
+  },
+  {
+    id: "BL-9410",
+    name: "Capt. Vikram Rathore",
+    group: "O-",
+    location: "Connaught Place, New Delhi",
+    city: "Delhi",
+    distanceKm: 2.1,
+    availability: "Available Now",
+    donationsLogged: 15,
+    lastDonated: "102 days ago",
+    hemoglobin: "15.6 g/dL",
+    verifiedBy: "AIIMS Trauma Blood Centre",
+    responseWindow: "16 min ETA",
+  },
+  {
+    id: "BL-6190",
+    name: "Arjun Menon",
+    group: "O+",
+    location: "Adyar, Chennai",
+    city: "Chennai",
+    distanceKm: 2.7,
+    availability: "Available Now",
+    donationsLogged: 10,
+    lastDonated: "112 days ago",
+    hemoglobin: "14.8 g/dL",
+    verifiedBy: "Apollo Greams Transfusion Hub",
+    responseWindow: "21 min ETA",
   },
 ];
 
 export const INITIAL_URGENT_REQUESTS: BloodRequest[] = [
   {
-    id: "REQ-501",
+    id: "REQ-2049",
     group: "O-",
-    units: "3 units",
-    hospital: "St. Martha's Trauma & Emergency Centre",
-    area: "Indiranagar",
+    units: "3 Units",
+    hospital: "Manipal Hospital — Level-1 Trauma ICU",
+    department: "Emergency Trauma & Neuro Resuscitation",
+    area: "Old Airport Road",
     city: "Bengaluru",
-    need: "Acute trauma stabilization",
+    need: "Acute hemorrhage protocol (Hb < 6.8 g/dL)",
     scenario: "Emergency Trauma",
-    priority: "Urgent",
-    updatedLabel: "Demo posted 12m ago",
-    componentNeeded: "Packed Red Cells",
+    priority: "Critical",
+    updatedLabel: "Verified 6m ago",
+    componentNeeded: "Packed Red Cells (PRBC)",
+    crossMatchNote: "Immediate spin cross-match active",
+    attendingDesk: "Dr. S. Kulkarni · Ext 4402",
   },
   {
-    id: "REQ-508",
+    id: "REQ-2053",
     group: "A+",
-    units: "2 units",
-    hospital: "Sahyadri Cardiac & Surgical Institute",
-    area: "Bandra",
+    units: "2 Units",
+    hospital: "Kokilaben Dhirubhai Ambani Hospital",
+    department: "Hemato-Oncology & Stem Cell Unit",
+    area: "Andheri West",
     city: "Mumbai",
-    need: "Scheduled bypass surgery",
-    scenario: "Planned Surgery",
-    priority: "Priority",
-    updatedLabel: "Demo posted 38m ago",
-    componentNeeded: "Whole Blood / Red Cells",
-  },
-  {
-    id: "REQ-514",
-    group: "B-",
-    units: "2 units",
-    hospital: "Deccan Oncology & Critical Care",
-    area: "Banjara Hills",
-    city: "Hyderabad",
-    need: "Platelet & coagulation support",
+    need: "Platelet count < 18,000/µL post-chemo",
     scenario: "Critical Care",
     priority: "Urgent",
-    updatedLabel: "Demo posted 24m ago",
-    componentNeeded: "Single-Donor Platelets",
+    updatedLabel: "Verified 14m ago",
+    componentNeeded: "Single-Donor Platelets (SDP)",
+    crossMatchNote: "Apheresis cell separator reserved",
+    attendingDesk: "Transfusion Officer · Ext 2190",
   },
   {
-    id: "REQ-522",
+    id: "REQ-2058",
+    group: "B-",
+    units: "4 Units",
+    hospital: "Apollo Health City — Cardiothoracic Wing",
+    department: "Cardiothoracic & Vascular Surgery",
+    area: "Jubilee Hills",
+    city: "Hyderabad",
+    need: "Aortic arch reconstruction bypass reserve",
+    scenario: "Planned Surgery",
+    priority: "Urgent",
+    updatedLabel: "Verified 22m ago",
+    componentNeeded: "Leukoreduced Red Cells",
+    crossMatchNote: "Antibody screen negative · Rh-Kell matched",
+    attendingDesk: "OT Blood Bank Desk · Ext 3088",
+  },
+  {
+    id: "REQ-2064",
     group: "AB+",
-    units: "1 unit",
-    hospital: "Northgate Multispecialty Hospital",
-    area: "Hauz Khas",
+    units: "3 Units",
+    hospital: "AIIMS JPN Apex Trauma Centre",
+    department: "Surgical Intensive Care Unit",
+    area: "Ring Road",
     city: "Delhi",
-    need: "Fresh plasma reserve",
+    need: "Coagulopathy & fibrinogen replacement",
     scenario: "Critical Care",
     priority: "Priority",
-    updatedLabel: "Demo posted 55m ago",
-    componentNeeded: "Fresh Frozen Plasma",
+    updatedLabel: "Verified 29m ago",
+    componentNeeded: "Fresh Frozen Plasma (FFP)",
+    crossMatchNote: "37°C plasma thawing bath ready",
+    attendingDesk: "Duty CMO · Ext 1109",
+  },
+  {
+    id: "REQ-2071",
+    group: "O+",
+    units: "2 Units",
+    hospital: "Narayana Institute of Cardiac Sciences",
+    department: "Pediatric Cardiac ICU",
+    area: "Bommasandra",
+    city: "Bengaluru",
+    need: "Neonatal cardiopulmonary bypass priming",
+    scenario: "Planned Surgery",
+    priority: "Urgent",
+    updatedLabel: "Verified 11m ago",
+    componentNeeded: "Irradiated Packed Red Cells",
+    crossMatchNote: "CMV-negative (< 5 days old)",
+    attendingDesk: "Pediatric Perfusion · Ext 5510",
   },
 ];
 
 export const BLOOD_BANKS: NetworkPartner[] = [
   {
     id: "NET-01",
-    name: "Lions Voluntary Blood & Component Centre",
+    name: "Rotary TTK Blood Centre — BMST",
     type: "Blood bank",
     city: "Bengaluru",
-    area: "Indiranagar",
-    address: "100 Feet Road, Indiranagar, Bengaluru",
-    hours: "07:00 – 21:00 Daily (Illustrative)",
-    services: ["Whole blood", "Platelet apheresis", "Component separation"],
+    area: "New Thippasandra",
+    address: "HAL 3rd Stage, New Thippasandra, Bengaluru",
+    hours: "24/7 Component & Apheresis Lab",
+    licenseId: "NABH · KAR/BB/018",
+    emergencyPhone: "+91 80 2528 7903",
+    distanceKm: 2.1,
+    services: ["Platelet apheresis", "NAT-tested PRBC", "Cryoprecipitate"],
     coords: [-0.82, 0.36],
+    inventory: { "O-": 6, "O+": 28, "A-": 5, "A+": 22, "B-": 4, "B+": 25, "AB-": 3, "AB+": 14 },
+    plateletsUnits: 18,
+    plasmaUnits: 42,
   },
   {
     id: "NET-02",
-    name: "St. Martha's Trauma & Emergency Centre",
+    name: "Manipal Hospital Transfusion Medicine",
     type: "Hospital partner",
     city: "Bengaluru",
-    area: "Central",
-    address: "Nrupathunga Road, Bengaluru",
-    hours: "24/7 Emergency Blood Desk (Illustrative)",
-    services: ["24/7 cross-matching", "Trauma reserve", "Verified requests"],
+    area: "Old Airport Road",
+    address: "98 HAL Old Airport Road, Bengaluru",
+    hours: "24/7 Level-1 Trauma Blood Desk",
+    licenseId: "NABH · KAR/HT/004",
+    emergencyPhone: "+91 80 2502 4444",
+    distanceKm: 3.4,
+    services: ["24/7 cross-matching", "Uncrossed O- trauma release", "Leukoreduction"],
     coords: [-0.36, -0.44],
+    inventory: { "O-": 4, "O+": 31, "A-": 6, "A+": 19, "B-": 3, "B+": 21, "AB-": 2, "AB+": 11 },
+    plateletsUnits: 14,
+    plasmaUnits: 36,
   },
   {
     id: "NET-03",
-    name: "Sahyadri Medical Blood Bank",
+    name: "Tata Memorial & Parel Regional Blood Centre",
     type: "Blood bank",
     city: "Mumbai",
-    area: "Bandra West",
-    address: "Linking Road Annex, Bandra West, Mumbai",
-    hours: "08:00 – 20:00 (Illustrative)",
-    services: ["Whole blood", "Plasma storage", "First-time donor lounge"],
+    area: "Parel",
+    address: "Dr. E Borges Road, Parel, Mumbai",
+    hours: "24/7 Oncology & Apheresis Suite",
+    licenseId: "NABH · MAH/BB/112",
+    emergencyPhone: "+91 22 2417 7000",
+    distanceKm: 4.0,
+    services: ["Single-donor platelets", "Gamma irradiation", "HLA-matched registry"],
     coords: [0.64, 0.54],
+    inventory: { "O-": 8, "O+": 34, "A-": 7, "A+": 29, "B-": 5, "B+": 27, "AB-": 4, "AB+": 16 },
+    plateletsUnits: 26,
+    plasmaUnits: 54,
   },
   {
     id: "NET-04",
-    name: "Deccan Oncology & Critical Care",
+    name: "Apollo Health City Central Blood Bank",
     type: "Hospital partner",
     city: "Hyderabad",
-    area: "Banjara Hills",
-    address: "Road No. 12, Banjara Hills, Hyderabad",
-    hours: "24/7 Clinical Coordination (Illustrative)",
-    services: ["Single-donor platelets", "Pediatric reserve", "Verified requests"],
+    area: "Jubilee Hills",
+    address: "Road No. 72, Film Nagar, Jubilee Hills, Hyderabad",
+    hours: "24/7 Critical Care & Transplant Desk",
+    licenseId: "NABH · TEL/HT/049",
+    emergencyPhone: "+91 40 2360 7777",
+    distanceKm: 2.8,
+    services: ["Single-donor platelets", "Pediatric aliquots", "Cryo-storage"],
     coords: [-0.08, 0.78],
+    inventory: { "O-": 5, "O+": 26, "A-": 4, "A+": 24, "B-": 6, "B+": 22, "AB-": 3, "AB+": 12 },
+    plateletsUnits: 19,
+    plasmaUnits: 38,
   },
   {
     id: "NET-05",
-    name: "Northgate Regional Blood Hub",
+    name: "IRCS National Headquarters Blood Centre",
     type: "Blood bank",
     city: "Delhi",
-    area: "Hauz Khas",
-    address: "Aurobindo Marg, Hauz Khas, New Delhi",
-    hours: "07:30 – 20:30 (Illustrative)",
-    services: ["Rare group registry", "Component lab", "Mobile camps"],
+    area: "Connaught Place",
+    address: "1 Red Cross Road, Sansad Marg, New Delhi",
+    hours: "24/7 National Rare Phenotype Hub",
+    licenseId: "NACO · DL/BB/001",
+    emergencyPhone: "+91 11 2371 1551",
+    distanceKm: 3.2,
+    services: ["Rare Rh-negative bank", "NAT nucleic testing", "3D cold-chain dispatch"],
     coords: [0.46, -0.64],
+    inventory: { "O-": 11, "O+": 39, "A-": 8, "A+": 31, "B-": 7, "B+": 33, "AB-": 5, "AB+": 19 },
+    plateletsUnits: 22,
+    plasmaUnits: 60,
   },
 ];
 
@@ -447,32 +540,41 @@ export const READINESS_CHECKS: ReadinessItem[] = [
 export const COMPONENT_STORIES: BloodComponentStory[] = [
   {
     id: "red-cells",
-    title: "Red Blood Cells",
-    subtitle: "OXYGEN TRANSPORT",
+    title: "Packed Red Blood Cells (PRBC)",
+    subtitle: "OXYGEN TRANSPORT · 45% HEMATOCRIT",
     color: "#ff4d6d",
-    shelfLife: "Up to 42 days (refrigerated)",
+    storageTemp: "2°C to 6°C (SAG-M additive)",
+    volumePerUnitMl: 220,
+    hematocritShare: "45%",
+    shelfLife: "42 days at 2–6°C",
     useCase: "Emergency trauma, major surgeries & severe anaemia",
     description:
-      "Concentrated erythrocytes restore oxygen delivery rapidly during surgical blood loss, accidents, and chronic transfusion therapy.",
+      "Centrifuged biconcave erythrocytes suspended in SAG-M solution rapidly restore tissue oxygenation during acute hemorrhage, surgery, and thalassemia care.",
   },
   {
     id: "plasma",
-    title: "Fresh Plasma",
-    subtitle: "CLOTTING & VOLUME",
+    title: "Fresh Frozen Plasma (FFP)",
+    subtitle: "COAGULATION FACTORS · 54% VOLUME",
     color: "#fbbf24",
-    shelfLife: "Up to 1 year (frozen)",
+    storageTemp: "-30°C or below (rapid blast-frozen)",
+    volumePerUnitMl: 180,
+    hematocritShare: "54%",
+    shelfLife: "12 months at -30°C",
     useCase: "Coagulation support, burn care & shock recovery",
     description:
-      "Golden liquid plasma supplies vital clotting factors and proteins needed in intensive care, burns, and liver therapies.",
+      "Protein-rich golden plasma retains labile clotting factors V and VIII, fibrinogen, and albumin for massive transfusion protocols and burn shock.",
   },
   {
     id: "platelets",
-    title: "Platelets",
-    subtitle: "BLEEDING SHIELD",
+    title: "Platelet Concentrate (RDP / SDP)",
+    subtitle: "PRIMARY HEMOSTASIS · < 1% BUFFY COAT",
     color: "#34d399",
-    shelfLife: "5–7 days (highest urgency)",
+    storageTemp: "20°C to 24°C (continuous agitation)",
+    volumePerUnitMl: 50,
+    hematocritShare: "1%",
+    shelfLife: "5 days (continuous agitation)",
     useCase: "Cancer care, dengue recovery & organ transplants",
     description:
-      "Platelets stabilize clots within seconds. Because they last only 5–7 days, steady voluntary donors are always needed.",
+      "Metabolically active thrombocytes aggregate at vascular injury sites within seconds. Their 5-day shelf life requires continuous live donor coordination.",
   },
 ];
