@@ -1,0 +1,10 @@
+{
+  "description": "A project setup utility that prepares imported apps for deployment and preview, then verifies their configurations so teams can launch with confidence.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
