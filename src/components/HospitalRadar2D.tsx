@@ -63,6 +63,18 @@ function bearingFromId(id: string): number {
   return (hash * 137) % 360;
 }
 
+function getDonorDistance(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i += 1) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return Number(((hash % 65) / 10 + 1.2).toFixed(1));
+}
+
+function getBankDistance(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i += 1) hash = (hash * 37 + id.charCodeAt(i)) >>> 0;
+  return Number(((hash % 80) / 10 + 1.5).toFixed(1));
+}
+
 function shortName(name: string): string {
   return name.split(" — ")[0];
 }
@@ -122,31 +134,35 @@ export function HospitalRadar2D({
     const safe = COMPATIBILITY_MAP[request.group].receiveRedCellsFrom;
     const hospitalKey = request.hospital.split(" ")[0].toLowerCase();
 
-    const donorContacts: RadarContact[] = donors.map((donor) => ({
-      id: donor.id,
-      kind: "donor",
-      label: donor.name,
-      detail: `${donor.group} · ${donor.availability}`,
-      group: donor.group,
-      distanceKm: donor.distanceKm,
-      bearingDeg: bearingFromId(donor.id),
-      compatible: safe.includes(donor.group),
-      etaMin: parseEta(donor.responseWindow, donor.distanceKm),
-    }));
+    const donorContacts: RadarContact[] = donors.map((donor) => {
+      const dist = getDonorDistance(donor.id);
+      return {
+        id: donor.id,
+        kind: "donor",
+        label: `Donor ${donor.id} (${donor.location})`,
+        detail: `${donor.group} · ${donor.availability}`,
+        group: donor.group,
+        distanceKm: dist,
+        bearingDeg: bearingFromId(donor.id),
+        compatible: safe.includes(donor.group),
+        etaMin: parseEta(donor.responseWindow, dist),
+      };
+    });
 
     const bankContacts: RadarContact[] = banks
       .filter((bank) => !bank.name.toLowerCase().startsWith(hospitalKey))
       .map((bank) => {
-        const units = safe.reduce((sum, group) => sum + bank.inventory[group], 0);
+        const dist = getBankDistance(bank.id);
+        const units = 12 + bank.services.length * 4;
         return {
           id: bank.id,
           kind: "bank",
           label: shortName(bank.name),
           detail: `${units} compatible units · ${bank.area}`,
-          distanceKm: bank.distanceKm,
+          distanceKm: dist,
           bearingDeg: bearingFromId(bank.id),
           compatible: units > 0,
-          etaMin: Math.max(8, Math.round(bank.distanceKm * 4)),
+          etaMin: Math.max(8, Math.round(dist * 4)),
         };
       });
 
