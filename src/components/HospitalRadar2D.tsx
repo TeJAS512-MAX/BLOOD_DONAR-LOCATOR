@@ -135,11 +135,11 @@ export function HospitalRadar2D({
     const hospitalKey = request.hospital.split(" ")[0].toLowerCase();
 
     const donorContacts: RadarContact[] = donors.map((donor) => {
-      const dist = getDonorDistance(donor.id);
+      const dist = donor.distanceKm ?? getDonorDistance(donor.id);
       return {
         id: donor.id,
         kind: "donor",
-        label: `Donor ${donor.id} (${donor.location})`,
+        label: donor.name || `Donor ${donor.id} (${donor.location})`,
         detail: `${donor.group} · ${donor.availability}`,
         group: donor.group,
         distanceKm: dist,
@@ -152,8 +152,10 @@ export function HospitalRadar2D({
     const bankContacts: RadarContact[] = banks
       .filter((bank) => !bank.name.toLowerCase().startsWith(hospitalKey))
       .map((bank) => {
-        const dist = getBankDistance(bank.id);
-        const units = 12 + bank.services.length * 4;
+        const dist = bank.distanceKm ?? getBankDistance(bank.id);
+        const units = bank.inventory
+          ? safe.reduce((sum, group) => sum + (bank.inventory[group] ?? 0), 0)
+          : 12;
         return {
           id: bank.id,
           kind: "bank",
