@@ -739,18 +739,6 @@ select option {
   -webkit-backdrop-filter: blur(18px) saturate(160%);
 }
 
-.scroll-progress {
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--blood), var(--blood-glow));
-  box-shadow: 0 0 12px var(--blood-glow);
-  transform: scaleX(var(--scroll, 0));
-  transform-origin: left;
-}
-
 .header-inner {
   display: flex;
   align-items: center;
@@ -1009,65 +997,6 @@ select option {
   color: var(--text-3);
 }
 
-/* Live request ticker */
-.ticker {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid var(--line);
-  background: rgba(12, 9, 9, 0.72);
-  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-}
-
-.ticker-track {
-  display: flex;
-  width: max-content;
-  padding: 16px 0;
-  animation: ticker 52s linear infinite;
-}
-
-.ticker:hover .ticker-track {
-  animation-play-state: paused;
-}
-
-.ticker-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding-right: 56px;
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text-2);
-  white-space: nowrap;
-}
-
-.ticker-item b {
-  padding: 3px 9px;
-  border: 1px solid var(--accent-line);
-  border-radius: 6px;
-  background: var(--accent-soft);
-  font-weight: 700;
-  color: #fff;
-}
-
-.ticker-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--blood-glow);
-  box-shadow: 0 0 10px var(--blood-glow);
-}
-
-.ticker-item.is-urgent .ticker-dot {
-  background: var(--amber);
-  box-shadow: 0 0 10px var(--amber);
-}
-
-.ticker-item.is-priority .ticker-dot {
-  background: var(--teal);
-  box-shadow: 0 0 10px var(--teal);
-}
-
 /* Hero network (HeroNetworkGrid3D) */
 .hero-grid3d-shell {
   position: relative;
@@ -1118,32 +1047,15 @@ select option {
   letter-spacing: 0.1em;
 }
 
-.hero-3d-cam-tabs {
-  display: inline-flex;
-  gap: 2px;
-}
-
-.cam-tab {
-  padding: 6px 12px;
-  border: 0;
+.hero-3d-sub {
+  padding: 4px 10px;
   border-radius: 99px;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.06);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--text-2);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.cam-tab:hover {
-  color: #fff;
-}
-
-.cam-tab.is-active {
-  background: var(--blood);
-  color: #fff;
+  letter-spacing: 0.08em;
+  color: var(--teal);
 }
 
 .projected-nodes-layer {
@@ -1528,26 +1440,12 @@ select option {
   color: var(--warn);
 }
 
-.pop-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid var(--line-2);
-  border-radius: 99px;
-  background: transparent;
-  font-size: 14px;
+.donor-id {
+  font-family: var(--mono);
+  font-size: 12px;
   font-weight: 600;
-  color: var(--text-2);
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.pop-toggle:hover {
-  border-color: var(--text);
-  color: var(--text);
+  letter-spacing: 0.06em;
+  color: var(--text-3);
 }
 
 .kv-list {
@@ -1983,14 +1881,6 @@ select option {
   box-shadow: 0 0 8px var(--teal);
 }
 
-.glyph.is-van {
-  width: 0;
-  height: 0;
-  border-right: 6px solid transparent;
-  border-bottom: 11px solid var(--amber);
-  border-left: 6px solid transparent;
-}
-
 .radar-panel {
   display: flex;
   flex-direction: column;
@@ -2144,11 +2034,6 @@ select option {
 .kind-tag.is-bank {
   background: var(--positive-soft);
   color: var(--teal);
-}
-
-.kind-tag.is-van {
-  background: var(--warn-soft);
-  color: var(--amber);
 }
 
 .lock-card h3 {
@@ -2428,179 +2313,6 @@ select option {
   color: var(--text);
 }
 
-/* ---------- Impact (night) ---------- */
-
-.impact-section {
-  background:
-    radial-gradient(circle at 78% 55%, rgba(227, 17, 47, 0.16), transparent 50%),
-    rgba(12, 9, 9, 0.8);
-}
-
-.impact-shell {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 48px;
-  padding: 40px;
-  border-radius: var(--radius-xl);
-}
-
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 99px;
-  background: var(--surface-sunken);
-  width: fit-content;
-  max-width: 100%;
-}
-
-.tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 42px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 99px;
-  background: transparent;
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--text-2);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.tab:hover {
-  color: #fff;
-}
-
-.tab.is-active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.tab-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-.component-detail {
-  margin-top: 22px;
-  padding: 22px 24px;
-  border-left: 3px solid var(--blood);
-  border-radius: 0 18px 18px 0;
-  background: var(--surface-sunken);
-  transition: border-color 0.3s ease;
-}
-
-.component-detail h3 {
-  margin-top: 8px;
-  font-size: 1.5rem;
-  letter-spacing: -0.025em;
-}
-
-.component-detail p {
-  margin: 10px 0 0;
-  color: var(--text-2);
-}
-
-.facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin: 18px 0 0;
-}
-
-.facts dt {
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.facts dd {
-  margin: 4px 0 0;
-  font-size: 14.5px;
-  font-weight: 600;
-}
-
-.drive-sim {
-  margin-top: 20px;
-  padding: 20px 22px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-.drive-sim label {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 14px;
-  font-size: 15px;
-  color: var(--text-2);
-}
-
-.drive-sim b {
-  font-family: var(--mono);
-  color: #fff;
-}
-
-.drive-result b {
-  color: var(--teal);
-}
-
-.range {
-  width: 100%;
-  accent-color: var(--blood);
-}
-
-.impact-stage {
-  display: flex;
-  justify-content: center;
-  min-width: 0;
-}
-
-.impact-3d-shell {
-  position: relative;
-  width: min(100%, 470px);
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: 1px solid var(--accent-line);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(227, 17, 47, 0.1), rgba(12, 9, 9, 0.4) 70%);
-  box-shadow:
-    0 0 0 14px rgba(255, 58, 82, 0.04),
-    0 0 0 28px rgba(255, 58, 82, 0.025);
-}
-
-.impact-3d-canvas {
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-}
-
-.impact-3d-hint {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  padding: 6px 14px;
-  border-radius: 99px;
-  background: rgba(12, 9, 9, 0.85);
-  font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--text-2);
-  white-space: nowrap;
-  pointer-events: none;
-  transform: translateX(-50%);
-}
-
 /* ---------- Donate (paper) ---------- */
 
 .donate-grid {
@@ -2870,21 +2582,6 @@ select option {
 
 .footer-links a:hover {
   color: var(--blood-glow);
-}
-
-.footer-wordmark {
-  margin-top: 56px;
-  font-family: var(--display);
-  font-size: clamp(4.5rem, 17vw, 15.5rem);
-  font-weight: 800;
-  line-height: 0.82;
-  letter-spacing: -0.065em;
-  white-space: nowrap;
-  background: linear-gradient(180deg, rgba(255, 58, 82, 0.55) 0%, rgba(255, 58, 82, 0.04) 85%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  user-select: none;
 }
 
 .footer-bottom {
@@ -3172,12 +2869,6 @@ select option {
   }
 }
 
-@keyframes ticker {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -3225,7 +2916,6 @@ select option {
 @media (max-width: 1100px) {
   .hero-grid,
   .radar-shell,
-  .impact-shell,
   .donate-grid {
     grid-template-columns: 1fr;
   }
@@ -3363,7 +3053,6 @@ select option {
   .donor-grid,
   .bank-grid,
   .form-row,
-  .facts,
   .checker-grid {
     grid-template-columns: 1fr;
   }
@@ -3397,13 +3086,8 @@ select option {
     width: 100%;
   }
 
-  .radar-shell,
-  .impact-shell {
+  .radar-shell {
     padding: 18px;
-  }
-
-  .tabs {
-    border-radius: 20px;
   }
 
   .cta-band {
@@ -3436,9 +3120,5 @@ select option {
   .reveal {
     opacity: 1;
     transform: none;
-  }
-
-  .ticker-track {
-    animation: none;
   }
 }

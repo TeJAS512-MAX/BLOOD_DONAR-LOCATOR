@@ -2,35 +2,35 @@
 
 **AI Prompt Battle 2.0** · Repository: [`TeJAS512-MAX/BLOOD_DONAR-LOCATOR`](https://github.com/TeJAS512-MAX/BLOOD_DONAR-LOCATOR)
 
-Emergency blood coordination for donors, hospitals and blood banks.
+Clinical blood donor locator, regional blood bank inventory directory, and hospital requisition coordination platform.
 
-## The problem
+## Clinical Challenge
 
-During emergencies, surgeries and critical treatment, finding suitable blood is slow. Three delays stand between a patient and blood:
+During trauma resuscitation, surgical procedures, and critical care, locating compatible blood components is frequently delayed by three operational bottlenecks:
 
-1. **Finding a matching donor.** Appeals ask for one exact group and miss donors who are medically compatible.
-2. **Locating a blood bank with stock.** Families phone centre after centre to ask what is available.
-3. **Coordinating requests in time.** Requests circulate unverified and nobody owns the response.
+1. **Identifying Compatible Donors:** Patient families broadcast single-group appeals and overlook donors whose blood group is medically cross-compatible.
+2. **Verifying Blood Bank Inventory:** Caregivers and hospital staff contact multiple centres individually to confirm component availability.
+3. **Coordinating Urgent Requisitions:** Unverified requests circulate informally without centralized tracking or confirmed donor dispatch.
 
-## How BloodLink solves it
+## Platform Capabilities
 
-| Problem | BloodLink feature |
+| Clinical Challenge | BloodLink Solution |
 | --- | --- |
-| Finding a matching donor | **Compatibility search.** ABO/Rh red-cell rules return every safe group, nearest first. Includes a donor → patient compatibility checker. Phone numbers stay private. |
-| Locating stock | **Blood bank directory.** Red-cell stock for all 8 groups, plus platelets and plasma. Low stock is flagged and the searched group is highlighted. |
-| Coordinating requests | **Verified hospital requests + 2D hospital radar.** A radar sweep around the requesting hospital locks the nearest compatible donor. It can dispatch donors, reserve bank units or reroute a mobile van, and tracks ETA until arrival. |
+| Identifying compatible donors | **ABO/Rh Compatibility Registry:** Automated red-cell matching returns all safe donor groups ordered by exact match and proximity, alongside an interactive donor-to-recipient compatibility reference. Personal contact details remain confidential. |
+| Verifying blood bank stock | **Regional Inventory Directory:** Displays Packed Red Blood Cell (PRBC) stock across all 8 ABO/Rh groups plus Single-Donor Platelets and Fresh Frozen Plasma reserves, flagging low-stock groups (`≤ 5` units). |
+| Coordinating urgent requests | **Verified Requisitions & 2D Dispatch Radar:** Hospital transfusion desks log verified requisitions and use the radial dispatch console (`2 km / 5 km / 10 km`) to lock onto and dispatch compatible donors or reserve blood bank units. |
 
-## Two-minute demo
+## Evaluation Walkthrough
 
-1. Press **Emergency** in the header. The radar locks onto the most critical request.
-2. Press **Dispatch donor**. The donor moves to the hospital on the radar and the ETA counts down until arrival.
-3. In **Urgent requests**, press **Post a request**. It appears at once and the radar starts scanning for compatible donors.
-4. In **Find donors**, open the **compatibility checker**. It shows why O- can give to A+, but A+ cannot give to O-.
-5. Check **Blood banks** for stock, then press **Become a donor** to create a donor pass.
+1. Select **Priority Dispatch** in the header to lock the radar onto the highest-priority trauma requisition.
+2. Select **Dispatch donor to hospital** in the radar panel to route the nearest compatible donor and monitor estimated arrival.
+3. In **Active Requisitions**, select **Submit Requisition** to log a new hospital request and immediately scan for compatible donors.
+4. In **Donor Registry**, expand the **Transfusion Compatibility Reference** to verify ABO/Rh red-cell compatibility between any donor and recipient group.
+5. Inspect **Blood Bank Inventory** and select **Register as Donor** to generate a voluntary donor credential.
 
-## Tech
+## Technology Stack
 
-React 19 · TypeScript · Vite · Three.js (live background, hero network, blood-component model) · Canvas 2D (hospital radar).
+React 19 · TypeScript · Vite · Three.js (vascular background & regional routing network) · HTML5 Canvas 2D (hospital dispatch radar).
 
 ## Run locally
 

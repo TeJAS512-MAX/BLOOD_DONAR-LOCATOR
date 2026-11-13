@@ -18,36 +18,36 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     id: "H1",
     label: "H1",
     role: "hospital",
-    title: "Manipal Level-1 Trauma & ICU Hub",
-    detail: "Immediate spin cross-match · 3 PRBC units active",
-    metricLabel: "ETA 14m · 99.4% Cross-Match Ready",
+    title: "Southern Regional Trauma & Critical Care Hub",
+    detail: "Active hospital transfusion desk · Cross-match verified",
+    metricLabel: "Primary receiving hospital",
     position: [0, 0.25, 0.2],
   },
   {
     id: "BK1",
     label: "BK1",
     role: "bank",
-    title: "Rotary TTK Regional Blood Centre",
-    detail: "107 PRBC units · 18 SDP platelet kits in stock",
-    metricLabel: "2°C–6°C Cold-Chain Verified",
+    title: "Bengaluru Regional Blood Centre",
+    detail: "107 PRBC units · 18 platelet units · 42 plasma units",
+    metricLabel: "24/7 Component & Apheresis Lab",
     position: [-1.45, 0.45, -0.75],
   },
   {
     id: "BK2",
     label: "BK2",
     role: "bank",
-    title: "Tata Memorial Component & Cryo Lab",
-    detail: "26 Apheresis Platelet units · -30°C FFP reserve",
-    metricLabel: "NAT Nucleic Acid Screened",
+    title: "Western Regional Blood Centre — Parel",
+    detail: "130 PRBC units · 26 platelet units · 54 plasma units",
+    metricLabel: "24/7 Oncology & Component Suite",
     position: [1.55, 0.35, -0.55],
   },
   {
     id: "O-",
     label: "O-",
     role: "donor",
-    title: "O− Universal Red-Cell Donor Node",
-    detail: "Un-crossmatched emergency trauma release compatible",
-    metricLabel: "Donates to all 8 ABO/Rh groups",
+    title: "Group O− Voluntary Donor Registry",
+    detail: "Universal red-cell donor group for emergency trauma release",
+    metricLabel: "Compatible with all 8 groups",
     bloodGroup: "O-",
     position: [-2.25, 0.72, 0.75],
   },
@@ -55,9 +55,9 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     id: "O+",
     label: "O+",
     role: "donor",
-    title: "O+ High-Volume Clinical Donor Node",
-    detail: "Supports O+, A+, B+, and AB+ surgical requisitions",
-    metricLabel: "37.4% population compatibility",
+    title: "Group O+ Voluntary Donor Registry",
+    detail: "Compatible with O+, A+, B+, and AB+ red-cell requisitions",
+    metricLabel: "Rh-positive red-cell donor",
     bloodGroup: "O+",
     position: [-1.55, 0.55, 1.65],
   },
@@ -65,9 +65,9 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     id: "B-",
     label: "B-",
     role: "donor",
-    title: "B− Rare Rh-Negative Registry Node",
-    detail: "Pre-screened Kell-negative donor pool on standby",
-    metricLabel: "1.5% rare phenotype reserve",
+    title: "Group B− Voluntary Donor Registry",
+    detail: "Rh-negative donor group supporting B−, B+, AB−, and AB+ patients",
+    metricLabel: "Rh-negative reserve group",
     bloodGroup: "B-",
     position: [2.2, 0.8, 0.7],
   },
@@ -75,15 +75,13 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     id: "A+",
     label: "A+",
     role: "donor",
-    title: "A+ Whole Blood & Platelet Apheresis Node",
-    detail: "High-yield single-donor platelet & PRBC match",
-    metricLabel: "Donates to A+ and AB+ recipients",
+    title: "Group A+ Voluntary Donor Registry",
+    detail: "Compatible with A+ and AB+ red-cell requisitions",
+    metricLabel: "Donates to A+ and AB+",
     bloodGroup: "A+",
     position: [1.45, 0.48, 1.55],
   },
 ];
-
-type CameraViewPreset = "network" | "macro" | "radar";
 
 /**
  * Creates an anatomically accurate biconcave erythrocyte (red blood cell) geometry
@@ -135,10 +133,6 @@ export function HeroNetworkGrid3D({
   const [selectedNodeId, setSelectedNodeId] = useState<string>("O-");
   const selectedIdRef = useRef(selectedNodeId);
   selectedIdRef.current = selectedNodeId;
-
-  const [cameraPreset, setCameraPreset] = useState<CameraViewPreset>("network");
-  const cameraPresetRef = useRef<CameraViewPreset>(cameraPreset);
-  cameraPresetRef.current = cameraPreset;
 
   const [projectedLabels, setProjectedLabels] = useState<ProjectedLabel[]>([]);
   const [ecgSpikeBoost, setEcgSpikeBoost] = useState(0);
@@ -548,18 +542,8 @@ export function HeroNetworkGrid3D({
       yaw += (targetYaw - yaw) * 0.08;
       worldGroup.rotation.y = Math.sin(elapsed * 0.22) * 0.16 + yaw;
 
-      // Smoothly transition camera between live 3D view presets
-      const preset = cameraPresetRef.current;
-      if (preset === "macro") {
-        desiredCamPos.set(0.35, 1.55, 2.55);
-        desiredLookAt.set(0, 1.2, -0.35);
-      } else if (preset === "radar") {
-        desiredCamPos.set(0, 5.5, 2.2);
-        desiredLookAt.set(0, 0, 0.2);
-      } else {
-        desiredCamPos.set(0, 2.25, 5.25);
-        desiredLookAt.set(0, 0.25, 0);
-      }
+      desiredCamPos.set(0, 2.25, 5.25);
+      desiredLookAt.set(0, 0.25, 0);
       camera.position.lerp(desiredCamPos, 0.06);
       currentLookAt.lerp(desiredLookAt, 0.08);
       camera.lookAt(currentLookAt);
@@ -675,35 +659,13 @@ export function HeroNetworkGrid3D({
 
   return (
     <div className="hero-grid3d-shell">
-      {/* Top 3D Camera Preset & Live Telemetry Bar */}
+      {/* Network status bar */}
       <div className="hero-3d-topbar">
         <div className="hero-3d-status">
           <span className="pulse-dot" />
-          <span>LIVE DONOR NETWORK</span>
+          <span>REGIONAL TRANSFUSION NETWORK · ABO/Rh ROUTING</span>
         </div>
-        <div className="hero-3d-cam-tabs" role="group" aria-label="Camera view">
-          <button
-            type="button"
-            className={`cam-tab ${cameraPreset === "network" ? "is-active" : ""}`}
-            onClick={() => setCameraPreset("network")}
-          >
-            Network
-          </button>
-          <button
-            type="button"
-            className={`cam-tab ${cameraPreset === "macro" ? "is-active" : ""}`}
-            onClick={() => setCameraPreset("macro")}
-          >
-            Red cell
-          </button>
-          <button
-            type="button"
-            className={`cam-tab ${cameraPreset === "radar" ? "is-active" : ""}`}
-            onClick={() => setCameraPreset("radar")}
-          >
-            Top view
-          </button>
-        </div>
+        <span className="hero-3d-sub">7 ACTIVE NODES</span>
       </div>
 
       <div className="hero-grid3d-canvas" ref={mountRef} />

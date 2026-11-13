@@ -1,18 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { HospitalRadar2D } from "./components/HospitalRadar2D";
-import { ImpactOrbit3D } from "./components/ImpactOrbit3D";
 import { LiveBiomedicalBg3D } from "./components/LiveBiomedicalBg3D";
 import {
   BLOOD_BANKS,
   BLOOD_GROUPS,
   COMPATIBILITY_MAP,
-  COMPONENT_STORIES,
   DONATION_GUIDES,
   DONOR_PROFILES,
   INITIAL_URGENT_REQUESTS,
   MYTHS_AND_FACTS,
-  type BloodComponentStory,
   type BloodGroup,
   type BloodRequest,
   type DonorProfile,
@@ -29,58 +26,58 @@ interface DonorPass {
 }
 
 const NAV_LINKS = [
-  { href: "#find-blood", label: "Find donors" },
-  { href: "#requests", label: "Requests" },
-  { href: "#radar", label: "Radar" },
-  { href: "#banks", label: "Blood banks" },
-  { href: "#donate", label: "Donate" },
+  { href: "#find-blood", label: "Donor Registry" },
+  { href: "#requests", label: "Requisitions" },
+  { href: "#radar", label: "Dispatch Radar" },
+  { href: "#banks", label: "Blood Banks" },
+  { href: "#donate", label: "Guidelines" },
 ];
 
 const PROBLEMS = [
   {
     index: "01",
-    title: "Finding a matching donor",
-    problem: "Families post exact-group appeals and miss donors who are medically compatible.",
-    solution: "Compatibility search returns every safe blood group, nearest donors first.",
+    title: "Identifying Compatible Donors",
+    problem: "Patient families often broadcast single-group appeals and overlook donors whose blood group is medically cross-compatible.",
+    solution: "Automated ABO and Rh red-cell compatibility matching surfaces all safe donor groups, ordered by proximity and availability.",
     href: "#find-blood",
-    cta: "Search donors",
+    cta: "Search Donor Registry",
   },
   {
     index: "02",
-    title: "Locating a blood bank with stock",
-    problem: "Relatives phone centre after centre to ask what is available.",
-    solution: "One directory with red-cell, platelet and plasma stock at partner centres.",
+    title: "Verifying Blood Bank Inventory",
+    problem: "Caregivers and hospital staff contact multiple centres individually to confirm component availability.",
+    solution: "A centralized regional directory displays current Packed Red Cell, Platelet, and Plasma reserves across authorized centres.",
     href: "#banks",
-    cta: "Check stock",
+    cta: "Inspect Regional Inventory",
   },
   {
     index: "03",
-    title: "Coordinating requests in time",
-    problem: "Requests circulate unverified and nobody owns the response.",
-    solution: "Hospitals post verified requests; the radar finds and dispatches the nearest compatible donor.",
+    title: "Coordinating Urgent Requisitions",
+    problem: "Unverified requests circulate informally without centralized tracking or confirmed donor dispatch.",
+    solution: "Hospital transfusion desks log verified requisitions and use the radial dispatch console to route nearby donors.",
     href: "#radar",
-    cta: "Open radar",
+    cta: "Open Dispatch Console",
   },
 ];
 
 const SCENARIO_FILTERS: { value: ScenarioFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "Emergency Trauma", label: "Trauma" },
-  { value: "Critical Care", label: "Critical care" },
-  { value: "Planned Surgery", label: "Surgery" },
+  { value: "all", label: "All Requisitions" },
+  { value: "Emergency Trauma", label: "Emergency Trauma" },
+  { value: "Critical Care", label: "Critical Care" },
+  { value: "Planned Surgery", label: "Scheduled Surgery" },
 ];
 
 const BANK_FILTERS: { value: BankFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "Blood bank", label: "Blood banks" },
-  { value: "Hospital partner", label: "Hospitals" },
+  { value: "all", label: "All Centres" },
+  { value: "Blood bank", label: "Regional Blood Banks" },
+  { value: "Hospital partner", label: "Hospital Blood Banks" },
 ];
 
 const ELIGIBILITY = [
-  { label: "Age", value: "18–65 years" },
-  { label: "Weight", value: "45 kg or more" },
-  { label: "Haemoglobin", value: "12.5 g/dL or more" },
-  { label: "Whole-blood gap", value: "90 days (men) · 120 days (women)" },
+  { label: "Donor Age", value: "18–65 years" },
+  { label: "Minimum Weight", value: "45 kg or above" },
+  { label: "Minimum Haemoglobin", value: "12.5 g/dL or above" },
+  { label: "Whole-Blood Interval", value: "90 days (men) · 120 days (women)" },
 ];
 
 function shortHospital(name: string) {
@@ -161,7 +158,6 @@ function App() {
   const [city, setCity] = useState("");
   const [availableNowOnly, setAvailableNowOnly] = useState(false);
   const [includeCompatible, setIncludeCompatible] = useState(true);
-  const [expandedDonorId, setExpandedDonorId] = useState<string | null>(null);
   const [checkerOpen, setCheckerOpen] = useState(false);
   const [checkDonor, setCheckDonor] = useState<BloodGroup>("O-");
   const [checkPatient, setCheckPatient] = useState<BloodGroup>("A+");
@@ -172,9 +168,6 @@ function App() {
 
   const [bankQuery, setBankQuery] = useState("");
   const [bankType, setBankType] = useState<BankFilter>("all");
-
-  const [activeComponentId, setActiveComponentId] = useState<BloodComponentStory["id"]>("red-cells");
-  const [driveUnits, setDriveUnits] = useState(12);
 
   const [openGuide, setOpenGuide] = useState<number | null>(0);
   const [mythIndex, setMythIndex] = useState(0);
@@ -243,27 +236,6 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
-  // Drives the scroll progress line under the header.
-  useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      document.documentElement.style.setProperty("--scroll", max > 0 ? String(Math.min(1, window.scrollY / max)) : "0");
-    };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
-
   useEffect(() => {
     if (!modalOpen) return undefined;
     const onKey = (event: KeyboardEvent) => {
@@ -293,7 +265,7 @@ function App() {
       (donor) =>
         allowed.includes(donor.group) &&
         (!query || donor.city.toLowerCase().includes(query) || donor.location.toLowerCase().includes(query)) &&
-        (!availableNowOnly || donor.availability === "Available Now"),
+        (!availableNowOnly || donor.availability === "Available Immediately"),
     ).sort((a, b) => {
       if (bloodGroup !== "all") {
         const exactA = a.group === bloodGroup ? 0 : 1;
@@ -320,26 +292,28 @@ function App() {
     );
   }, [bankQuery, bankType]);
 
-  const activeComponent = COMPONENT_STORIES.find((item) => item.id === activeComponentId) ?? COMPONENT_STORIES[0];
   const checkCompatible = COMPATIBILITY_MAP[checkPatient].receiveRedCellsFrom.includes(checkDonor);
   const currentMyth = MYTHS_AND_FACTS[mythIndex];
 
   const toggleEmergency = () => {
     if (emergencyMode) {
       setEmergencyMode(false);
-      showToast("Emergency mode off.");
+      showToast("Priority dispatch protocol deactivated.");
       return;
     }
     setEmergencyMode(true);
     const critical = requests.find((request) => request.priority === "Critical") ?? requests[0];
-    openRadarFor(critical.id, `Emergency mode on — radar locked to ${critical.id} at ${shortHospital(critical.hospital)}.`);
+    openRadarFor(
+      critical.id,
+      `Priority dispatch active — radar locked to ${critical.id} at ${shortHospital(critical.hospital)}.`,
+    );
   };
 
   const handleSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setBgPulse((count) => count + 1);
     showToast(
-      `${matches.length} ${matches.length === 1 ? "donor" : "donors"} found${city.trim() ? ` near ${city.trim()}` : ""}.`,
+      `${matches.length} compatible ${matches.length === 1 ? "donor" : "donors"} matched${city.trim() ? ` in ${city.trim()}` : ""}.`,
     );
   };
 
@@ -348,13 +322,13 @@ function App() {
       setBloodGroup(group);
       setIncludeCompatible(true);
       setBgPulse((count) => count + 1);
-      showToast(`Donor search set to ${group} patients.`);
+      showToast(`Donor registry filtered for Group ${group} recipients.`);
     },
     [showToast],
   );
 
   const handleHeroBank = useCallback(() => {
-    showToast("Blood bank selected — partner stock is listed under Blood banks.");
+    showToast("Blood bank node selected — inspect component inventory in the Blood Banks section.");
   }, [showToast]);
 
   const scrollRequests = (direction: 1 | -1) => {
@@ -363,7 +337,7 @@ function App() {
 
   const sendDonorRequest = (donor: DonorProfile) => {
     setActiveDonor(null);
-    notify(`Request sent to ${donor.name}. Their number stays private until they accept.`);
+    notify(`Requisition relayed to ${donor.name} via ${donor.verifiedBy}. Contact details remain confidential until accepted.`);
   };
 
   const handleRegistration = (event: FormEvent<HTMLFormElement>) => {
@@ -403,21 +377,21 @@ function App() {
       city: requestCity,
       need:
         scenario === "Emergency Trauma"
-          ? "Active bleeding — immediate transfusion"
+          ? "Acute haemorrhage resuscitation protocol"
           : scenario === "Critical Care"
-            ? "Low platelet count — transfusion needed"
-            : "Blood reserved for scheduled surgery",
+            ? "Critical care thrombocytopenia support"
+            : "Cross-matched surgical standby reserve",
       scenario,
       priority: scenario === "Emergency Trauma" ? "Critical" : scenario === "Critical Care" ? "Urgent" : "Priority",
       updatedLabel: "Verified just now",
       componentNeeded: scenario === "Critical Care" ? "Single-Donor Platelets (SDP)" : "Packed Red Cells (PRBC)",
       crossMatchNote: "Cross-match sample received",
-      attendingDesk: "Blood bank duty officer",
+      attendingDesk: "Hospital Transfusion Desk",
     };
 
     setRequests((prev) => [newRequest, ...prev]);
     setScenarioFilter("all");
-    openRadarFor(newRequest.id, `${newRequest.id} posted — radar is scanning for ${group}-compatible donors.`);
+    openRadarFor(newRequest.id, `${newRequest.id} logged — dispatch radar scanning for ${group}-compatible donors.`);
   };
 
   const emergencyButton = (onClick: () => void) => (
@@ -428,7 +402,7 @@ function App() {
       onClick={onClick}
     >
       <span className="pulse-dot" />
-      {emergencyMode ? "Emergency on" : "Emergency"}
+      {emergencyMode ? "Priority Dispatch Active" : "Priority Dispatch"}
     </button>
   );
 
@@ -464,7 +438,7 @@ function App() {
                   openRegister();
                 }}
               >
-                Become a donor
+                Register as Donor
               </button>
             </div>
           </nav>
@@ -472,7 +446,7 @@ function App() {
           <div className="header-actions">
             {emergencyButton(toggleEmergency)}
             <button type="button" className="btn btn-primary" onClick={openRegister}>
-              Become a donor
+              Register as Donor
             </button>
           </div>
 
@@ -488,7 +462,6 @@ function App() {
             <span />
           </button>
         </div>
-        <span className="scroll-progress" aria-hidden="true" />
       </header>
 
       <main id="top">
@@ -497,7 +470,7 @@ function App() {
             <div className="hero-copy">
               <span className="hero-badge">
                 <span className="pulse-dot" />
-                Live · {requests.length} urgent requests in {requestCities} cities
+                Clinical Coordination · {requests.length} active requisitions across {requestCities} cities
               </span>
               <h1 className="hero-title">
                 Every drop
@@ -505,14 +478,15 @@ function App() {
                 <em>connects</em> a life.
               </h1>
               <p className="hero-sub">
-                Find compatible donors, check blood bank stock and dispatch help to hospitals — in minutes, not hours.
+                A unified clinical coordination platform for locating ABO/Rh-compatible voluntary donors, verifying
+                regional blood bank inventory, and dispatching urgent hospital requisitions.
               </p>
               <div className="hero-actions">
                 <a className="btn btn-primary btn-lg" href="#find-blood">
-                  Find a donor <ArrowIcon />
+                  Locate Compatible Donors <ArrowIcon />
                 </a>
                 <button type="button" className="btn btn-glass btn-lg" onClick={openRegister}>
-                  Become a donor
+                  Register as a Donor
                 </button>
               </div>
             </div>
@@ -522,18 +496,7 @@ function App() {
                 onSelectDonorGroup={handleHeroGroup}
                 onSelectBankView={handleHeroBank}
               />
-              <p className="hero-hint">Drag to rotate · tap a node to trace its route</p>
-            </div>
-          </div>
-          <div className="ticker" aria-hidden="true">
-            <div className="ticker-track">
-              {[...requests, ...requests].map((request, index) => (
-                <span key={`${request.id}-${index}`} className={`ticker-item is-${request.priority.toLowerCase()}`}>
-                  <span className="ticker-dot" />
-                  <b>{request.group}</b>
-                  {request.units} · {shortHospital(request.hospital)} · {request.city}
-                </span>
-              ))}
+              <p className="hero-hint">Select a blood group or blood bank node to inspect compatibility routing</p>
             </div>
           </div>
         </section>
@@ -542,10 +505,14 @@ function App() {
           <div className="container reveal">
             <div className="section-head is-center">
               <div className="section-head-copy">
-                <span className="eyebrow">The problem</span>
+                <span className="eyebrow">Clinical Challenge</span>
                 <h2>
-                  Three delays stand between <em>a patient</em> and blood
+                  Three operational delays in <em>emergency</em> transfusion
                 </h2>
+                <p>
+                  During trauma resuscitation, surgical procedures, and critical care, locating compatible blood
+                  components is frequently delayed by fragmented communication.
+                </p>
               </div>
             </div>
             <div className="problem-grid">
@@ -554,11 +521,11 @@ function App() {
                   <span className="problem-index">{item.index}</span>
                   <h3>{item.title}</h3>
                   <div className="problem-row">
-                    <span>Today</span>
+                    <span>Conventional Practice</span>
                     <p>{item.problem}</p>
                   </div>
                   <div className="problem-row is-solution">
-                    <span>With BloodLink</span>
+                    <span>BloodLink Protocol</span>
                     <p>{item.solution}</p>
                   </div>
                   <a className="problem-link" href={item.href}>
@@ -574,24 +541,27 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow">Find donors</span>
+                <span className="eyebrow">Donor Registry</span>
                 <h2>
-                  Search <em>compatible</em> donors near you
+                  Locate <em>compatible</em> voluntary donors
                 </h2>
-                <p>Every medically safe blood group is included, nearest first. Phone numbers stay private.</p>
+                <p>
+                  Search results include all ABO/Rh-compatible red-cell donor groups, ordered by exact match and
+                  proximity. Personal contact details remain confidential until a donor accepts a requisition.
+                </p>
               </div>
             </div>
 
             <div className="search-panel glass">
               <form className="search-form" onSubmit={handleSearch}>
                 <label className="field">
-                  <span>Patient blood group</span>
+                  <span>Recipient Blood Group</span>
                   <select
                     className="input"
                     value={bloodGroup}
                     onChange={(event) => setBloodGroup(event.target.value as "all" | BloodGroup)}
                   >
-                    <option value="all">Any group</option>
+                    <option value="all">All Blood Groups</option>
                     {BLOOD_GROUPS.map((group) => (
                       <option key={group} value={group}>
                         {group}
@@ -600,28 +570,28 @@ function App() {
                   </select>
                 </label>
                 <label className="field">
-                  <span>City or area</span>
+                  <span>City or Locality</span>
                   <input
                     className="input"
                     type="search"
                     value={city}
                     onChange={(event) => setCity(event.target.value)}
-                    placeholder="Bengaluru, Mumbai, Delhi…"
+                    placeholder="Bengaluru, Mumbai, New Delhi, Hyderabad…"
                   />
                 </label>
                 <label className="field">
-                  <span>Availability</span>
+                  <span>Availability Status</span>
                   <select
                     className="input"
                     value={availableNowOnly ? "now" : "any"}
                     onChange={(event) => setAvailableNowOnly(event.target.value === "now")}
                   >
-                    <option value="any">Any time</option>
-                    <option value="now">Available now</option>
+                    <option value="any">All Registered Donors</option>
+                    <option value="now">Available Immediately</option>
                   </select>
                 </label>
                 <button type="submit" className="btn btn-primary btn-lg search-submit">
-                  <SearchIcon /> Search
+                  <SearchIcon /> Search Registry
                 </button>
               </form>
               <div className="search-sub">
@@ -633,12 +603,12 @@ function App() {
                     onChange={(event) => setIncludeCompatible(event.target.checked)}
                   />
                   <span>
-                    Include compatible groups
+                    Include all ABO/Rh-compatible red-cell donor groups
                     {bloodGroup !== "all" && ` (${COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(", ")})`}
                   </span>
                 </label>
                 <span className="result-count" aria-live="polite">
-                  {matches.length} {matches.length === 1 ? "donor" : "donors"} found
+                  {matches.length} registered {matches.length === 1 ? "donor" : "donors"} matched
                 </span>
               </div>
             </div>
@@ -646,15 +616,14 @@ function App() {
             {matches.length > 0 ? (
               <div className="donor-grid">
                 {matches.slice(0, 6).map((donor) => {
-                  const expanded = expandedDonorId === donor.id;
                   const exact = bloodGroup !== "all" && donor.group === bloodGroup;
                   return (
-                    <article key={donor.id} className={`donor-card glass glass-lift ${expanded ? "is-open" : ""}`}>
+                    <article key={donor.id} className="donor-card glass glass-lift">
                       <div className="card-top">
                         <span className="group-badge">{donor.group}</span>
                         {bloodGroup !== "all" && (
                           <span className={`match-tag ${exact ? "is-exact" : "is-compat"}`}>
-                            {exact ? "Exact match" : "Compatible"}
+                            {exact ? "Exact Match" : "Compatible Match"}
                           </span>
                         )}
                       </div>
@@ -663,39 +632,23 @@ function App() {
                         {donor.location} · {donor.distanceKm} km
                       </p>
                       <p className="donor-status">
-                        <span className={`status-dot ${donor.availability === "Available Now" ? "is-live" : ""}`} />
+                        <span className={`status-dot ${donor.availability === "Available Immediately" ? "is-live" : ""}`} />
                         {donor.availability} · {donor.responseWindow}
                       </p>
-                      <div className={`pop-down ${expanded ? "is-open" : ""}`} id={`donor-${donor.id}`}>
-                        <div className="pop-down-inner">
-                          <div className="kv-list">
-                            <div className="kv">
-                              <span>Haemoglobin</span>
-                              <strong>{donor.hemoglobin}</strong>
-                            </div>
-                            <div className="kv">
-                              <span>Last donation</span>
-                              <strong>{donor.lastDonated}</strong>
-                            </div>
-                            <div className="kv">
-                              <span>Verified by</span>
-                              <strong>{donor.verifiedBy}</strong>
-                            </div>
-                          </div>
+                      <div className="kv-list">
+                        <div className="kv">
+                          <span>Verified Centre</span>
+                          <strong>{donor.verifiedBy}</strong>
+                        </div>
+                        <div className="kv">
+                          <span>Compatible Recipients</span>
+                          <strong>{COMPATIBILITY_MAP[donor.group].donateRedCellsTo.join(", ")}</strong>
                         </div>
                       </div>
                       <div className="card-actions">
-                        <button
-                          type="button"
-                          className="pop-toggle"
-                          aria-expanded={expanded}
-                          aria-controls={`donor-${donor.id}`}
-                          onClick={() => setExpandedDonorId(expanded ? null : donor.id)}
-                        >
-                          {expanded ? "Less" : "Details"} <ChevronIcon open={expanded} />
-                        </button>
+                        <span className="donor-id">ID · {donor.id}</span>
                         <button type="button" className="btn btn-primary btn-sm" onClick={() => setActiveDonor(donor)}>
-                          Contact
+                          Initiate Request
                         </button>
                       </div>
                     </article>
@@ -703,7 +656,10 @@ function App() {
                 })}
               </div>
             ) : (
-              <p className="empty-state">No donors match. Clear the city or include compatible groups.</p>
+              <p className="empty-state">
+                No registered donors match the current filter criteria. Broaden the locality filter or enable compatible
+                blood groups.
+              </p>
             )}
 
             <div className={`checker glass ${checkerOpen ? "is-open" : ""}`}>
@@ -715,8 +671,8 @@ function App() {
                 onClick={() => setCheckerOpen((open) => !open)}
               >
                 <span>
-                  <span className="panel-label">Compatibility checker</span>
-                  <strong>Can this donor give to this patient?</strong>
+                  <span className="panel-label">Transfusion Compatibility Reference</span>
+                  <strong>Verify donor-to-recipient red-cell compatibility</strong>
                 </span>
                 <ChevronIcon open={checkerOpen} />
               </button>
@@ -725,7 +681,7 @@ function App() {
                   <div className="checker-body">
                     <div className="checker-grid">
                       <div>
-                        <span className="panel-label">Donor</span>
+                        <span className="panel-label">Donor Blood Group</span>
                         <div className="group-pills" role="group" aria-label="Donor blood group">
                           {BLOOD_GROUPS.map((group) => (
                             <button
@@ -744,7 +700,7 @@ function App() {
                         <ArrowIcon />
                       </span>
                       <div>
-                        <span className="panel-label">Patient</span>
+                        <span className="panel-label">Recipient Blood Group</span>
                         <div className="group-pills" role="group" aria-label="Patient blood group">
                           {BLOOD_GROUPS.map((group) => (
                             <button
@@ -762,19 +718,21 @@ function App() {
                     </div>
                     <div className={`verdict ${checkCompatible ? "is-ok" : "is-bad"}`} aria-live="polite">
                       <div>
-                        <span className="verdict-label">{checkCompatible ? "Compatible" : "Not compatible"}</span>
+                        <span className="verdict-label">
+                          {checkCompatible ? "Compatible Transfusion Match" : "Incompatible — Antigen Conflict"}
+                        </span>
                         <strong>
-                          {checkDonor} donor → {checkPatient} patient
+                          Group {checkDonor} Donor → Group {checkPatient} Recipient
                         </strong>
                         <p>
                           {checkCompatible
-                            ? `${checkPatient} patients can safely receive ${checkDonor} red cells.`
-                            : `${checkDonor} red cells carry antigens a ${checkPatient} patient would react to. Safe donors: ${COMPATIBILITY_MAP[checkPatient].receiveRedCellsFrom.join(", ")}.`}
+                            ? `Group ${checkPatient} recipients may safely receive Packed Red Blood Cells from a Group ${checkDonor} donor.`
+                            : `Group ${checkDonor} erythrocytes carry antigens incompatible with Group ${checkPatient} recipients. Compatible donor groups: ${COMPATIBILITY_MAP[checkPatient].receiveRedCellsFrom.join(", ")}.`}
                         </p>
                       </div>
                       {!checkCompatible && (
                         <button type="button" className="btn btn-glass btn-sm" onClick={() => setCheckDonor("O-")}>
-                          Try O- universal donor
+                          Select Group O− (Universal Donor)
                         </button>
                       )}
                     </div>
@@ -789,15 +747,18 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow">Urgent requests</span>
+                <span className="eyebrow">Active Requisitions</span>
                 <h2>
-                  Hospitals that need blood <em>now</em>
+                  Verified hospital <em>transfusion</em> requests
                 </h2>
-                <p>Every request is verified by the hospital's blood desk before it appears.</p>
+                <p>
+                  Each requisition is logged by the hospital transfusion desk with required blood component, unit
+                  volume, and clinical indication.
+                </p>
               </div>
               <div className="section-head-actions">
                 <button type="button" className="btn btn-primary" onClick={() => setCreateRequestOpen(true)}>
-                  Post a request
+                  Submit Requisition
                 </button>
                 <div className="carousel-arrows">
                   <button type="button" className="icon-btn" aria-label="Previous requests" onClick={() => scrollRequests(-1)}>
@@ -856,7 +817,7 @@ function App() {
                   <p className="request-need">{request.need}</p>
                   <div className="card-actions">
                     <button type="button" className="btn btn-glass btn-sm" onClick={() => setActiveRequest(request)}>
-                      Details
+                      Requisition Details
                     </button>
                     <button
                       type="button"
@@ -864,16 +825,16 @@ function App() {
                       onClick={() =>
                         openRadarFor(
                           request.id,
-                          `Radar scanning for ${request.group}-compatible donors near ${shortHospital(request.hospital)}.`,
+                          `Dispatch radar scanning for ${request.group}-compatible donors near ${shortHospital(request.hospital)}.`,
                         )
                       }
                     >
-                      Find donors <ArrowIcon />
+                      Locate on Radar <ArrowIcon />
                     </button>
                   </div>
                 </article>
               ))}
-              {filteredRequests.length === 0 && <p className="empty-state">No requests in this category.</p>}
+              {filteredRequests.length === 0 && <p className="empty-state">No active requisitions in this category.</p>}
             </div>
           </div>
         </section>
@@ -882,13 +843,13 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow is-teal">Hospital radar</span>
+                <span className="eyebrow is-teal">Dispatch Radar</span>
                 <h2>
-                  Locate and <em>dispatch</em> the nearest donor
+                  Radial donor &amp; inventory <em>coordination</em>
                 </h2>
                 <p>
-                  The sweep scans around the requesting hospital. Select a contact to dispatch a donor, reserve units or
-                  reroute a mobile unit.
+                  Select an active hospital requisition to scan surrounding compatible donors and authorized blood banks
+                  within a 2 km, 5 km, or 10 km radius.
                 </p>
               </div>
             </div>
@@ -907,13 +868,14 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow is-teal">Blood banks</span>
+                <span className="eyebrow is-teal">Blood Bank Inventory</span>
                 <h2>
-                  Stock at <em>partner</em> centres
+                  Component stock at <em>authorized</em> centres
                 </h2>
                 <p>
-                  Red-cell units by group. Low stock is marked in red
-                  {bloodGroup !== "all" ? `, and ${bloodGroup} is outlined` : ""}.
+                  Current Packed Red Blood Cell (PRBC) units by blood group, alongside Single-Donor Platelets and Fresh
+                  Frozen Plasma reserves. Groups with five or fewer units are flagged as low stock
+                  {bloodGroup !== "all" ? `, and Group ${bloodGroup} is highlighted` : ""}.
                 </p>
               </div>
               <div className="section-head-actions">
@@ -935,7 +897,7 @@ function App() {
                   type="search"
                   value={bankQuery}
                   onChange={(event) => setBankQuery(event.target.value)}
-                  placeholder="Search city or centre"
+                  placeholder="Filter by city or centre"
                   aria-label="Search blood banks"
                 />
               </div>
@@ -984,87 +946,8 @@ function App() {
                 ))}
               </div>
             ) : (
-              <p className="empty-state">No centres match that search.</p>
+              <p className="empty-state">No authorized blood centres match the current filter.</p>
             )}
-          </div>
-        </section>
-
-        <section className="section impact-section" id="impact">
-          <div className="container reveal">
-            <div className="section-head is-center">
-              <div className="section-head-copy">
-                <span className="eyebrow">Impact</span>
-                <h2>
-                  One donation, up to <em>three</em> patients
-                </h2>
-                <p>Whole blood is separated into red cells, plasma and platelets — each treats a different patient.</p>
-              </div>
-            </div>
-
-            <div className="impact-shell glass">
-              <div className="impact-info">
-                <div className="tabs" role="group" aria-label="Blood components">
-                  {COMPONENT_STORIES.map((component) => (
-                    <button
-                      key={component.id}
-                      type="button"
-                      className={`tab ${activeComponentId === component.id ? "is-active" : ""}`}
-                      aria-pressed={activeComponentId === component.id}
-                      onClick={() => setActiveComponentId(component.id)}
-                    >
-                      <span className="tab-dot" style={{ background: component.color }} />
-                      {component.title.split(" (")[0]}
-                    </button>
-                  ))}
-                </div>
-                <div className="component-detail" style={{ borderLeftColor: activeComponent.color }}>
-                  <span className="panel-label">{activeComponent.subtitle}</span>
-                  <h3>{activeComponent.title}</h3>
-                  <p>{activeComponent.description}</p>
-                  <dl className="facts">
-                    <div>
-                      <dt>Storage</dt>
-                      <dd>{activeComponent.storageTemp}</dd>
-                    </div>
-                    <div>
-                      <dt>Shelf life</dt>
-                      <dd>{activeComponent.shelfLife}</dd>
-                    </div>
-                    <div>
-                      <dt>Used for</dt>
-                      <dd>{activeComponent.useCase}</dd>
-                    </div>
-                  </dl>
-                </div>
-                <div className="drive-sim">
-                  <label htmlFor="drive-units">
-                    <span>
-                      Blood drive: <b>{driveUnits}</b> donations
-                    </span>
-                    <span className="drive-result">
-                      Up to <b>{driveUnits * 3}</b> patients helped*
-                    </span>
-                  </label>
-                  <input
-                    id="drive-units"
-                    className="range"
-                    type="range"
-                    min={1}
-                    max={50}
-                    value={driveUnits}
-                    onChange={(event) => setDriveUnits(Number(event.target.value))}
-                  />
-                </div>
-                <p className="fine-print">*When separated into components. Actual use depends on each patient's needs.</p>
-              </div>
-              <div className="impact-stage">
-                <ImpactOrbit3D
-                  activeComponent={activeComponentId}
-                  unitCount={driveUnits}
-                  onSelectComponent={setActiveComponentId}
-                />
-              </div>
-            </div>
           </div>
         </section>
 
@@ -1072,11 +955,15 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow">Donate</span>
+                <span className="eyebrow">Donor Guidelines</span>
                 <h2>
-                  Before you <em>donate</em>
+                  Voluntary blood donation <em>standards</em>
                 </h2>
-                <p>What to expect, who can give and how often. Your blood bank confirms eligibility on the day.</p>
+                <p>
+                  A single whole-blood donation can be separated into red cells, plasma, and platelets to support up to
+                  three patients. Final eligibility is confirmed through a confidential medical screening at the blood
+                  centre.
+                </p>
               </div>
             </div>
 
@@ -1119,7 +1006,7 @@ function App() {
 
               <div className="donate-side">
                 <div className="info-card glass">
-                  <span className="panel-label">Eligibility at a glance</span>
+                  <span className="panel-label">National Eligibility Standards (NBTC)</span>
                   <ul className="eligibility-list">
                     {ELIGIBILITY.map((item) => (
                       <li key={item.label}>
@@ -1128,12 +1015,14 @@ function App() {
                       </li>
                     ))}
                   </ul>
-                  <p className="fine-print">Based on India's national (NBTC) donor guidelines.</p>
+                  <p className="fine-print">
+                    Reference criteria per National Blood Transfusion Council (NBTC) donor guidelines.
+                  </p>
                 </div>
 
                 <div className="info-card glass">
                   <div className="myth-head">
-                    <span className="panel-label">Myth vs fact</span>
+                    <span className="panel-label">Clinical Facts vs. Common Misconceptions</span>
                     <div className="myth-nav">
                       <button
                         type="button"
@@ -1156,7 +1045,7 @@ function App() {
                   <div className="myth-slide" key={mythIndex} aria-live="polite">
                     <p className="myth-text">{currentMyth.myth}</p>
                     <p className="fact-text">
-                      <strong>Fact:</strong> {currentMyth.fact}
+                      <strong>Clinical Fact:</strong> {currentMyth.fact}
                     </p>
                   </div>
                   <div className="slide-dots">
@@ -1177,14 +1066,14 @@ function App() {
 
             <div className="cta-band glass">
               <div>
-                <h3>Ready to give?</h3>
+                <h3>Register with the Voluntary Donor Network</h3>
                 <p>
-                  Join the donor registry in under a minute. Hospitals see only your blood group and area until you accept
-                  a request.
+                  Complete registration in under one minute. Participating hospitals view only your blood group and
+                  locality until you accept a verified transfusion request.
                 </p>
               </div>
               <button type="button" className="btn btn-light btn-lg" onClick={openRegister}>
-                Become a donor <ArrowIcon />
+                Register as a Donor <ArrowIcon />
               </button>
             </div>
           </div>
@@ -1200,7 +1089,10 @@ function App() {
                 Blood<span className="brand-accent">Link</span>
               </span>
             </a>
-            <p className="footer-about">Connecting voluntary donors, hospitals and blood banks when every minute counts.</p>
+            <p className="footer-about">
+              Clinical blood donor locator, regional inventory directory, and hospital requisition coordination
+              platform.
+            </p>
           </div>
           <nav className="footer-links" aria-label="Footer">
             {NAV_LINKS.map((link) => (
@@ -1208,15 +1100,14 @@ function App() {
                 {link.label}
               </a>
             ))}
-            <a href="#impact">Impact</a>
           </nav>
         </div>
-        <div className="container footer-wordmark" aria-hidden="true">
-          BloodLink
-        </div>
         <div className="container footer-bottom">
-          <span>© 2026 BloodLink</span>
-          <span>Hackathon prototype · sample data, not connected to live hospital systems.</span>
+          <span>© 2026 BloodLink Transfusion Coordination Platform</span>
+          <span>
+            Demonstration environment · all donor profiles, inventory figures, and hospital requisitions are
+            illustrative sample records.
+          </span>
         </div>
       </footer>
 
@@ -1246,12 +1137,14 @@ function App() {
                   <span className="success-mark">
                     <CheckIcon />
                   </span>
-                  <span className="eyebrow is-teal">Registered</span>
-                  <h2 id="modal-title">Welcome, {donorPass.name}.</h2>
-                  <p className="modal-intro">Show this pass at a partner blood bank for faster check-in.</p>
+                  <span className="eyebrow is-teal">Registration Confirmed</span>
+                  <h2 id="modal-title">{donorPass.name}</h2>
+                  <p className="modal-intro">
+                    Present this registration credential at an authorized blood centre during donor check-in.
+                  </p>
                   <div className="donor-pass">
                     <div className="pass-top">
-                      <span>BloodLink donor pass</span>
+                      <span>Voluntary Donor Credential</span>
                       <span>{donorPass.id}</span>
                     </div>
                     <div className="pass-body">
@@ -1263,24 +1156,25 @@ function App() {
                     </div>
                   </div>
                   <button type="button" className="btn btn-primary btn-lg btn-block" onClick={closeModals}>
-                    Done
+                    Close
                   </button>
                 </>
               ) : (
                 <>
-                  <span className="eyebrow">Become a donor</span>
-                  <h2 id="modal-title">Join the donor registry</h2>
+                  <span className="eyebrow">Voluntary Donor Registration</span>
+                  <h2 id="modal-title">Register with the Donor Network</h2>
                   <p className="modal-intro">
-                    Hospitals see only your blood group and area. You choose which requests to accept.
+                    Participating hospitals view only your blood group and locality. Personal contact information is
+                    shared only when you accept a requisition.
                   </p>
                   <form className="form" onSubmit={handleRegistration}>
                     <label className="field">
-                      <span>Full name</span>
+                      <span>Full Name</span>
                       <input className="input" name="name" required autoComplete="name" placeholder="e.g. Aarav Nair" />
                     </label>
                     <div className="form-row">
                       <label className="field">
-                        <span>Blood group</span>
+                        <span>Blood Group</span>
                         <select className="input" name="group" defaultValue="" required>
                           <option value="" disabled>
                             Select
@@ -1293,7 +1187,7 @@ function App() {
                         </select>
                       </label>
                       <label className="field">
-                        <span>City</span>
+                        <span>City or Locality</span>
                         <input
                           className="input"
                           name="city"
@@ -1304,7 +1198,7 @@ function App() {
                       </label>
                     </div>
                     <button type="submit" className="btn btn-primary btn-lg btn-block">
-                      Create donor pass <ArrowIcon />
+                      Issue Donor Credential <ArrowIcon />
                     </button>
                   </form>
                 </>
@@ -1312,22 +1206,25 @@ function App() {
 
             {createRequestOpen && (
               <>
-                <span className="eyebrow">Hospital blood desk</span>
-                <h2 id="modal-title">Post an urgent request</h2>
-                <p className="modal-intro">It appears on the board and the radar starts scanning for compatible donors.</p>
+                <span className="eyebrow">Hospital Transfusion Desk</span>
+                <h2 id="modal-title">Submit Urgent Requisition</h2>
+                <p className="modal-intro">
+                  Logged requisitions appear immediately in the active queue and initiate radial scanning for compatible
+                  donors.
+                </p>
                 <form className="form" onSubmit={handleCreateRequest}>
                   <label className="field">
-                    <span>Hospital</span>
+                    <span>Receiving Hospital</span>
                     <input
                       className="input"
                       name="hospital"
                       required
-                      placeholder="e.g. St. John's Medical College Hospital"
+                      placeholder="e.g. Southern Regional Trauma Centre"
                     />
                   </label>
                   <div className="form-row">
                     <label className="field">
-                      <span>Blood group</span>
+                      <span>Required Blood Group</span>
                       <select className="input" name="group" defaultValue="O-">
                         {BLOOD_GROUPS.map((group) => (
                           <option key={group} value={group}>
@@ -1337,7 +1234,7 @@ function App() {
                       </select>
                     </label>
                     <label className="field">
-                      <span>Units</span>
+                      <span>Units Required</span>
                       <input className="input" name="units" type="number" min={1} max={10} defaultValue={2} required />
                     </label>
                   </div>
@@ -1347,16 +1244,16 @@ function App() {
                       <input className="input" name="city" required defaultValue="Bengaluru" />
                     </label>
                     <label className="field">
-                      <span>Situation</span>
+                      <span>Clinical Category</span>
                       <select className="input" name="scenario" defaultValue="Emergency Trauma">
-                        <option value="Emergency Trauma">Emergency trauma</option>
-                        <option value="Critical Care">Critical care</option>
-                        <option value="Planned Surgery">Planned surgery</option>
+                        <option value="Emergency Trauma">Emergency Trauma</option>
+                        <option value="Critical Care">Critical Care</option>
+                        <option value="Planned Surgery">Scheduled Surgery</option>
                       </select>
                     </label>
                   </div>
                   <button type="submit" className="btn btn-primary btn-lg btn-block">
-                    Post request <ArrowIcon />
+                    Log Requisition <ArrowIcon />
                   </button>
                 </form>
               </>
@@ -1379,19 +1276,19 @@ function App() {
                     <dd>{activeRequest.department}</dd>
                   </div>
                   <div>
-                    <dt>Clinical need</dt>
+                    <dt>Clinical Indication</dt>
                     <dd>{activeRequest.need}</dd>
                   </div>
                   <div>
-                    <dt>Safe donor groups</dt>
+                    <dt>Compatible Donor Groups</dt>
                     <dd>{COMPATIBILITY_MAP[activeRequest.group].receiveRedCellsFrom.join(", ")}</dd>
                   </div>
                   <div>
-                    <dt>Cross-match</dt>
+                    <dt>Cross-Match Status</dt>
                     <dd>{activeRequest.crossMatchNote}</dd>
                   </div>
                   <div>
-                    <dt>Blood desk</dt>
+                    <dt>Authorizing Desk</dt>
                     <dd>{activeRequest.attendingDesk}</dd>
                   </div>
                 </dl>
@@ -1401,18 +1298,18 @@ function App() {
                   onClick={() =>
                     openRadarFor(
                       activeRequest.id,
-                      `Radar scanning for ${activeRequest.group}-compatible donors near ${shortHospital(activeRequest.hospital)}.`,
+                      `Dispatch radar scanning for ${activeRequest.group}-compatible donors near ${shortHospital(activeRequest.hospital)}.`,
                     )
                   }
                 >
-                  Find donors on radar <ArrowIcon />
+                  Open on Dispatch Radar <ArrowIcon />
                 </button>
               </>
             )}
 
             {activeDonor && (
               <>
-                <span className="eyebrow is-teal">Verified donor · {activeDonor.id}</span>
+                <span className="eyebrow is-teal">Registered Donor · {activeDonor.id}</span>
                 <div className="modal-group">{activeDonor.group}</div>
                 <h2 id="modal-title">{activeDonor.name}</h2>
                 <p className="modal-intro">
@@ -1420,31 +1317,29 @@ function App() {
                 </p>
                 <dl className="detail-list">
                   <div>
-                    <dt>Availability</dt>
+                    <dt>Availability Status</dt>
                     <dd>
                       {activeDonor.availability} · {activeDonor.responseWindow}
                     </dd>
                   </div>
                   <div>
-                    <dt>Haemoglobin</dt>
-                    <dd>{activeDonor.hemoglobin}</dd>
+                    <dt>Verification Centre</dt>
+                    <dd>{activeDonor.verifiedBy}</dd>
                   </div>
                   <div>
-                    <dt>Last donation</dt>
-                    <dd>{activeDonor.lastDonated}</dd>
-                  </div>
-                  <div>
-                    <dt>Can give red cells to</dt>
+                    <dt>Compatible Recipient Groups</dt>
                     <dd>{COMPATIBILITY_MAP[activeDonor.group].donateRedCellsTo.join(", ")}</dd>
                   </div>
                 </dl>
-                <p className="form-note">Phone numbers stay private. Your request is relayed through {activeDonor.verifiedBy}.</p>
+                <p className="form-note">
+                  Personal contact numbers remain confidential. Requisitions are relayed through {activeDonor.verifiedBy}.
+                </p>
                 <button
                   type="button"
                   className="btn btn-primary btn-lg btn-block"
                   onClick={() => sendDonorRequest(activeDonor)}
                 >
-                  Send request <ArrowIcon />
+                  Transmit Requisition <ArrowIcon />
                 </button>
               </>
             )}

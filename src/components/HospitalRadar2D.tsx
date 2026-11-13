@@ -7,7 +7,7 @@ import {
   type NetworkPartner,
 } from "../data/bloodlinkData";
 
-type ContactKind = "donor" | "bank" | "van";
+type ContactKind = "donor" | "bank";
 
 interface RadarContact {
   id: string;
@@ -19,7 +19,6 @@ interface RadarContact {
   bearingDeg: number;
   compatible: boolean;
   etaMin: number;
-  orbitDegPerSec?: number;
 }
 
 interface DispatchInfo {
@@ -43,16 +42,14 @@ const SWEEP_DEG_PER_SEC = 72; // one rotation every 5 s
 const DISPATCH_SIM_MS = 30000; // compressed travel time so the demo can be watched end to end
 
 const KIND_LABEL: Record<ContactKind, string> = {
-  donor: "Donor",
-  bank: "Blood bank",
-  van: "Mobile unit",
+  donor: "Registered Donor",
+  bank: "Authorized Blood Bank",
 };
 
 const COLOR = {
   donor: "#ff3a52",
   donorDim: "#64748b",
   bank: "#2ee6c9",
-  van: "#f2a20c",
   ring: "rgba(46, 230, 201, 0.18)",
   ringOuter: "rgba(46, 230, 201, 0.48)",
   label: "rgba(211, 201, 195, 0.72)",
@@ -75,9 +72,8 @@ function parseEta(text: string, distanceKm: number): number {
   return Number.isFinite(minutes) ? minutes : Math.max(5, Math.round(distanceKm * 5));
 }
 
-function contactBearing(contact: RadarContact, dispatch: DispatchInfo | undefined, timeMs: number): number {
+function contactBearing(contact: RadarContact, dispatch: DispatchInfo | undefined): number {
   if (dispatch) return dispatch.bearingDeg;
-  if (contact.orbitDegPerSec) return (contact.bearingDeg + (timeMs / 1000) * contact.orbitDegPerSec) % 360;
   return contact.bearingDeg;
 }
 
@@ -90,11 +86,6 @@ function drawGlyph(ctx: CanvasRenderingContext2D, kind: ContactKind, x: number, 
   ctx.beginPath();
   if (kind === "bank") {
     ctx.rect(x - 5, y - 5, 10, 10);
-  } else if (kind === "van") {
-    ctx.moveTo(x, y - 7);
-    ctx.lineTo(x + 6.5, y + 5);
-    ctx.lineTo(x - 6.5, y + 5);
-    ctx.closePath();
   } else {
     ctx.arc(x, y, 5.5, 0, Math.PI * 2);
   }
@@ -159,19 +150,7 @@ export function HospitalRadar2D({
         };
       });
 
-    const van: RadarContact = {
-      id: "VAN-07",
-      kind: "van",
-      label: "Mobile collection van 07",
-      detail: "Cold-chain unit on patrol · 4 °C",
-      distanceKm: 3.2,
-      bearingDeg: 210,
-      compatible: true,
-      etaMin: 12,
-      orbitDegPerSec: 3,
-    };
-
-    return [...donorContacts, ...bankContacts, van];
+    return [...donorContacts, ...bankContacts];
   }, [banks, donors, request.group, request.hospital]);
 
   const visible = useMemo(
@@ -378,7 +357,7 @@ export function HospitalRadar2D({
         if (state.compatibleOnly && !contact.compatible) continue;
 
         const dispatch = state.dispatched[contact.id];
-        const bearing = contactBearing(contact, dispatch, reduced ? 0 : timeMs);
+        const bearing = contactBearing(contact, dispatch);
         const progress = dispatchProgress(dispatch, nowMs);
         const startR = (contact.distanceKm / state.rangeKm) * radius;
         const [x, y] = polar(bearing, startR * (1 - progress));
@@ -388,11 +367,9 @@ export function HospitalRadar2D({
         const color =
           contact.kind === "bank"
             ? COLOR.bank
-            : contact.kind === "van"
-              ? COLOR.van
-              : contact.compatible
-                ? COLOR.donor
-                : COLOR.donorDim;
+            : contact.compatible
+              ? COLOR.donor
+              : COLOR.donorDim;
 
         if (dispatch) {
           const [ox, oy] = polar(bearing, startR);
@@ -432,7 +409,7 @@ export function HospitalRadar2D({
         ctx.font = mono(11, 600);
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillText(contact.kind === "donor" ? contact.group ?? "" : contact.kind === "bank" ? "BANK" : "VAN", x + 9, y - 9);
+        ctx.fillText(contact.kind === "donor" ? contact.group ?? "" : "BANK", x + 9, y - 9);
         ctx.restore();
 
         hits.push({ id: contact.id, x, y });
@@ -519,21 +496,17 @@ export function HospitalRadar2D({
 
   const statusFor = (contact: RadarContact): string | null => {
     const remaining = remainingMinutes(contact);
-    if (remaining !== null) return remaining === 0 ? "Arrived" : `En route · ${remaining} min`;
+    if (remaining !== null) return remaining === 0 ? "Arrived" : `Dispatched · ${remaining} min`;
     if (reserved[contact.id]) return "Reserved";
     return null;
   };
 
   const dispatchContact = (contact: RadarContact) => {
-    const bearing = contactBearing(contact, undefined, performance.now());
+    const bearing = contactBearing(contact, undefined);
     const startedAt = Date.now();
     setDispatched((prev) => ({ ...prev, [contact.id]: { startedAt, bearingDeg: bearing } }));
     setNow(startedAt);
-    notifyRef.current(
-      contact.kind === "van"
-        ? `${contact.label} rerouted to ${hospital} · ETA ${contact.etaMin} min.`
-        : `${contact.label} dispatched to ${hospital} · ETA ${contact.etaMin} min.`,
-    );
+    notifyRef.current(`${contact.label} dispatched to ${hospital} · estimated arrival ${contact.etaMin} min.`);
   };
 
   const reserveFromBank = (contact: RadarContact) => {
@@ -557,20 +530,20 @@ export function HospitalRadar2D({
     if (contact.kind === "donor" && !contact.compatible) {
       return (
         <button type="button" className="btn btn-glass" disabled>
-          Not compatible with {request.group}
+          Incompatible with {request.group}
         </button>
       );
     }
     if (remaining !== null) {
       return (
         <button type="button" className="btn btn-glass" disabled>
-          {remaining === 0 ? `Arrived at ${hospital}` : `En route · ${remaining} min left`}
+          {remaining === 0 ? `Arrived at ${hospital}` : `Dispatched · ${remaining} min remaining`}
         </button>
       );
     }
     return (
       <button type="button" className="btn btn-primary" onClick={() => dispatchContact(contact)}>
-        {contact.kind === "van" ? "Reroute van to hospital" : "Dispatch donor"}
+        Dispatch donor to hospital
       </button>
     );
   };
@@ -589,13 +562,13 @@ export function HospitalRadar2D({
             onPointerDown={handlePointerDown}
           />
           <div className="radar-hud is-tl">
-            <span>Origin</span>
+            <span>Requisition origin</span>
             <strong>{hospital}</strong>
           </div>
           <div className="radar-hud is-tr">
-            <span>In range</span>
+            <span>Within {rangeKm} km</span>
             <strong>
-              {compatibleDonorsInRange} {compatibleDonorsInRange === 1 ? "donor" : "donors"}
+              {compatibleDonorsInRange} compatible {compatibleDonorsInRange === 1 ? "donor" : "donors"}
             </strong>
           </div>
         </div>
@@ -607,16 +580,12 @@ export function HospitalRadar2D({
           {!compatibleOnly && (
             <span className="legend-item">
               <span className="glyph is-donor is-dim" />
-              Not compatible
+              Incompatible donor
             </span>
           )}
           <span className="legend-item">
             <span className="glyph is-bank" />
-            Blood bank
-          </span>
-          <span className="legend-item">
-            <span className="glyph is-van" />
-            Mobile unit
+            Authorized blood bank
           </span>
         </div>
       </div>
@@ -624,7 +593,7 @@ export function HospitalRadar2D({
       <div className="radar-panel">
         <div className="radar-request">
           <label className="panel-label" htmlFor="radar-request">
-            Active request
+            Selected requisition
           </label>
           <select
             id="radar-request"
@@ -648,7 +617,7 @@ export function HospitalRadar2D({
             </div>
           </div>
           <p className="radar-safe">
-            Safe donor groups: <b>{safeGroups.join("  ")}</b>
+            Compatible donor groups: <b>{safeGroups.join("  ")}</b>
           </p>
         </div>
 
@@ -673,7 +642,7 @@ export function HospitalRadar2D({
         {locked ? (
           <div className="lock-card" aria-live="polite">
             <div className="lock-head">
-              <span className="panel-label">Locked contact</span>
+              <span className="panel-label">Selected contact</span>
               <span className={`kind-tag is-${locked.kind}`}>
                 {KIND_LABEL[locked.kind]}
                 {locked.group ? ` · ${locked.group}` : ""}
@@ -687,12 +656,12 @@ export function HospitalRadar2D({
                 <dd>{locked.distanceKm} km</dd>
               </div>
               <div>
-                <dt>ETA</dt>
+                <dt>Est. arrival</dt>
                 <dd>{lockedRemaining === null ? `${locked.etaMin} min` : lockedRemaining === 0 ? "Arrived" : `${lockedRemaining} min`}</dd>
               </div>
               <div>
                 <dt>Bearing</dt>
-                <dd>{locked.orbitDegPerSec && !dispatched[locked.id] ? "Moving" : `${String(Math.round(dispatched[locked.id]?.bearingDeg ?? locked.bearingDeg)).padStart(3, "0")}°`}</dd>
+                <dd>{`${String(Math.round(dispatched[locked.id]?.bearingDeg ?? locked.bearingDeg)).padStart(3, "0")}°`}</dd>
               </div>
             </dl>
             {renderAction(locked)}
@@ -702,7 +671,7 @@ export function HospitalRadar2D({
         )}
 
         <div className="contact-block">
-          <span className="panel-label">Contacts in range ({visible.length})</span>
+          <span className="panel-label">Contacts within radius ({visible.length})</span>
           {visible.length > 0 ? (
             <ul className="contact-list">
               {visible.map((contact) => {
