@@ -849,13 +849,13 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow is-teal">Dispatch Radar</span>
+                <span className="eyebrow is-teal">Tactical Geospatial Dispatch Radar</span>
                 <h2>
-                  Radial donor &amp; inventory <em>coordination</em>
+                  Geospatial ABO/Rh donor &amp; transit <em>coordination</em>
                 </h2>
                 <p>
-                  Select an active hospital requisition to scan surrounding compatible donors and authorized blood banks
-                  within a 2 km, 5 km, or 10 km radius.
+                  Scan real-time compatible voluntary donors and blood bank vaults across a 2 km to 25 km regional perimeter.
+                  Track live Green Corridor transit couriers, trigger AI Fast-Match auto-dispatch, or broadcast radial emergency alerts.
                 </p>
               </div>
             </div>
