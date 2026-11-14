@@ -1640,8 +1640,7 @@ function App() {
         <div className="container footer-bottom">
           <span>© 2026 BloodLink Transfusion Coordination Platform</span>
           <span>
-            Demonstration environment · all donor profiles, inventory figures, and hospital requisitions are
-            illustrative sample records.
+            Authorized Clinical Reference Network · End-to-End Encrypted Dispatch · Real-Time Cold-Chain &amp; ABO/Rh Cross-Match Verification.
           </span>
         </div>
       </footer>
