@@ -495,8 +495,14 @@ function App() {
                 boostFlow={emergencyMode}
                 onSelectDonorGroup={handleHeroGroup}
                 onSelectBankView={handleHeroBank}
+                onOpenRegister={openRegister}
+                onOpenRadar={() => {
+                  const firstReq = requests[0]?.id;
+                  if (firstReq) openRadarFor(firstReq, "Focused on live emergency dispatch radar.");
+                }}
+                onNotify={notify}
               />
-              <p className="hero-hint">Select a blood group or blood bank node to inspect compatibility routing</p>
+              <p className="hero-hint">Instant life-saving coordination: Match emergency blood, gauge donor impact, or verify bank reserves</p>
             </div>
           </div>
         </section>
