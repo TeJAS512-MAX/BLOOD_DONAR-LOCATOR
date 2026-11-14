@@ -272,16 +272,34 @@ h2 em {
 }
 
 .glass-lift {
+  animation: card-float-a 5.6s ease-in-out infinite;
+  will-change: transform, box-shadow;
   transition:
     transform 0.35s var(--ease),
     border-color 0.25s ease,
     box-shadow 0.35s var(--ease);
 }
 
+.glass-lift:nth-child(3n + 1) {
+  animation: card-float-a 5.6s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.glass-lift:nth-child(3n + 2) {
+  animation: card-float-b 6.4s ease-in-out infinite;
+  animation-delay: -2.1s;
+}
+
+.glass-lift:nth-child(3n + 3) {
+  animation: card-float-c 5.8s ease-in-out infinite;
+  animation-delay: -3.9s;
+}
+
 .glass-lift:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent-line);
-  box-shadow: var(--shadow-hover);
+  animation-play-state: paused;
+  transform: translateY(-12px) scale(1.015) !important;
+  border-color: rgba(0, 240, 255, 0.48) !important;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Numbered chapter label: [01] THE PROBLEM —— */
@@ -1022,6 +1040,12 @@ select option {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: hero-card-float 6.8s ease-in-out infinite;
+  will-change: transform, box-shadow;
+}
+
+.hero-smart-hub-card:hover {
+  animation-play-state: paused;
 }
 
 .hub-topbar {
@@ -3934,36 +3958,66 @@ select option {
   transform: none;
 }
 
-/* Stagger card entrances once their section is revealed.
-   An animation (fill: backwards) keeps hover transitions instant afterwards. */
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > * {
-  animation: card-in 0.7s var(--ease) backwards;
+/* Anti-gravity floating card animations */
+.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 1) {
+  animation: card-float-a 5.6s ease-in-out infinite;
+  animation-delay: 0s;
+  will-change: transform, box-shadow;
 }
 
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > :nth-child(2) {
-  animation-delay: 0.08s;
+.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 2) {
+  animation: card-float-b 6.4s ease-in-out infinite;
+  animation-delay: -2.1s;
+  will-change: transform, box-shadow;
 }
 
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > :nth-child(3) {
-  animation-delay: 0.16s;
+.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 3) {
+  animation: card-float-c 5.8s ease-in-out infinite;
+  animation-delay: -3.9s;
+  will-change: transform, box-shadow;
 }
 
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > :nth-child(4) {
-  animation-delay: 0.24s;
+@keyframes card-float-a {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 52px rgba(0, 0, 0, 0.65), 0 0 22px rgba(0, 240, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
 }
 
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > :nth-child(5) {
-  animation-delay: 0.32s;
+@keyframes card-float-b {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.62), 0 0 20px rgba(255, 46, 86, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
 }
 
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid) > :nth-child(6) {
-  animation-delay: 0.4s;
+@keyframes card-float-c {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    transform: translateY(-10px);
+    box-shadow: 0 26px 56px rgba(0, 0, 0, 0.68), 0 0 24px rgba(16, 185, 129, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
 }
 
-@keyframes card-in {
-  from {
-    opacity: 0;
-    transform: translateY(22px);
+@keyframes hero-card-float {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.65), 0 0 35px -10px rgba(225, 29, 72, 0.16);
+  }
+  50% {
+    transform: translateY(-8px);
+    box-shadow: 0 36px 82px -15px rgba(0, 0, 0, 0.78), 0 0 45px -8px rgba(225, 29, 72, 0.28);
   }
 }
 

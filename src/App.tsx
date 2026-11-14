@@ -1540,7 +1540,7 @@ function App() {
               </div>
 
               <div className="donate-side">
-                <div className="info-card glass">
+                <div className="info-card glass glass-lift">
                   <span className="panel-label">National Eligibility Standards (NBTC)</span>
                   <ul className="eligibility-list">
                     {ELIGIBILITY.map((item) => (
@@ -1555,7 +1555,7 @@ function App() {
                   </p>
                 </div>
 
-                <div className="info-card glass">
+                <div className="info-card glass glass-lift">
                   <div className="myth-head">
                     <span className="panel-label">Clinical Facts vs. Common Misconceptions</span>
                     <div className="myth-nav">
