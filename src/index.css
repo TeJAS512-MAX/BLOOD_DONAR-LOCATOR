@@ -270,33 +270,16 @@ h2 em {
 }
 
 .glass-lift {
-  animation: card-float-a 5.6s ease-in-out infinite;
   transition:
-    transform 0.35s var(--ease),
+    transform 0.25s var(--ease),
     border-color 0.25s ease,
-    box-shadow 0.35s var(--ease);
-}
-
-.glass-lift:nth-child(3n + 1) {
-  animation: card-float-a 5.6s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.glass-lift:nth-child(3n + 2) {
-  animation: card-float-b 6.4s ease-in-out infinite;
-  animation-delay: -2.1s;
-}
-
-.glass-lift:nth-child(3n + 3) {
-  animation: card-float-c 5.8s ease-in-out infinite;
-  animation-delay: -3.9s;
+    box-shadow 0.25s var(--ease);
 }
 
 .glass-lift:hover {
-  animation-play-state: paused;
-  transform: translateY(-12px) scale(1.015) !important;
-  border-color: rgba(0, 240, 255, 0.48) !important;
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 240, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(0, 240, 255, 0.4) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 18px rgba(0, 240, 255, 0.15) !important;
 }
 
 /* Numbered chapter label: [01] THE PROBLEM —— */
@@ -768,8 +751,8 @@ select option {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  min-height: 74px;
+  gap: 16px;
+  min-height: 68px;
 }
 
 .brand {
@@ -777,14 +760,15 @@ select option {
   align-items: center;
   gap: 10px;
   font-family: var(--display);
-  font-size: 23px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.04em;
+  flex-shrink: 0;
 }
 
 .brand-mark {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.9;
@@ -803,19 +787,22 @@ select option {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px 6px;
   border: 1px solid var(--line);
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .main-nav a {
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: 99px;
-  font-size: 14.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-2);
+  white-space: nowrap;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
@@ -829,7 +816,8 @@ select option {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .emergency-btn {
@@ -1031,12 +1019,7 @@ select option {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  animation: hero-card-float 6.8s ease-in-out infinite;
   transition: border-color 0.25s ease, box-shadow 0.35s ease;
-}
-
-.hero-smart-hub-card:hover {
-  animation-play-state: paused;
 }
 
 .hub-topbar {
@@ -3941,80 +3924,11 @@ select option {
   transform: none;
 }
 
+.reveal,
 .reveal.is-visible {
-  animation: pop-inside-out 0.45s cubic-bezier(0.34, 1.45, 0.64, 1) both;
-}
-
-@keyframes pop-inside-out {
-  0% {
-    transform: scale(0.96) translateZ(0);
-  }
-  65% {
-    transform: scale(1.012) translateZ(0);
-  }
-  100% {
-    transform: scale(1) translateZ(0);
-  }
-}
-
-/* Anti-gravity floating card animations */
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 1) {
-  animation: card-float-a 5.6s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 2) {
-  animation: card-float-b 6.4s ease-in-out infinite;
-  animation-delay: -2.1s;
-}
-
-.reveal.is-visible :is(.problem-grid, .donor-grid, .bank-grid, .requests-grid, .donate-side) > :nth-child(3n + 3) {
-  animation: card-float-c 5.8s ease-in-out infinite;
-  animation-delay: -3.9s;
-}
-
-@keyframes card-float-a {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-  50% {
-    transform: translateY(-8px);
-    box-shadow: 0 24px 52px rgba(0, 0, 0, 0.65), 0 0 22px rgba(0, 240, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  }
-}
-
-@keyframes card-float-b {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-  50% {
-    transform: translateY(-6px);
-    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.62), 0 0 20px rgba(255, 46, 86, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  }
-}
-
-@keyframes card-float-c {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-  50% {
-    transform: translateY(-10px);
-    box-shadow: 0 26px 56px rgba(0, 0, 0, 0.68), 0 0 24px rgba(16, 185, 129, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  }
-}
-
-@keyframes hero-card-float {
-  0%, 100% {
-    transform: translateY(0);
-    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.65), 0 0 35px -10px rgba(225, 29, 72, 0.16);
-  }
-  50% {
-    transform: translateY(-8px);
-    box-shadow: 0 36px 82px -15px rgba(0, 0, 0, 0.78), 0 0 45px -8px rgba(225, 29, 72, 0.28);
-  }
+  opacity: 1;
+  transform: none;
+  animation: none;
 }
 
 @keyframes pulse-ring {
@@ -4113,7 +4027,7 @@ select option {
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1180px) {
   .header-actions {
     display: none;
   }
@@ -4142,7 +4056,8 @@ select option {
   }
 
   .main-nav.is-open {
-    max-height: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
     padding: 14px 24px 24px;
     border-bottom: 1px solid var(--line);
   }

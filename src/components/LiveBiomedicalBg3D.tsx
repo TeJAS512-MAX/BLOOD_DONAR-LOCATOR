@@ -485,23 +485,15 @@ export function LiveBiomedicalBg3D({
     scene.add(shockwaveRingMesh);
     disposables.push(shockwaveRingGeo, shockwaveRingMat);
 
-    // Mouse Parallax & Scroll Tracking (Smooth Lerped)
-    let pointerX = 0;
-    let pointerY = 0;
+    // Scroll Tracking (Smooth Lerped down the bloodstream)
     let targetScrollProgress = 0;
     let smoothScroll = 0;
-
-    const onPointerMove = (e: PointerEvent) => {
-      pointerX = (e.clientX / Math.max(window.innerWidth, 1) - 0.5) * 2;
-      pointerY = -(e.clientY / Math.max(window.innerHeight, 1) - 0.5) * 2;
-    };
 
     const onScroll = () => {
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       targetScrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
     };
 
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     smoothScroll = targetScrollProgress;
@@ -552,14 +544,14 @@ export function LiveBiomedicalBg3D({
       // Smooth lerp for scroll progress to prevent any sudden teleportation or glitch during fast scroll
       smoothScroll += (targetScrollProgress - smoothScroll) * 0.06;
 
-      // Smooth camera position with parallax
-      const targetCamX = pointerX * 0.65 + Math.sin(smoothScroll * Math.PI) * 0.45;
-      const targetCamY = 0.25 + pointerY * 0.35 - smoothScroll * 0.35;
+      // Stably anchored camera tracking scroll down the bloodstream (no gyro mouse tilt)
+      const targetCamX = Math.sin(smoothScroll * Math.PI) * 0.2;
+      const targetCamY = 0.25 - smoothScroll * 0.2;
       const targetCamZ = 8.0;
       camera.position.x += (targetCamX - camera.position.x) * 0.05;
       camera.position.y += (targetCamY - camera.position.y) * 0.05;
       camera.position.z += (targetCamZ - camera.position.z) * 0.05;
-      camera.lookAt(pointerX * 0.2, pointerY * 0.15, 0);
+      camera.lookAt(0, 0, 0);
 
       rbcUniforms.uCameraPos.value.copy(camera.position);
       liquidUniforms.uCameraPos.value.copy(camera.position);
@@ -709,7 +701,6 @@ export function LiveBiomedicalBg3D({
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       disposables.forEach((d) => d.dispose());

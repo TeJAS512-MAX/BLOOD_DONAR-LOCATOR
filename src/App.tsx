@@ -26,13 +26,13 @@ type ScenarioFilter = "all" | BloodRequest["scenario"];
 type BankFilter = "all" | "Blood bank" | "Hospital partner";
 
 const NAV_LINKS = [
-  { href: "#journey", label: "Blood Journey" },
-  { href: "#find-blood", label: "Donor Registry" },
+  { href: "#journey", label: "Journey" },
+  { href: "#find-blood", label: "Donors" },
   { href: "#requests", label: "Requisitions" },
-  { href: "#radar", label: "Dispatch Radar" },
-  { href: "#crisis-forecast", label: "Surge Forecaster" },
-  { href: "#advanced-lab", label: "Innovation Lab" },
-  { href: "#banks", label: "Blood Banks" },
+  { href: "#radar", label: "Radar" },
+  { href: "#crisis-forecast", label: "Forecaster" },
+  { href: "#advanced-lab", label: "Lab" },
+  { href: "#banks", label: "Banks" },
   { href: "#donate", label: "Guidelines" },
 ];
 
