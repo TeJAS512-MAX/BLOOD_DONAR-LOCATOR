@@ -117,8 +117,8 @@ body {
   min-width: 320px;
   margin: 0;
   font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 14.5px;
+  line-height: 1.55;
   color: var(--text);
   background: var(--night);
   -webkit-font-smoothing: antialiased;
@@ -176,17 +176,17 @@ h3 {
 }
 
 h2 {
-  font-size: clamp(2.4rem, 4.8vw, 4rem);
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.035em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
 h3 {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.015em;
 }
 
@@ -356,8 +356,9 @@ h2 em {
 
 .section-head-copy p {
   max-width: 600px;
-  margin: 18px 0 0;
-  font-size: 1.125rem;
+  margin: 16px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
   color: var(--text-2);
   text-wrap: pretty;
 }
@@ -938,10 +939,10 @@ select option {
 }
 
 .hero-title {
-  font-size: clamp(3.4rem, 7vw, 6.6rem);
+  font-size: clamp(2.4rem, 4.6vw, 4.2rem);
   font-weight: 800;
-  line-height: 0.92;
-  letter-spacing: -0.05em;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
 }
 
 .hero-title em {
@@ -950,9 +951,9 @@ select option {
 }
 
 .hero-sub {
-  max-width: 520px;
-  margin: 28px 0 0;
-  font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+  max-width: 500px;
+  margin: 22px 0 0;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-2);
   text-wrap: pretty;
@@ -1635,9 +1636,9 @@ select option {
 
 .problem-index {
   font-family: var(--serif);
-  font-size: 3.6rem;
+  font-size: 2.2rem;
   font-style: italic;
-  line-height: 0.9;
+  line-height: 0.95;
   color: var(--accent);
 }
 
@@ -3639,8 +3640,8 @@ select option {
 }
 
 .cta-band h3 {
-  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
-  letter-spacing: -0.035em;
+  font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+  letter-spacing: -0.03em;
   color: #fff;
 }
 
@@ -3780,19 +3781,19 @@ select option {
 .modal h2 {
   margin-top: 12px;
   padding-right: 40px;
-  font-size: clamp(1.8rem, 3.4vw, 2.3rem);
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
 }
 
 .modal-intro {
   margin: 10px 0 24px;
-  font-size: 15.5px;
+  font-size: 14px;
   color: var(--text-2);
 }
 
 .modal-group {
   margin-top: 12px;
   font-family: var(--display);
-  font-size: 3.4rem;
+  font-size: 2.6rem;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;

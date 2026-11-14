@@ -244,7 +244,7 @@ function App() {
       setPingedDonorId(donor.id);
       setBgPulse((c) => c + 1);
       showToast(
-        `📲 Priority Ping dispatched to ${donor.name} (${donor.group}) via ${donor.verifiedBy}. Standby acknowledged.`,
+        `Priority Ping dispatched to ${donor.name} (${donor.group}) via ${donor.verifiedBy}. Standby acknowledged.`,
       );
       window.setTimeout(() => setPingedDonorId(null), 3200);
     },
@@ -761,9 +761,9 @@ function App() {
                       value={donorSort}
                       onChange={(e) => setDonorSort(e.target.value as "distance" | "eta" | "donations")}
                     >
-                      <option value="distance">📍 Proximity (Nearest)</option>
-                      <option value="eta">⚡ Fastest Response ETA</option>
-                      <option value="donations">⭐ Lifetime Donations</option>
+                      <option value="distance">Proximity (Nearest)</option>
+                      <option value="eta">Fastest Response ETA</option>
+                      <option value="donations">Lifetime Donations</option>
                     </select>
                   </div>
 
@@ -813,11 +813,17 @@ function App() {
                             <div className="donor-name-row">
                               <h3>{donor.name}</h3>
                               <span className="verified-shield" title="Verified Volunteer">
-                                ✓
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
                               </span>
                             </div>
                             <span className="donor-loc">
-                              📍 {donor.location} · <b>{donor.distanceKm} km</b>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: "inline", verticalAlign: "-1px", marginRight: "4px" }}>
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                              </svg>
+                              {donor.location} · <b>{donor.distanceKm} km</b>
                             </span>
                           </div>
 
@@ -830,11 +836,16 @@ function App() {
                         <div className="donor-tags-row">
                           {bloodGroup !== "all" && (
                             <span className={`match-tag ${exact ? "is-exact" : "is-compat"}`}>
-                              {exact ? "✨ Exact Match" : "🧬 Cross-Compatible"}
+                              {exact ? "Exact Match" : "Cross-Compatible"}
                             </span>
                           )}
                           {donor.donorBadge && <span className="honor-badge">{donor.donorBadge}</span>}
-                          <span className="eta-badge">⚡ {donor.responseWindow}</span>
+                          <span className="eta-badge">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ display: "inline", verticalAlign: "-1px", marginRight: "3px" }}>
+                              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                            </svg>
+                            {donor.responseWindow}
+                          </span>
                         </div>
 
                         {/* Clinical Dossier Metric Grid */}
@@ -882,7 +893,7 @@ function App() {
                             className="btn btn-primary btn-sm"
                             onClick={() => setActiveDonor(donor)}
                           >
-                            🚨 Initiate Request
+                            Initiate Request
                           </button>
                           <button
                             type="button"
@@ -890,7 +901,7 @@ function App() {
                             onClick={() => handlePingDonor(donor)}
                             disabled={isPinged}
                           >
-                            {isPinged ? "✅ Ping Sent" : "📲 Direct Ping"}
+                            {isPinged ? "Ping Sent" : "Direct Ping"}
                           </button>
                           <button
                             type="button"
@@ -898,7 +909,13 @@ function App() {
                             onClick={() => handleTrackDonorOnRadar(donor)}
                             title="Locate on Radar"
                           >
-                            🎯
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="22" y1="12" x2="18" y2="12" />
+                              <line x1="6" y1="12" x2="2" y2="12" />
+                              <line x1="12" y1="6" x2="12" y2="2" />
+                              <line x1="12" y1="22" x2="12" y2="18" />
+                            </svg>
                           </button>
                         </div>
                       </article>
@@ -1000,7 +1017,12 @@ function App() {
               )
             ) : (
               <div className="empty-state-card glass">
-                <div className="empty-icon">🔍</div>
+                <div className="empty-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ margin: "0 auto", color: "var(--c-brand)" }}>
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </div>
                 <h3>No compatible voluntary donors match your filters</h3>
                 <p>
                   Try widening your location perimeter, selecting &quot;All Groups&quot;, or enabling cross-compatible matching.

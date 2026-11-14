@@ -88,7 +88,7 @@ export function HeroNetworkGrid3D({
     if (onSelectDonorGroup) {
       onSelectDonorGroup(selectedGroup);
     }
-    const message = `🚨 Emergency SOS Dispatched: Alert broadcast to ${matchingDonorsCount} compatible donors and nearest regional blood bank for Group ${selectedGroup} (${selectedComponent}).`;
+    const message = `EMERGENCY DISPATCH: Alert broadcast to ${matchingDonorsCount} compatible donors and nearest regional blood bank for Group ${selectedGroup} (${selectedComponent}).`;
     if (onNotify) {
       onNotify(message);
     }
@@ -115,7 +115,7 @@ export function HeroNetworkGrid3D({
           <span>REAL-TIME CLINICAL COORDINATION HUB</span>
         </div>
         <span className="hub-status-pill">
-          {isEmergency ? "🔴 CODE RED TRIAGE" : "🟢 24/7 ACTIVE"}
+          {isEmergency ? "CRITICAL TRIAGE" : "TELEMETRY ACTIVE"}
         </span>
       </div>
 
@@ -128,7 +128,13 @@ export function HeroNetworkGrid3D({
           className={`hub-tab-btn ${activeTab === "emergency" ? "is-active" : ""}`}
           onClick={() => setActiveTab("emergency")}
         >
-          <span className="tab-icon">🚨</span>
+          <span className="tab-icon">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </span>
           <span>Emergency Match</span>
         </button>
         <button
@@ -138,7 +144,11 @@ export function HeroNetworkGrid3D({
           className={`hub-tab-btn ${activeTab === "donor" ? "is-active" : ""}`}
           onClick={() => setActiveTab("donor")}
         >
-          <span className="tab-icon">🩸</span>
+          <span className="tab-icon">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2C7 9 4 13 4 17a8 8 0 0 0 16 0c0-4-3-8-8-15Z" />
+            </svg>
+          </span>
           <span>Donor Impact</span>
         </button>
         <button
@@ -148,7 +158,13 @@ export function HeroNetworkGrid3D({
           className={`hub-tab-btn ${activeTab === "inventory" ? "is-active" : ""}`}
           onClick={() => setActiveTab("inventory")}
         >
-          <span className="tab-icon">📊</span>
+          <span className="tab-icon">
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
+          </span>
           <span>City Reserves</span>
         </button>
       </div>
@@ -254,7 +270,7 @@ export function HeroNetworkGrid3D({
             </div>
 
             <div className="match-routing-detail">
-              <span className="routing-bullet">📍 Primary Vault:</span>
+              <span className="routing-bullet">Primary Vault:</span>
               <span>Bengaluru Regional Blood Centre · Cold-Chain Cross-Match Certified</span>
             </div>
 
@@ -262,7 +278,7 @@ export function HeroNetworkGrid3D({
               <div className="sos-dispatched-banner">
                 <span className="pulse-dot is-green" />
                 <div>
-                  <strong>🚨 Emergency Signal Dispatched (Ref: BL-{Math.floor(1000 + Math.random() * 9000)})</strong>
+                  <strong>Emergency Signal Dispatched (Ref: BL-{Math.floor(1000 + Math.random() * 9000)})</strong>
                   <p>
                     {matchingDonorsCount} compatible voluntary donors alerted via priority SMS/IVR. Nearest cold-chain
                     vault alerted for preparation.
@@ -276,7 +292,7 @@ export function HeroNetworkGrid3D({
                   className="btn btn-primary btn-block hub-btn-pulse"
                   onClick={handleTriggerSOS}
                 >
-                  📢 Broadcast Live Emergency SOS Alert
+                  Broadcast Emergency Signal
                 </button>
                 {onOpenRadar && (
                   <button type="button" className="btn btn-glass" onClick={onOpenRadar}>
@@ -329,8 +345,8 @@ export function HeroNetworkGrid3D({
               <span className="gauge-title">City Reserve for Group {selectedGroup}:</span>
               <span className={`gauge-badge ${currentGroupStock < 10 ? "is-critical" : "is-good"}`}>
                 {currentGroupStock < 10
-                  ? `🔴 CRITICAL DEFICIT (${currentGroupStock} units remaining)`
-                  : `🟢 STABLE RESERVE (${currentGroupStock} units available)`}
+                  ? `CRITICAL DEFICIT (${currentGroupStock} units remaining)`
+                  : `STABLE RESERVE (${currentGroupStock} units available)`}
               </span>
             </div>
             <p className="gauge-insight">
@@ -396,7 +412,7 @@ export function HeroNetworkGrid3D({
 
             {isEligible ? (
               <div className="elig-result is-eligible">
-                <span>✅ You are clinically eligible to donate today!</span>
+                <span>Verified: Clinically eligible for donation today.</span>
                 {bookedSlot ? (
                   <div className="slot-confirmed-note">
                     Appointment confirmed for <strong>{bookedSlot}</strong> at Regional Blood Centre.
@@ -413,14 +429,14 @@ export function HeroNetworkGrid3D({
                       className="btn btn-glass"
                       onClick={() => handleBookSlot("Today 4:30 PM")}
                     >
-                      Book 1-Click Priority Slot (4:30 PM)
+                      Book Priority Slot (4:30 PM)
                     </button>
                   </div>
                 )}
               </div>
             ) : (
               <div className="elig-result is-ineligible">
-                <span>⚠️ Please review eligibility criteria before presenting at a donor centre.</span>
+                <span>Notice: Please review medical eligibility criteria before presenting at a donor centre.</span>
               </div>
             )}
           </div>

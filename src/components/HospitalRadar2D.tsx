@@ -250,7 +250,7 @@ export function HospitalRadar2D({
         if (contact) {
           triggerRadarPulse("#10b981", 3200, 1.2);
           notifyRef.current(
-            `✅ PRIORITY ARRIVAL: ${contact.label} has arrived at ${hospital} Transfusion Desk. Cold-chain verified.`,
+            `PRIORITY ARRIVAL: ${contact.label} has arrived at ${hospital} Transfusion Desk. Cold-chain verified.`,
           );
         }
       }
@@ -589,11 +589,11 @@ export function HospitalRadar2D({
           ctx.arc(x, y, 7, 0, Math.PI * 2);
           ctx.fill();
 
-          // Courier badge "🚑 EN ROUTE"
+          // Courier badge
           ctx.font = mono(9.5, 700);
           ctx.fillStyle = "#ffffff";
           ctx.shadowBlur = 4;
-          ctx.fillText("🚑 EN ROUTE", x + 10, y - 8);
+          ctx.fillText("EN ROUTE", x + 10, y - 8);
           ctx.restore();
         }
 
@@ -819,7 +819,7 @@ export function HospitalRadar2D({
     setNow(startedAt);
     triggerRadarPulse(COLOR.transitCourier, 3200, 1.15);
     notifyRef.current(
-      `🚨 GREEN CORRIDOR TRANSIT ACTIVE: ${contact.label} dispatched to ${hospital}. Real-time GPS beacon locked.`,
+      `PRIORITY TRANSIT ACTIVE: ${contact.label} dispatched to ${hospital}. Real-time beacon locked.`,
     );
   };
 
@@ -827,7 +827,7 @@ export function HospitalRadar2D({
     setReserved((prev) => ({ ...prev, [contact.id]: true }));
     triggerRadarPulse(COLOR.bank, 2200, 0.9);
     notifyRef.current(
-      `📦 COLD-CHAIN LOCK: ${request.units} of ${request.group}-compatible units reserved at ${contact.label}.`,
+      `COLD-CHAIN LOCK: ${request.units} of ${request.group}-compatible units reserved at ${contact.label}.`,
     );
   };
 
@@ -851,7 +851,7 @@ export function HospitalRadar2D({
     triggerRadarPulse("#ff1f4b", 4000, 1.3);
     const count = visible.filter((c) => c.compatible && c.kind === "donor").length;
     notifyRef.current(
-      `🚨 EMERGENCY SOS BROADCAST: Priority requisition broadcast to ${count} compatible Group ${request.group} donors within ${rangeKm} km radius.`,
+      `EMERGENCY BROADCAST: Priority requisition broadcast to ${count} compatible Group ${request.group} donors within ${rangeKm} km radius.`,
     );
   };
 
@@ -859,7 +859,7 @@ export function HospitalRadar2D({
   const handleSimulateSms = (contact: RadarContact) => {
     setSimulatedSmsSent(contact.id);
     notifyRef.current(
-      `📲 SMS DISPATCH SENT to ${contact.label} (${contact.phoneMasked}): "URGENT BloodLink Requisition: Group ${request.group} required at ${hospital}. Emergency token generated."`,
+      `SMS DISPATCH TRANSMITTED to ${contact.label} (${contact.phoneMasked}): "URGENT BloodLink Requisition: Group ${request.group} required at ${hospital}. Emergency token generated."`,
     );
     window.setTimeout(() => setSimulatedSmsSent(null), 4000);
   };
@@ -869,7 +869,7 @@ export function HospitalRadar2D({
     if (contact.kind === "bank") {
       return reserved[contact.id] ? (
         <button type="button" className="btn btn-glass" disabled>
-          ✅ Units Reserved at Vault
+          Units Reserved at Vault
         </button>
       ) : (
         <button type="button" className="btn btn-primary" onClick={() => reserveFromBank(contact)}>
@@ -887,13 +887,13 @@ export function HospitalRadar2D({
     if (remaining !== null) {
       return (
         <button type="button" className="btn btn-glass" disabled>
-          {remaining === 0 ? `✅ Arrived at ${hospital}` : `🚑 Transit Active · ${remaining}m remaining`}
+          {remaining === 0 ? `Arrived at ${hospital}` : `Transit Active · ${remaining}m remaining`}
         </button>
       );
     }
     return (
       <button type="button" className="btn btn-primary" onClick={() => dispatchContact(contact)}>
-        🚑 Dispatch Donor (Green Corridor)
+        Dispatch Donor (Priority Corridor)
       </button>
     );
   };
@@ -932,7 +932,7 @@ export function HospitalRadar2D({
           {activeTransitsCount > 0 && (
             <div className="radar-hud is-bl">
               <span className="pulse-alert">
-                <span className="pulse-dot" /> 🚑 GREEN CORRIDOR ACTIVE
+                <span className="pulse-dot" /> GREEN CORRIDOR ACTIVE
               </span>
               <strong>{activeTransitsCount} COURIER EN ROUTE</strong>
             </div>
@@ -998,7 +998,13 @@ export function HospitalRadar2D({
                 {request.units} · {request.componentNeeded}
               </strong>
               <span>{request.need}</span>
-              <span className="attending-note">📍 {request.attendingDesk}</span>
+              <span className="attending-note">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ display: "inline", verticalAlign: "-1px", marginRight: "4px" }}>
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {request.attendingDesk}
+              </span>
             </div>
           </div>
 
@@ -1055,14 +1061,24 @@ export function HospitalRadar2D({
               className="btn btn-action btn-auto-match"
               onClick={handleAutoDispatchNearest}
             >
-              <span className="btn-icon">⚡</span> AI Fast-Match Auto-Dispatch
+              <span className="btn-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              </span> AI Fast-Match Auto-Dispatch
             </button>
             <button
               type="button"
               className="btn btn-action btn-broadcast-sos"
               onClick={handleBroadcastSOS}
             >
-              <span className="btn-icon">🚨</span> Broadcast Radial SOS
+              <span className="btn-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </span> Broadcast Radial SOS
             </button>
           </div>
         </div>
@@ -1092,8 +1108,8 @@ export function HospitalRadar2D({
                   {lockedRemaining === null
                     ? `${locked.etaMin} min`
                     : lockedRemaining === 0
-                      ? "✅ Arrived"
-                      : `🚑 ${lockedRemaining} min`}
+                      ? "Arrived"
+                      : `${lockedRemaining} min`}
                 </dd>
               </div>
               <div>
@@ -1106,7 +1122,7 @@ export function HospitalRadar2D({
             {dispatched[locked.id] && (
               <div className="transit-progress-box">
                 <div className="transit-progress-labels">
-                  <span>🚑 Green Corridor Priority Transit</span>
+                  <span>Green Corridor Priority Transit</span>
                   <strong>{Math.round(lockedProgress * 100)}%</strong>
                 </div>
                 <div className="transit-bar">
@@ -1123,7 +1139,7 @@ export function HospitalRadar2D({
                 onClick={() => handleSimulateSms(locked)}
                 disabled={simulatedSmsSent === locked.id}
               >
-                {simulatedSmsSent === locked.id ? "✅ SMS Signal Transmitted" : `📲 Direct SMS Relay (${locked.phoneMasked})`}
+                {simulatedSmsSent === locked.id ? "SMS Signal Transmitted" : `Direct SMS Relay (${locked.phoneMasked})`}
               </button>
             </div>
           </div>
