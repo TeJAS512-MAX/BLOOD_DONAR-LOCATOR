@@ -12,113 +12,83 @@ interface LiveBiomedicalBg3DProps {
 }
 
 /**
- * High-resolution Evans–Fung parametric biconcave red blood cell geometry
- * with thickness attribute stored in UV.x for subsurface scattering in GLSL.
+ * Custom GLSL Shaders for the UHD Futuristic Quantum Wave Matrix
  */
-function createSubsurfaceRBCGeometry(radius = 1, wSeg = 52, hSeg = 34): THREE.BufferGeometry {
-  const geo = new THREE.SphereGeometry(radius, wSeg, hSeg);
-  const pos = geo.attributes.position as THREE.BufferAttribute;
-  const uv = geo.attributes.uv as THREE.BufferAttribute;
-
-  for (let i = 0; i < pos.count; i += 1) {
-    const x = pos.getX(i) / radius;
-    const y = pos.getY(i) / radius;
-    const z = pos.getZ(i) / radius;
-    const r2 = Math.min(1, x * x + z * z);
-    const signY = y >= 0 ? 1 : -1;
-    const radialEnv = Math.sqrt(Math.max(0, 1 - r2));
-    const poly = 0.207 + 2.003 * r2 - 1.123 * r2 * r2;
-    const biconcaveY = signY * 0.52 * radialEnv * poly * radius;
-    pos.setXYZ(i, x * radius, biconcaveY, z * radius);
-    // Store normalized radial distance (0 = thin center dimple, 1 = thick outer torus) in uv.x
-    uv.setXY(i, Math.sqrt(r2), (y + 1) * 0.5);
-  }
-
-  pos.needsUpdate = true;
-  uv.needsUpdate = true;
-  geo.computeVertexNormals();
-  return geo;
-}
-
-const RBC_VERTEX_SHADER = `
-  varying vec3 vNormal;
+const QUANTUM_GRID_VERTEX_SHADER = `
   varying vec3 vWorldPos;
   varying vec2 vUv;
+  varying float vElevation;
   uniform float uTime;
   uniform float uSystole;
+  uniform vec2 uPointer;
 
   void main() {
     vUv = uv;
     vec3 pos = position;
-    // Subtle elastic cell membrane shear deformation during systolic pulse
-    float membraneWave = sin(pos.x * 3.8 + uTime * 3.2) * 0.025 * (1.0 + uSystole * 0.8);
-    pos.y += membraneWave;
 
-    #ifdef USE_INSTANCING
-      vec4 worldPosition = modelMatrix * instanceMatrix * vec4(pos, 1.0);
-      mat3 normalMat = mat3(modelMatrix * instanceMatrix);
-    #else
-      vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
-      mat3 normalMat = normalMatrix;
-    #endif
+    // Multi-frequency undulating quantum energy waves
+    float w1 = sin(pos.x * 0.42 + uTime * 1.6) * cos(pos.y * 0.36 + uTime * 1.1) * 0.65;
+    float w2 = sin(pos.x * 0.88 - uTime * 2.2 + pos.y * 0.65) * 0.32 * (1.0 + uSystole * 0.65);
+    float distToPointer = length(pos.xy - uPointer * 3.5);
+    float w3 = cos(distToPointer * 0.9 - uTime * 2.8) * 0.24 * (1.0 + uSystole * 0.8);
 
+    float elevation = w1 + w2 + w3;
+    pos.z += elevation;
+    vElevation = elevation;
+
+    vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
     vWorldPos = worldPosition.xyz;
-    vNormal = normalize(normalMat * normal);
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
   }
 `;
 
-const RBC_FRAGMENT_SHADER = `
-  varying vec3 vNormal;
+const QUANTUM_GRID_FRAGMENT_SHADER = `
   varying vec3 vWorldPos;
   varying vec2 vUv;
-  uniform vec3 uCameraPos;
+  varying float vElevation;
+  uniform float uTime;
   uniform float uSystole;
+  uniform vec3 uCameraPos;
 
   void main() {
-    vec3 N = normalize(vNormal);
-    vec3 V = normalize(uCameraPos - vWorldPos);
-    vec3 L1 = normalize(vec3(2.8, 3.6, 4.2));
-    vec3 L2 = normalize(vec3(-3.2, -1.8, -2.5));
+    // Ultra-crisp futuristic cyber-grid pattern with glow
+    vec2 gridUv = fract(vUv * 36.0);
+    vec2 gridLine = smoothstep(0.05, 0.0, abs(gridUv - 0.5));
+    float gridPattern = max(gridLine.x, gridLine.y);
 
-    float diff1 = max(dot(N, L1), 0.0);
-    float diff2 = max(dot(N, L2), 0.0);
-    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.65);
+    // Flowing laser pulse ripples along the grid coordinates
+    float pulse = sin(vUv.y * 42.0 - uTime * 3.8 + vElevation * 2.2) * 0.5 + 0.5;
+    float pulseHighlight = pow(pulse, 5.0) * (0.8 + uSystole * 0.5);
 
-    // Subsurface hemoglobin translucency: center dimple (vUv.x near 0) transmits more light
-    float dimpleTranslucency = smoothstep(0.75, 0.12, vUv.x);
-    float backLight = pow(max(dot(-V, L1), 0.0), 2.0) * 0.65 + 0.35;
+    vec3 cyanBeam = vec3(0.05, 0.88, 1.0);
+    vec3 neonCrimson = vec3(1.0, 0.12, 0.36);
+    vec3 deepNavy = vec3(0.04, 0.07, 0.14);
+    vec3 laserWhite = vec3(1.0, 1.0, 1.0);
 
-    vec3 deepOxblood = vec3(0.36, 0.02, 0.08);
-    vec3 arterialCrimson = vec3(0.96, 0.08, 0.22);
-    vec3 sssCoral = vec3(1.0, 0.36, 0.48);
-    vec3 rimGlow = vec3(1.0, 0.58, 0.70);
+    // Dynamic gradient based on elevation and pulse wave
+    vec3 col = mix(cyanBeam, neonCrimson, smoothstep(-0.6, 0.6, vElevation));
+    col = mix(deepNavy, col, gridPattern * 0.85 + pulseHighlight * 0.7);
+    col += laserWhite * pulseHighlight * gridPattern * 0.85;
 
-    vec3 baseCol = mix(deepOxblood, arterialCrimson, diff1 * 0.85 + diff2 * 0.35);
-    // Add warm subsurface scattering in thin biconcave center & backlit edges
-    baseCol += sssCoral * dimpleTranslucency * backLight * (0.48 + uSystole * 0.25);
-    // Silky Fresnel rim light
-    baseCol += rimGlow * fresnel * (0.85 + uSystole * 0.35);
+    // Soft atmospheric depth fade
+    float dist = length(uCameraPos - vWorldPos);
+    float edgeFade = smoothstep(0.0, 0.14, vUv.x) * smoothstep(1.0, 0.86, vUv.x) *
+                     smoothstep(0.0, 0.14, vUv.y) * smoothstep(1.0, 0.86, vUv.y);
+    float distFade = smoothstep(28.0, 6.0, dist);
 
-    // Specular clearcoat highlight
-    vec3 H = normalize(L1 + V);
-    float spec = pow(max(dot(N, H), 0.0), 32.0);
-    baseCol += vec3(1.0, 0.88, 0.92) * spec * 0.52;
-
-    // Atmospheric depth fade
-    float depthDist = length(uCameraPos - vWorldPos);
-    float fogFactor = smoothstep(24.0, 6.0, depthDist);
-    vec3 fogColor = vec3(0.065, 0.095, 0.165);
-    vec3 finalCol = mix(fogColor, baseCol, fogFactor);
-
-    gl_FragColor = vec4(finalCol, 0.98);
+    float alpha = (gridPattern * 0.42 + pulseHighlight * 0.55) * edgeFade * distFade * (0.68 + uSystole * 0.28);
+    gl_FragColor = vec4(col, alpha);
   }
 `;
 
-const BOKEH_VERTEX_SHADER = `
+/**
+ * Custom Shaders for UHD Holographic Quantum Photons & Telemetry Beacons
+ */
+const PHOTON_VERTEX_SHADER = `
   attribute float aSize;
   attribute vec3 aColor;
   attribute float aPhase;
+  attribute float aSpeed;
   varying vec3 vColor;
   varying float vAlpha;
   uniform float uTime;
@@ -127,93 +97,38 @@ const BOKEH_VERTEX_SHADER = `
   void main() {
     vColor = aColor;
     vec3 pos = position;
-    pos.y += sin(uTime * 1.1 + aPhase) * 0.18;
-    pos.x += cos(uTime * 0.85 + aPhase) * 0.14;
+
+    // Fluid forward kinetic motion with systolic burst
+    float t = uTime * aSpeed;
+    pos.x += sin(t * 1.4 + aPhase) * 0.35;
+    pos.y += cos(t * 1.1 + aPhase) * 0.28;
+    pos.z += sin(t * 0.9 + aPhase * 2.0) * 0.45;
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     float dist = -mvPosition.z;
-    gl_PointSize = aSize * (240.0 / max(dist, 1.5)) * (1.0 + uSystole * 0.28);
-    vAlpha = smoothstep(18.0, 3.0, dist) * (0.45 + 0.3 * sin(uTime * 2.2 + aPhase));
+    gl_PointSize = aSize * (320.0 / max(dist, 1.2)) * (1.0 + uSystole * 0.42);
+
+    float pulse = 0.5 + 0.5 * sin(uTime * 3.2 + aPhase * 3.0);
+    vAlpha = smoothstep(22.0, 3.0, dist) * (0.55 + 0.45 * pulse) * (0.85 + uSystole * 0.35);
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
 
-const BOKEH_FRAGMENT_SHADER = `
+const PHOTON_FRAGMENT_SHADER = `
   varying vec3 vColor;
   varying float vAlpha;
 
   void main() {
-    vec2 uv = gl_PointCoord - vec2(0.5);
-    float d = length(uv);
+    vec2 coord = gl_PointCoord - vec2(0.5);
+    float d = length(coord);
     if (d > 0.5) discard;
-    float softRing = smoothstep(0.5, 0.08, d);
-    gl_FragColor = vec4(vColor, softRing * vAlpha);
-  }
-`;
 
-const LIQUID_STREAM_VERTEX_SHADER = `
-  varying vec3 vNormal;
-  varying vec3 vWorldPos;
-  varying vec2 vUv;
-  uniform float uTime;
-  uniform float uSystole;
+    // Ultra-sharp laser core with soft bloom halo
+    float core = smoothstep(0.12, 0.0, d) * 1.4;
+    float halo = smoothstep(0.5, 0.08, d) * 0.8;
+    vec3 col = mix(vColor, vec3(1.0, 1.0, 1.0), core);
 
-  void main() {
-    vUv = uv;
-    vec3 pos = position;
-    // Multi-octave organic liquid wave undulation
-    float w1 = sin(pos.x * 0.72 + uTime * 2.1) * cos(pos.y * 0.85 + uTime * 1.3) * 0.45;
-    float w2 = sin(pos.x * 1.45 - uTime * 3.4 + pos.y * 1.1) * 0.22 * (1.0 + uSystole * 0.6);
-    float w3 = cos(pos.y * 2.2 + uTime * 1.8) * 0.12;
-    pos.z += w1 + w2 + w3;
-
-    vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
-    vWorldPos = worldPosition.xyz;
-    vNormal = normalize(normalMatrix * normal);
-    gl_Position = projectionMatrix * viewMatrix * worldPosition;
-  }
-`;
-
-const LIQUID_STREAM_FRAGMENT_SHADER = `
-  varying vec3 vNormal;
-  varying vec3 vWorldPos;
-  varying vec2 vUv;
-  uniform vec3 uCameraPos;
-  uniform float uTime;
-  uniform float uSystole;
-
-  void main() {
-    vec3 N = normalize(vNormal);
-    vec3 V = normalize(uCameraPos - vWorldPos);
-    vec3 L = normalize(vec3(1.5, 3.2, 2.8));
-
-    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.8);
-    float diff = max(dot(N, L), 0.0);
-
-    // Liquid plasma caustic ripple shimmer
-    float c1 = sin(vUv.x * 22.0 + uTime * 3.8 + sin(vUv.y * 16.0 + uTime * 2.4));
-    float c2 = cos(vUv.y * 26.0 - uTime * 3.2 + cos(vUv.x * 18.0 + uTime * 2.8));
-    float caustic = pow(clamp(c1 * c2 * 0.5 + 0.5, 0.0, 1.0), 3.5) * 0.7;
-
-    vec3 plasmaDeep = vec3(0.24, 0.015, 0.06);
-    vec3 plasmaBright = vec3(0.88, 0.08, 0.22);
-    vec3 plasmaAmber = vec3(1.0, 0.58, 0.18);
-    vec3 liquidSheen = vec3(1.0, 0.85, 0.90);
-
-    vec3 col = mix(plasmaDeep, plasmaBright, diff * 0.6 + caustic * 0.4);
-    col += plasmaAmber * caustic * 0.55;
-    col += liquidSheen * fresnel * (0.8 + uSystole * 0.4);
-
-    // Specular liquid highlight
-    vec3 H = normalize(L + V);
-    float spec = pow(max(dot(N, H), 0.0), 40.0);
-    col += vec3(1.0, 0.95, 0.98) * spec * 0.65;
-
-    // Edge fade so liquid boundary dissolves into the dark background
-    float edgeFade = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x) *
-                     smoothstep(0.0, 0.16, vUv.y) * smoothstep(1.0, 0.84, vUv.y);
-
-    gl_FragColor = vec4(col, edgeFade * (0.46 + uSystole * 0.18));
+    gl_FragColor = vec4(col, (core + halo) * vAlpha);
   }
 `;
 
@@ -259,11 +174,11 @@ export function LiveBiomedicalBg3D({
 
     const w = window.innerWidth || 1280;
     const h = window.innerHeight || 800;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h);
-    renderer.setClearColor(0x0a101f, 1);
+    renderer.setClearColor(0x080e1a, 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.32;
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -281,207 +196,162 @@ export function LiveBiomedicalBg3D({
     syncHudSize();
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 45);
-    camera.position.set(0, 0.3, 8.2);
+    const camera = new THREE.PerspectiveCamera(44, w / h, 0.1, 50);
+    camera.position.set(0, 1.2, 9.2);
 
     const disposables: { dispose: () => void }[] = [];
 
-    // Shared Custom GLSL Subsurface-Scattering Material for Red Blood Cells
-    const rbcUniforms = {
+    // 1. Futuristic UHD Topographical Quantum Wave Matrix (Floor & Horizon)
+    const gridUniforms = {
       uTime: { value: 0 },
       uSystole: { value: 0 },
-      uCameraPos: { value: new THREE.Vector3(0, 0.3, 8.2) },
+      uPointer: { value: new THREE.Vector2(0, 0) },
+      uCameraPos: { value: new THREE.Vector3(0, 1.2, 9.2) },
     };
 
-    const rbcShaderMat = new THREE.ShaderMaterial({
-      vertexShader: RBC_VERTEX_SHADER,
-      fragmentShader: RBC_FRAGMENT_SHADER,
-      uniforms: rbcUniforms,
+    const quantumGridGeo = new THREE.PlaneGeometry(36, 22, 96, 64);
+    const quantumGridMat = new THREE.ShaderMaterial({
+      vertexShader: QUANTUM_GRID_VERTEX_SHADER,
+      fragmentShader: QUANTUM_GRID_FRAGMENT_SHADER,
+      uniforms: gridUniforms,
       transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
     });
-    const rbcInstancedMat = new THREE.ShaderMaterial({
-      vertexShader: `#define USE_INSTANCING\n${RBC_VERTEX_SHADER}`,
-      fragmentShader: RBC_FRAGMENT_SHADER,
-      uniforms: rbcUniforms,
-      transparent: true,
-    });
-    disposables.push(rbcShaderMat, rbcInstancedMat);
+    const quantumGridMesh = new THREE.Mesh(quantumGridGeo, quantumGridMat);
+    quantumGridMesh.position.set(0, -1.8, -1.5);
+    quantumGridMesh.rotation.set(-1.22, 0.08, 0.15);
+    scene.add(quantumGridMesh);
+    disposables.push(quantumGridGeo, quantumGridMat);
 
-    // 1. Subtle Ambient Erythrocyte Anchor in Deep Background
-    const heroCellGeo = createSubsurfaceRBCGeometry(0.52, 48, 32);
-    const heroCellMesh = new THREE.Mesh(heroCellGeo, rbcShaderMat);
-    heroCellMesh.position.set(-3.2, 0.45, -2.2);
-    heroCellMesh.rotation.set(0.68, 0.42, -0.35);
-    scene.add(heroCellMesh);
-    disposables.push(heroCellGeo);
+    // 2. Hyper-Velocity Fiber-Optic Neural Data Conduits (Catmull-Rom 3D Splines)
+    const conduitGroup = new THREE.Group();
+    scene.add(conduitGroup);
 
-    // 2. Instanced Swarm of 36 Graceful Biconcave Erythrocytes
-    const swarmCount = 36;
-    const swarmGeo = createSubsurfaceRBCGeometry(0.24, 32, 20);
-    const swarmMesh = new THREE.InstancedMesh(swarmGeo, rbcInstancedMat, swarmCount);
-    scene.add(swarmMesh);
-    disposables.push(swarmGeo);
-
-    const cellSeeds = Array.from({ length: swarmCount }, (_, idx) => ({
-      u: idx / swarmCount,
-      radial: 1.1 + (idx % 7) * 0.48,
-      angleOffset: idx * 0.87,
-      ySpread: ((idx % 9) - 4) * 0.62,
-      zSpread: -2.2 - (idx % 5) * 0.9,
-      scale: 0.36 + (idx % 4) * 0.12,
-      rotSpeed: 0.35 + (idx % 4) * 0.18,
-    }));
-
-    // 3. 5 Luminous 3D Bio-Optical Vascular Signal Ribbons + Traveling Pulse Capsules
-    const ribbonGroup = new THREE.Group();
-    scene.add(ribbonGroup);
-
-    const pulseCapsules: {
+    const travelingPhotons: {
       curve: THREE.CatmullRomCurve3;
       mesh: THREE.Mesh;
       speed: number;
       offset: number;
     }[] = [];
 
-    const capsuleGeo = new THREE.SphereGeometry(0.085, 16, 16);
-    disposables.push(capsuleGeo);
+    const photonBeaconGeo = new THREE.SphereGeometry(0.09, 16, 16);
+    disposables.push(photonBeaconGeo);
 
-    const ribbonColors = [0xff4d6d, 0x38bdf8, 0xfbbf24, 0xff4d6d, 0x34d399];
-    ribbonColors.forEach((col, rIdx) => {
+    const conduitPalettes = [
+      { tube: 0x00f0ff, pulse: 0xffffff }, // Cyan cold-chain laser
+      { tube: 0xff1a53, pulse: 0xffffff }, // Arterial crimson beacon
+      { tube: 0x38bdf8, pulse: 0x93c5fd }, // Sapphire telemetry
+      { tube: 0x00ffb3, pulse: 0xffffff }, // Quantum emerald reserve
+      { tube: 0xf59e0b, pulse: 0xffedd5 }, // Amber emergency priority
+    ];
+
+    conduitPalettes.forEach((palette, cIdx) => {
       const pts: THREE.Vector3[] = [];
-      const yBase = (rIdx - 2) * 1.05;
-      const zBase = -1.2 - (rIdx % 3) * 1.1;
+      const yBase = (cIdx - 2) * 1.35;
+      const zBase = -1.8 - (cIdx % 3) * 1.2;
       for (let step = 0; step <= 8; step += 1) {
         const u = step / 8;
-        const x = (u - 0.5) * 18.0;
-        const y = yBase + Math.sin(u * Math.PI * 2 + rIdx * 1.1) * 1.25;
-        const z = zBase + Math.cos(u * Math.PI * 1.5 + rIdx) * 1.1;
+        const x = (u - 0.5) * 24.0;
+        const y = yBase + Math.sin(u * Math.PI * 2.2 + cIdx * 1.2) * 1.6;
+        const z = zBase + Math.cos(u * Math.PI * 1.8 + cIdx) * 1.3;
         pts.push(new THREE.Vector3(x, y, z));
       }
       const curve = new THREE.CatmullRomCurve3(pts);
-      const tubeGeo = new THREE.TubeGeometry(curve, 72, 0.026, 8, false);
+      const tubeGeo = new THREE.TubeGeometry(curve, 96, 0.024, 8, false);
       const tubeMat = new THREE.MeshBasicMaterial({
-        color: col,
+        color: palette.tube,
         transparent: true,
-        opacity: 0.48,
+        opacity: 0.52,
       });
-      ribbonGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+      conduitGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
       disposables.push(tubeGeo, tubeMat);
 
+      // Add 2 high-speed photon packets per conduit
       for (let p = 0; p < 2; p += 1) {
-        const capMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const capMesh = new THREE.Mesh(capsuleGeo, capMat);
-        ribbonGroup.add(capMesh);
-        disposables.push(capMat);
-        pulseCapsules.push({
+        const pMat = new THREE.MeshBasicMaterial({ color: palette.pulse });
+        const pMesh = new THREE.Mesh(photonBeaconGeo, pMat);
+        conduitGroup.add(pMesh);
+        disposables.push(pMat);
+        travelingPhotons.push({
           curve,
-          mesh: capMesh,
-          speed: 0.14 + rIdx * 0.025,
-          offset: p * 0.5 + rIdx * 0.17,
+          mesh: pMesh,
+          speed: 0.18 + cIdx * 0.03,
+          offset: p * 0.5 + cIdx * 0.16,
         });
       }
     });
 
-    // 4. Custom Shader Bokeh Plasma, Oxygen & Platelet Micro-Particles
-    const bokehCount = 160;
-    const bokehPos = new Float32Array(bokehCount * 3);
-    const bokehSizes = new Float32Array(bokehCount);
-    const bokehColors = new Float32Array(bokehCount * 3);
-    const bokehPhases = new Float32Array(bokehCount);
+    // 3. Swarm of 380 UHD Quantum Photons & Spatial Coordinates
+    const photonCount = 380;
+    const photonPositions = new Float32Array(photonCount * 3);
+    const photonSizes = new Float32Array(photonCount);
+    const photonColors = new Float32Array(photonCount * 3);
+    const photonPhases = new Float32Array(photonCount);
+    const photonSpeeds = new Float32Array(photonCount);
 
-    const palette = [
-      new THREE.Color(0xff4d6d), // Erythrocyte ruby
-      new THREE.Color(0xfbbf24), // Golden plasma
-      new THREE.Color(0x38bdf8), // Cold-chain cyan
-      new THREE.Color(0x34d399), // Platelet emerald
+    const quantumPalette = [
+      new THREE.Color(0x00f0ff), // Cyan photon
+      new THREE.Color(0xff1a53), // Crimson dispatch
+      new THREE.Color(0x00ffb3), // Emerald verified
+      new THREE.Color(0x38bdf8), // Sky telemetry
+      new THREE.Color(0xffffff), // Laser core
     ];
 
-    for (let i = 0; i < bokehCount; i += 1) {
-      bokehPos[i * 3] = (Math.random() - 0.5) * 18;
-      bokehPos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      bokehPos[i * 3 + 2] = -4.5 + Math.random() * 8.5;
-      bokehSizes[i] = 0.08 + Math.random() * 0.22;
-      bokehPhases[i] = Math.random() * Math.PI * 2;
-      const c = palette[i % palette.length];
-      bokehColors[i * 3] = c.r;
-      bokehColors[i * 3 + 1] = c.g;
-      bokehColors[i * 3 + 2] = c.b;
+    for (let i = 0; i < photonCount; i += 1) {
+      photonPositions[i * 3] = (Math.random() - 0.5) * 26.0;
+      photonPositions[i * 3 + 1] = (Math.random() - 0.5) * 14.0;
+      photonPositions[i * 3 + 2] = -6.0 + Math.random() * 10.0;
+      photonSizes[i] = 0.08 + Math.random() * 0.24;
+      photonPhases[i] = Math.random() * Math.PI * 2;
+      photonSpeeds[i] = 0.4 + Math.random() * 0.8;
+
+      const c = quantumPalette[i % quantumPalette.length];
+      photonColors[i * 3] = c.r;
+      photonColors[i * 3 + 1] = c.g;
+      photonColors[i * 3 + 2] = c.b;
     }
 
-    const bokehGeo = new THREE.BufferGeometry();
-    bokehGeo.setAttribute("position", new THREE.BufferAttribute(bokehPos, 3));
-    bokehGeo.setAttribute("aSize", new THREE.BufferAttribute(bokehSizes, 1));
-    bokehGeo.setAttribute("aColor", new THREE.BufferAttribute(bokehColors, 3));
-    bokehGeo.setAttribute("aPhase", new THREE.BufferAttribute(bokehPhases, 1));
+    const photonGeo = new THREE.BufferGeometry();
+    photonGeo.setAttribute("position", new THREE.BufferAttribute(photonPositions, 3));
+    photonGeo.setAttribute("aSize", new THREE.BufferAttribute(photonSizes, 1));
+    photonGeo.setAttribute("aColor", new THREE.BufferAttribute(photonColors, 3));
+    photonGeo.setAttribute("aPhase", new THREE.BufferAttribute(photonPhases, 1));
+    photonGeo.setAttribute("aSpeed", new THREE.BufferAttribute(photonSpeeds, 1));
 
-    const bokehUniforms = {
+    const photonUniforms = {
       uTime: { value: 0 },
       uSystole: { value: 0 },
     };
 
-    const bokehMat = new THREE.ShaderMaterial({
-      vertexShader: BOKEH_VERTEX_SHADER,
-      fragmentShader: BOKEH_FRAGMENT_SHADER,
-      uniforms: bokehUniforms,
+    const photonMat = new THREE.ShaderMaterial({
+      vertexShader: PHOTON_VERTEX_SHADER,
+      fragmentShader: PHOTON_FRAGMENT_SHADER,
+      uniforms: photonUniforms,
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     });
-    const bokehPoints = new THREE.Points(bokehGeo, bokehMat);
-    scene.add(bokehPoints);
-    disposables.push(bokehGeo, bokehMat);
+    const photonSystem = new THREE.Points(photonGeo, photonMat);
+    scene.add(photonSystem);
+    disposables.push(photonGeo, photonMat);
 
-    // 5. Undulating Viscous Liquid Plasma Stream Bed (Shader Driven)
-    const liquidUniforms = {
-      uTime: { value: 0 },
-      uSystole: { value: 0 },
-      uCameraPos: { value: new THREE.Vector3(0, 0.3, 8.2) },
-    };
-
-    const liquidGeo = new THREE.PlaneGeometry(26, 14, 72, 54);
-    const liquidMat = new THREE.ShaderMaterial({
-      vertexShader: LIQUID_STREAM_VERTEX_SHADER,
-      fragmentShader: LIQUID_STREAM_FRAGMENT_SHADER,
-      uniforms: liquidUniforms,
+    // 4. Volumetric 3D Pulse Shockwave Expansion Ring
+    const shockwaveRingGeo = new THREE.RingGeometry(0.1, 0.28, 64);
+    const shockwaveRingMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
       transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
+      opacity: 0,
       side: THREE.DoubleSide,
     });
-    const liquidMesh = new THREE.Mesh(liquidGeo, liquidMat);
-    liquidMesh.position.set(0, -0.65, -1.6);
-    liquidMesh.rotation.set(-1.18, 0.12, 0.25);
-    scene.add(liquidMesh);
-    disposables.push(liquidGeo, liquidMat);
+    const shockwaveRingMesh = new THREE.Mesh(shockwaveRingGeo, shockwaveRingMat);
+    shockwaveRingMesh.rotation.x = -Math.PI / 2;
+    shockwaveRingMesh.position.set(0, -0.8, -1.0);
+    scene.add(shockwaveRingMesh);
+    disposables.push(shockwaveRingGeo, shockwaveRingMat);
 
-    // 6. Instanced Viscous Blood Droplets Streaming along Flow Vectors
-    const dropletCount = 36;
-    const dropletGeo = new THREE.SphereGeometry(0.12, 16, 12);
-    dropletGeo.scale(0.7, 2.1, 0.7); // Elongated hydrodynamic teardrop shape
-    const dropletMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe6193c,
-      emissive: 0x4a0510,
-      roughness: 0.14,
-      metalness: 0.08,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.06,
-      transmission: 0.45,
-      transparent: true,
-      opacity: 0.88,
-    });
-    const dropletMesh = new THREE.InstancedMesh(dropletGeo, dropletMat, dropletCount);
-    scene.add(dropletMesh);
-    disposables.push(dropletGeo, dropletMat);
-
-    const dropletSeeds = Array.from({ length: dropletCount }, (_, idx) => ({
-      u: idx / dropletCount,
-      yOffset: ((idx % 7) - 3) * 0.78,
-      zOffset: -2.2 + (idx % 5) * 0.95,
-      speed: 0.26 + (idx % 6) * 0.09,
-      scale: 0.65 + (idx % 4) * 0.18,
-    }));
-
-    // Mouse Parallax & Scroll Tracking
+    // Mouse Parallax & Cinematic Motion
     let pointerX = 0;
     let pointerY = 0;
     let scrollProgress = 0;
@@ -489,6 +359,7 @@ export function LiveBiomedicalBg3D({
     const onPointerMove = (e: PointerEvent) => {
       pointerX = (e.clientX / Math.max(window.innerWidth, 1) - 0.5) * 2;
       pointerY = -(e.clientY / Math.max(window.innerHeight, 1) - 0.5) * 2;
+      gridUniforms.uPointer.value.set(pointerX, pointerY);
     };
 
     const onScroll = () => {
@@ -511,204 +382,126 @@ export function LiveBiomedicalBg3D({
     window.addEventListener("resize", onResize);
 
     const clock = new THREE.Clock();
-    const dummy = new THREE.Object3D();
     const tmpVec = new THREE.Vector3();
-    let arterialPhase = 0;
     let frameId = 0;
 
     const animate = () => {
       frameId = window.requestAnimationFrame(animate);
       const dt = Math.min(clock.getDelta(), 0.05);
-      const elapsed = reducedMotion ? 2.4 : clock.getElapsedTime();
-      const speedMult = boostRef.current ? 1.75 : 1.0;
+      const elapsed = reducedMotion ? 2.0 : clock.getElapsedTime();
+      const speedMult = boostRef.current ? 1.85 : 1.0;
 
-      // Realistic cardiac cycle: sharp systolic upstroke + dicrotic notch + diastolic decay
-      const bpmFreq = boostRef.current ? 2.0 : 1.23; // ~74 BPM normal, 120 BPM boosted
+      // Realistic cardiac/telemetry cycle spike
+      const bpmFreq = boostRef.current ? 2.0 : 1.25;
       const beatCycle = (elapsed * bpmFreq) % 1;
       const systoleSpike =
         Math.exp(-Math.pow((beatCycle - 0.18) * 9.5, 2)) +
-        0.38 * Math.exp(-Math.pow((beatCycle - 0.34) * 12.0, 2));
+        0.35 * Math.exp(-Math.pow((beatCycle - 0.34) * 12.0, 2));
 
       if (shockwaveRef.current > 0) {
-        shockwaveRef.current = Math.max(0, shockwaveRef.current - dt * 1.15);
+        shockwaveRef.current = Math.max(0, shockwaveRef.current - dt * 1.25);
       }
 
-      const combinedSystole = Math.min(1.4, systoleSpike + shockwaveRef.current * 0.8);
-      // Pulsatile forward velocity: faster during systole, gentle drift in diastole
-      arterialPhase += dt * speedMult * (0.22 + combinedSystole * 0.42);
+      const combinedSystole = Math.min(1.4, systoleSpike + shockwaveRef.current * 0.85);
 
-      rbcUniforms.uTime.value = elapsed;
-      rbcUniforms.uSystole.value = combinedSystole;
-      bokehUniforms.uTime.value = elapsed;
-      bokehUniforms.uSystole.value = combinedSystole;
-      liquidUniforms.uTime.value = elapsed;
-      liquidUniforms.uSystole.value = combinedSystole;
+      gridUniforms.uTime.value = elapsed * speedMult;
+      gridUniforms.uSystole.value = combinedSystole;
+      photonUniforms.uTime.value = elapsed * speedMult;
+      photonUniforms.uSystole.value = combinedSystole;
 
-      // Determine active 3D formation mode (either explicit or scroll-choreographed)
-      let activeFormation: "arterial" | "helix" | "vortex" = "arterial";
-      if (modeRef.current !== "auto") {
-        activeFormation = modeRef.current;
-      } else if (scrollProgress < 0.34) {
-        activeFormation = "arterial";
-      } else if (scrollProgress < 0.68) {
-        activeFormation = "helix";
-      } else {
-        activeFormation = "vortex";
-      }
+      // Cinematic smooth camera parallax & orbit
+      const targetCamX = pointerX * 0.95 + Math.sin(scrollProgress * Math.PI * 2) * 0.65;
+      const targetCamY = 1.2 + pointerY * 0.55 - scrollProgress * 0.5;
+      const targetCamZ = 9.2 - scrollProgress * 1.5;
+      camera.position.x += (targetCamX - camera.position.x) * 0.06;
+      camera.position.y += (targetCamY - camera.position.y) * 0.06;
+      camera.position.z += (targetCamZ - camera.position.z) * 0.06;
+      camera.lookAt(pointerX * 0.35, pointerY * 0.25 - scrollProgress * 0.3, 0);
+      gridUniforms.uCameraPos.value.copy(camera.position);
 
-      // Smoothly choreograph camera position with mouse parallax & scroll depth
-      const targetCamX = pointerX * 0.75 + Math.sin(scrollProgress * Math.PI * 2) * 0.55;
-      const targetCamY = 0.25 + pointerY * 0.45 - scrollProgress * 0.4;
-      const targetCamZ = activeFormation === "vortex" ? 7.4 : 8.2;
-      camera.position.x += (targetCamX - camera.position.x) * 0.05;
-      camera.position.y += (targetCamY - camera.position.y) * 0.05;
-      camera.position.z += (targetCamZ - camera.position.z) * 0.05;
-      camera.lookAt(pointerX * 0.25, pointerY * 0.18, 0);
-      rbcUniforms.uCameraPos.value.copy(camera.position);
-      liquidUniforms.uCameraPos.value.copy(camera.position);
-
-      // Animate Ambient Erythrocyte in Deep Background
-      heroCellMesh.position.x = -3.2 + Math.cos(elapsed * 0.45) * 0.18 - scrollProgress * 1.2;
-      heroCellMesh.position.y = 0.45 + Math.sin(elapsed * 0.75) * 0.12 + combinedSystole * 0.04;
-      heroCellMesh.position.z = -2.2;
-      heroCellMesh.rotation.y = elapsed * 0.34;
-      heroCellMesh.rotation.x = 0.62 + Math.sin(elapsed * 0.6) * 0.18;
-      heroCellMesh.rotation.z = -0.3 + Math.cos(elapsed * 0.5) * 0.14;
-      const heroScale = Math.max(0.35, 0.75 - scrollProgress * 0.35);
-      heroCellMesh.scale.setScalar(heroScale * (1 + combinedSystole * 0.035));
-
-      // Animate 42 Instanced Biconcave Erythrocytes according to active 3D mode
-      for (let i = 0; i < swarmCount; i += 1) {
-        const seed = cellSeeds[i];
-        const flowU = (seed.u + arterialPhase * 0.12) % 1;
-
-        if (activeFormation === "arterial") {
-          // Laminar pulsatile bloodstream from left-deep to right-foreground
-          const x = (flowU - 0.5) * 16.5;
-          const archY = Math.sin(flowU * Math.PI * 2 + seed.angleOffset) * 1.15 + seed.ySpread * 0.55;
-          const z = seed.zSpread + Math.cos(flowU * Math.PI + seed.angleOffset) * 0.9;
-          dummy.position.set(x, archY, z);
-        } else if (activeFormation === "helix") {
-          // Double-helix ABO/Rh vascular strand
-          const strand = i % 2 === 0 ? 1 : -1;
-          const theta = flowU * Math.PI * 4 + (strand === 1 ? 0 : Math.PI);
-          const x = (flowU - 0.5) * 15.0;
-          const y = Math.sin(theta) * 2.15;
-          const z = Math.cos(theta) * 2.15 - 1.0;
-          dummy.position.set(x, y, z);
-        } else {
-          // Tri-layer centrifuge component vortex
-          const theta = elapsed * 0.65 * speedMult + seed.angleOffset + flowU * Math.PI * 2;
-          const ringRadius = 1.6 + (i % 3) * 1.35;
-          const x = Math.cos(theta) * ringRadius * 1.35;
-          const y = Math.sin(theta) * ringRadius * 0.85;
-          const z = -1.2 + Math.sin(theta * 2 + i) * 1.1;
-          dummy.position.set(x, y, z);
-        }
-
-        dummy.rotation.set(
-          elapsed * seed.rotSpeed + seed.angleOffset,
-          elapsed * (seed.rotSpeed * 0.8) + i,
-          Math.sin(elapsed + i) * 0.5,
-        );
-        dummy.scale.setScalar(seed.scale * (1 + combinedSystole * 0.05));
-        dummy.updateMatrix();
-        swarmMesh.setMatrixAt(i, dummy.matrix);
-      }
-      swarmMesh.instanceMatrix.needsUpdate = true;
-
-      // Animate traveling bio-optical signal capsules along 3D vascular tubes
-      pulseCapsules.forEach((cap) => {
-        const u = (elapsed * cap.speed * speedMult + cap.offset) % 1;
-        cap.curve.getPointAt(u, tmpVec);
-        cap.mesh.position.copy(tmpVec);
-        cap.mesh.scale.setScalar(0.85 + combinedSystole * 0.55);
+      // Animate traveling photon laser beacons along 3D fiber conduits
+      travelingPhotons.forEach((p) => {
+        const u = (elapsed * p.speed * speedMult + p.offset) % 1;
+        p.curve.getPointAt(u, tmpVec);
+        p.mesh.position.copy(tmpVec);
+        p.mesh.scale.setScalar(0.9 + combinedSystole * 0.65);
       });
 
-      // Animate elongated viscous blood plasma droplets streaming across laminar vectors
-      for (let i = 0; i < dropletCount; i += 1) {
-        const seed = dropletSeeds[i];
-        const dropU = (seed.u + elapsed * seed.speed * speedMult * 0.16 + arterialPhase * 0.06) % 1;
-        const x = (dropU - 0.5) * 22.0;
-        const waveY = Math.sin(dropU * Math.PI * 3 + elapsed * 1.6) * 0.45;
-        const y = seed.yOffset + waveY - 0.25;
-        const z = seed.zOffset + Math.cos(dropU * Math.PI * 2.2) * 0.55;
-        dummy.position.set(x, y, z);
-        const pitch = Math.cos(dropU * Math.PI * 3 + elapsed * 1.6) * 0.28;
-        dummy.rotation.set(pitch, 0, -Math.PI / 2 + pitch * 0.35);
-        const stretchZ = 1.0 + combinedSystole * 0.4;
-        dummy.scale.set(seed.scale, seed.scale * stretchZ, seed.scale);
-        dummy.updateMatrix();
-        dropletMesh.setMatrixAt(i, dummy.matrix);
-      }
-      dropletMesh.instanceMatrix.needsUpdate = true;
+      conduitGroup.rotation.z = Math.sin(elapsed * 0.25) * 0.08;
 
-      ribbonGroup.rotation.z = Math.sin(elapsed * 0.18) * 0.06;
+      // Animate 3D pulse shockwave ring on heartbeat / event
+      if (shockwaveRef.current > 0.02) {
+        const p = 1.0 - shockwaveRef.current;
+        shockwaveRingMesh.scale.setScalar(1 + p * 28.0);
+        shockwaveRingMat.opacity = shockwaveRef.current * 0.62;
+      } else {
+        shockwaveRingMat.opacity = 0;
+      }
+
       renderer.render(scene, camera);
 
-      // Render Subtle 2D Broadcast Telemetry & Systolic Shockwave Overlay
+      // Render UHD 2D HUD Cybernetic Telemetry Layer
       if (hudCtx) {
         const cw = window.innerWidth || 1280;
         const ch = window.innerHeight || 800;
         hudCtx.clearRect(0, 0, cw, ch);
 
-        // Fluid plasma ribbons drifting organically across canvas
-        hudCtx.save();
-        for (let wave = 0; wave < 3; wave += 1) {
-          const waveY = ch * (0.34 + wave * 0.24);
-          const grad = hudCtx.createLinearGradient(0, waveY - 45, cw, waveY + 45);
-          grad.addColorStop(0, "rgba(225, 29, 72, 0.0)");
-          grad.addColorStop(0.28, wave === 0 ? "rgba(255, 77, 109, 0.22)" : "rgba(244, 63, 94, 0.14)");
-          grad.addColorStop(0.72, wave === 1 ? "rgba(251, 191, 36, 0.16)" : "rgba(225, 29, 72, 0.18)");
-          grad.addColorStop(1, "rgba(225, 29, 72, 0.0)");
-
-          hudCtx.beginPath();
-          hudCtx.moveTo(0, waveY);
-          for (let x = 0; x <= cw; x += 18) {
-            const u = x / cw;
-            const yDisp =
-              Math.sin(u * 5.2 + elapsed * (1.1 + wave * 0.4) * speedMult) * (20 + wave * 8) +
-              Math.cos(u * 8.6 - elapsed * (0.8 + wave * 0.3)) * (12 + wave * 5);
-            hudCtx.lineTo(x, waveY + yDisp);
-          }
-          hudCtx.strokeStyle = grad;
-          hudCtx.lineWidth = 3.6 + wave * 1.4;
-          hudCtx.stroke();
-        }
-        hudCtx.restore();
-
-        // Continuous ambient ECG / Arterial PPG waveform along the lower background
+        // Futuristic Holographic Waveform along the lower telemetry baseline
         hudCtx.save();
         hudCtx.beginPath();
-        const baseY = ch * 0.84;
+        const baseY = ch * 0.86;
         for (let x = 0; x <= cw; x += 6) {
           const u = x / cw;
-          const wPhase = ((u * 3.5 - elapsed * 0.48 * speedMult) % 1 + 1) % 1;
+          const wPhase = ((u * 3.6 - elapsed * 0.52 * speedMult) % 1 + 1) % 1;
           let spike = 0;
-          if (wPhase > 0.42 && wPhase < 0.46) spike = -10;
-          else if (wPhase >= 0.46 && wPhase < 0.50) spike = 44 * (1 + combinedSystole * 0.35);
-          else if (wPhase >= 0.50 && wPhase < 0.54) spike = -24;
-          else if (wPhase >= 0.54 && wPhase < 0.60) spike = 11;
+          if (wPhase > 0.42 && wPhase < 0.46) spike = -12;
+          else if (wPhase >= 0.46 && wPhase < 0.50) spike = 48 * (1 + combinedSystole * 0.4);
+          else if (wPhase >= 0.50 && wPhase < 0.54) spike = -26;
+          else if (wPhase >= 0.54 && wPhase < 0.60) spike = 14;
           const y = baseY - spike;
           if (x === 0) hudCtx.moveTo(x, y);
           else hudCtx.lineTo(x, y);
         }
-        hudCtx.save();
-        hudCtx.strokeStyle = "rgba(255, 77, 109, 0.55)";
+        hudCtx.strokeStyle = "rgba(0, 240, 255, 0.65)";
         hudCtx.lineWidth = 2.4;
-        hudCtx.shadowColor = "#ff4d6d";
-        hudCtx.shadowBlur = 8;
+        hudCtx.shadowColor = "#00f0ff";
+        hudCtx.shadowBlur = 10;
         hudCtx.stroke();
         hudCtx.restore();
 
-        // Expanding systolic shockwave ring when user triggers a pulse or switches blood group
+        // High-Tech Ambient Telemetry Crosshairs in Screen Corners
+        hudCtx.save();
+        hudCtx.strokeStyle = "rgba(0, 240, 255, 0.22)";
+        hudCtx.lineWidth = 1.2;
+        // Top Left Reticle
+        hudCtx.strokeRect(32, 32, 16, 16);
+        hudCtx.beginPath();
+        hudCtx.moveTo(40, 26);
+        hudCtx.lineTo(40, 54);
+        hudCtx.moveTo(26, 40);
+        hudCtx.lineTo(54, 40);
+        hudCtx.stroke();
+
+        // Bottom Right Reticle
+        hudCtx.strokeRect(cw - 48, ch - 48, 16, 16);
+        hudCtx.beginPath();
+        hudCtx.moveTo(cw - 40, ch - 54);
+        hudCtx.lineTo(cw - 40, ch - 26);
+        hudCtx.moveTo(cw - 54, ch - 40);
+        hudCtx.lineTo(cw - 26, ch - 40);
+        hudCtx.stroke();
+        hudCtx.restore();
+
+        // Expanding 2D shockwave ring on trigger
         if (shockwaveRef.current > 0.01) {
           const p = 1.0 - shockwaveRef.current;
           hudCtx.save();
           hudCtx.beginPath();
-          hudCtx.arc(cw * 0.5, ch * 0.48, 60 + p * Math.max(cw, ch) * 0.55, 0, Math.PI * 2);
-          hudCtx.strokeStyle = `rgba(255, 77, 109, ${shockwaveRef.current * 0.42})`;
-          hudCtx.lineWidth = 2.2;
+          hudCtx.arc(cw * 0.5, ch * 0.48, 80 + p * Math.max(cw, ch) * 0.6, 0, Math.PI * 2);
+          hudCtx.strokeStyle = `rgba(0, 240, 255, ${shockwaveRef.current * 0.48})`;
+          hudCtx.lineWidth = 2.4;
+          hudCtx.shadowColor = "#00f0ff";
+          hudCtx.shadowBlur = 12;
           hudCtx.stroke();
           hudCtx.restore();
         }

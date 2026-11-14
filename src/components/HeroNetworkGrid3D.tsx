@@ -21,7 +21,7 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     title: "Southern Regional Trauma & Critical Care Hub",
     detail: "Active hospital transfusion desk · Cross-match verified",
     metricLabel: "Primary receiving hospital",
-    position: [0, 0.25, 0.2],
+    position: [0, 0.28, 0.2],
   },
   {
     id: "BK1",
@@ -29,7 +29,7 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     role: "bank",
     title: "Bengaluru Regional Blood Centre",
     detail: "107 PRBC units · 18 platelet units · 42 plasma units",
-    metricLabel: "24/7 Component & Apheresis Lab",
+    metricLabel: "24/7 Automated Cold-Chain Vault",
     position: [-1.45, 0.45, -0.75],
   },
   {
@@ -38,8 +38,8 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
     role: "bank",
     title: "Western Regional Blood Centre — Parel",
     detail: "130 PRBC units · 26 platelet units · 54 plasma units",
-    metricLabel: "24/7 Oncology & Component Suite",
-    position: [1.55, 0.35, -0.55],
+    metricLabel: "Autonomous Drone Dispatch Hub",
+    position: [1.55, 0.38, -0.55],
   },
   {
     id: "O-",
@@ -145,42 +145,116 @@ export function HeroNetworkGrid3D({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.35;
+    renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    renderer.setClearColor(0x000000, 0);
-
     const camera = new THREE.PerspectiveCamera(44, w / h, 0.1, 40);
-    camera.position.set(0, 2.35, 5.4);
-    camera.lookAt(0, 0.1, 0);
+    camera.position.set(0, 2.45, 5.5);
+    camera.lookAt(0, 0.15, 0);
 
-    scene.add(new THREE.AmbientLight(0x475569, 2.4));
-    const rubyLight = new THREE.PointLight(0xff3b5c, 18, 18, 1.2);
-    rubyLight.position.set(1.2, 2.4, 2.2);
+    scene.add(new THREE.AmbientLight(0x38bdf8, 1.8));
+    const rubyLight = new THREE.PointLight(0xff1a53, 20, 18, 1.4);
+    rubyLight.position.set(1.4, 2.6, 2.2);
     scene.add(rubyLight);
-    const blueLight = new THREE.PointLight(0x38bdf8, 16, 18, 1.3);
-    blueLight.position.set(-2.5, 2.2, -1.5);
-    scene.add(blueLight);
-    const rimLight = new THREE.DirectionalLight(0xffffff, 1.6);
-    rimLight.position.set(-3, 4, -3);
+    const cyanLight = new THREE.PointLight(0x00f0ff, 18, 18, 1.3);
+    cyanLight.position.set(-2.5, 2.4, -1.5);
+    scene.add(cyanLight);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    rimLight.position.set(-3, 5, -3);
     scene.add(rimLight);
 
     const worldGroup = new THREE.Group();
     scene.add(worldGroup);
 
-    // 3D Medical Telemetry Floor Grid + Concentric Range Rings
-    const grid = new THREE.GridHelper(12, 28, 0x3b82f6, 0x1e293b);
+    // 1. Futuristic 3D Coordinate Grid & Topographical Digital Matrix
+    const grid = new THREE.GridHelper(12, 28, 0x00f0ff, 0x1e293b);
     grid.position.y = -0.35;
     worldGroup.add(grid);
 
+    // 2. Holographic Topographical Digital Twin District Blocks
+    const buildingMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.15,
+      roughness: 0.25,
+      metalness: 0.75,
+      transparent: true,
+      opacity: 0.72,
+    });
+
+    const buildingCoords: [number, number, number, number, number, number][] = [
+      [-2.8, -0.35, -2.0, 0.45, 0.65, 0.45],
+      [-2.2, -0.35, -2.4, 0.5, 0.85, 0.5],
+      [2.5, -0.35, -2.1, 0.45, 0.75, 0.45],
+      [3.0, -0.35, -1.6, 0.55, 0.95, 0.55],
+      [-3.2, -0.35, 0.8, 0.4, 0.55, 0.4],
+      [3.1, -0.35, 1.2, 0.45, 0.7, 0.45],
+    ];
+
+    const disposables: { dispose: () => void }[] = [buildingMat];
+
+    buildingCoords.forEach(([x, y, z, wB, hB, dB]) => {
+      const bGeo = new THREE.BoxGeometry(wB, hB, dB);
+      const bMesh = new THREE.Mesh(bGeo, buildingMat);
+      bMesh.position.set(x, y + hB * 0.5, z);
+      worldGroup.add(bMesh);
+      disposables.push(bGeo);
+
+      const edgeGeo = new THREE.EdgesGeometry(bGeo);
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.45 });
+      const edgeLines = new THREE.LineSegments(edgeGeo, edgeMat);
+      bMesh.add(edgeLines);
+      disposables.push(edgeGeo, edgeMat);
+    });
+
+    // 3. Central Hospital Medical Citadel (Multi-Tier Crystalline Hub)
+    const hubBaseGeo = new THREE.CylinderGeometry(0.38, 0.48, 0.25, 6);
+    const hubBaseMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      emissive: 0xff1a53,
+      emissiveIntensity: 0.4,
+      roughness: 0.2,
+      metalness: 0.8,
+    });
+    const hubBaseMesh = new THREE.Mesh(hubBaseGeo, hubBaseMat);
+    hubBaseMesh.position.set(0, -0.22, 0.2);
+    worldGroup.add(hubBaseMesh);
+    disposables.push(hubBaseGeo, hubBaseMat);
+
+    const hubSpireGeo = new THREE.CylinderGeometry(0.24, 0.34, 0.35, 6);
+    const hubSpireMat = new THREE.MeshPhysicalMaterial({
+      color: 0xff1a53,
+      emissive: 0x880822,
+      roughness: 0.12,
+      metalness: 0.3,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.08,
+    });
+    const hubSpireMesh = new THREE.Mesh(hubSpireGeo, hubSpireMat);
+    hubSpireMesh.position.set(0, 0.08, 0.2);
+    worldGroup.add(hubSpireMesh);
+    disposables.push(hubSpireGeo, hubSpireMat);
+
+    // 3D Laser Cross Beacon above Hospital Spire
+    const crossGroup = new THREE.Group();
+    const crossBarVGeo = new THREE.BoxGeometry(0.09, 0.28, 0.09);
+    const crossBarHGeo = new THREE.BoxGeometry(0.28, 0.09, 0.09);
+    const crossMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    crossGroup.add(new THREE.Mesh(crossBarVGeo, crossMat));
+    crossGroup.add(new THREE.Mesh(crossBarHGeo, crossMat));
+    crossGroup.position.set(0, 0.48, 0.2);
+    worldGroup.add(crossGroup);
+    disposables.push(crossBarVGeo, crossBarHGeo, crossMat);
+
     // Holographic Radar Sector Sweep around Central Hospital
-    const sweepGeo = new THREE.RingGeometry(0.2, 3.8, 48, 1, 0, Math.PI * 0.42);
+    const sweepGeo = new THREE.RingGeometry(0.2, 4.0, 48, 1, 0, Math.PI * 0.42);
     const sweepMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
+      color: 0x00f0ff,
       transparent: true,
       opacity: 0.18,
       side: THREE.DoubleSide,
@@ -189,36 +263,17 @@ export function HeroNetworkGrid3D({
     sweepMesh.rotation.x = -Math.PI / 2;
     sweepMesh.position.set(0, -0.33, 0.2);
     worldGroup.add(sweepMesh);
+    disposables.push(sweepGeo, sweepMat);
 
-    // Central Hospital Hub Core + 3D Medical Cross Crown + Radar Rings
-    const hubGeo = new THREE.CylinderGeometry(0.34, 0.44, 0.38, 6);
-    const hubMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe11d48,
-      emissive: 0x660814,
-      roughness: 0.18,
-      metalness: 0.25,
-      clearcoat: 0.9,
-    });
-    const hubMesh = new THREE.Mesh(hubGeo, hubMat);
-    hubMesh.position.set(0, 0.05, 0.2);
-    worldGroup.add(hubMesh);
-
-    // 3D Medical Cross above Hospital Hub
-    const crossGroup = new THREE.Group();
-    const crossBarVGeo = new THREE.BoxGeometry(0.09, 0.28, 0.09);
-    const crossBarHGeo = new THREE.BoxGeometry(0.28, 0.09, 0.09);
-    const crossMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    crossGroup.add(new THREE.Mesh(crossBarVGeo, crossMat));
-    crossGroup.add(new THREE.Mesh(crossBarHGeo, crossMat));
-    crossGroup.position.set(0, 0.46, 0.2);
-    worldGroup.add(crossGroup);
-
+    // Expanding Concentric Distance Range Rings
     const radarRings: THREE.Mesh[] = [];
     const radarMats: THREE.MeshBasicMaterial[] = [];
     const radarGeo = new THREE.RingGeometry(0.95, 1.0, 64);
+    disposables.push(radarGeo);
+
     for (let r = 0; r < 3; r += 1) {
       const rMat = new THREE.MeshBasicMaterial({
-        color: 0xff4d6d,
+        color: 0x00f0ff,
         transparent: true,
         opacity: 0.35,
         side: THREE.DoubleSide,
@@ -229,59 +284,46 @@ export function HeroNetworkGrid3D({
       worldGroup.add(rMesh);
       radarRings.push(rMesh);
       radarMats.push(rMat);
+      disposables.push(rMat);
     }
 
-    // Ambient subtle telemetry micro-particles
-    const particleCount = 60;
+    // 4. Ambient Holographic Telemetry Micro-Photons
+    const particleCount = 80;
     const particlePos = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount; i += 1) {
-      particlePos[i * 3] = (Math.random() - 0.5) * 7.2;
-      particlePos[i * 3 + 1] = -0.15 + Math.random() * 2.2;
-      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 5.2;
+      particlePos[i * 3] = (Math.random() - 0.5) * 8.0;
+      particlePos[i * 3 + 1] = -0.15 + Math.random() * 2.5;
+      particlePos[i * 3 + 2] = (Math.random() - 0.5) * 6.0;
     }
     const particleGeo = new THREE.BufferGeometry();
     particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePos, 3));
     const particleMat = new THREE.PointsMaterial({
-      color: 0x38bdf8,
-      size: 0.038,
+      color: 0x00f0ff,
+      size: 0.04,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.55,
     });
     const particleSystem = new THREE.Points(particleGeo, particleMat);
     worldGroup.add(particleSystem);
+    disposables.push(particleGeo, particleMat);
 
-    // Live 3D ECG Heartbeat Line across the foreground of the grid
+    // 5. Live 3D Holographic Telemetry Ribbon across Grid Foreground
     const ecgPointsCount = 110;
     const ecgPositions = new Float32Array(ecgPointsCount * 3);
     const ecgGeo = new THREE.BufferGeometry();
-    ecgGeo.setAttribute("position", new THREE.BufferAttribute(ecgPointsCount > 0 ? ecgPositions : new Float32Array(), 3));
-    const ecgMat = new THREE.LineBasicMaterial({ color: 0xff4d6d, transparent: true, opacity: 0.95 });
+    ecgGeo.setAttribute("position", new THREE.BufferAttribute(ecgPositions, 3));
+    const ecgMat = new THREE.LineBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.95 });
     const ecgLine = new THREE.Line(ecgGeo, ecgMat);
     worldGroup.add(ecgLine);
+    disposables.push(ecgGeo, ecgMat);
 
-    // Interactive 3D Network Nodes with Pedestal Pillars & Base Rings
+    // 6. Interactive 3D Network Nodes with Elevated Laser Pedestals & Halos
     const nodeGeo = new THREE.SphereGeometry(0.13, 24, 24);
-    const bankTowerGeo = new THREE.OctahedronGeometry(0.17, 1);
-    const pedestalGeo = new THREE.CylinderGeometry(0.018, 0.018, 1, 10);
+    const bankTowerGeo = new THREE.OctahedronGeometry(0.18, 1);
+    const pedestalGeo = new THREE.CylinderGeometry(0.016, 0.016, 1, 10);
     const nodeRingGeo = new THREE.RingGeometry(0.18, 0.22, 32);
-    const disposables: { dispose: () => void }[] = [
-      sweepGeo,
-      sweepMat,
-      hubGeo,
-      hubMat,
-      crossBarVGeo,
-      crossBarHGeo,
-      crossMat,
-      radarGeo,
-      particleGeo,
-      particleMat,
-      ecgGeo,
-      ecgMat,
-      nodeGeo,
-      bankTowerGeo,
-      pedestalGeo,
-      nodeRingGeo,
-    ];
+    disposables.push(nodeGeo, bankTowerGeo, pedestalGeo, nodeRingGeo);
+
     const nodeObjects: {
       info: GridNodeInfo;
       mesh: THREE.Mesh;
@@ -291,14 +333,14 @@ export function HeroNetworkGrid3D({
 
     HERO_GRID_NODES.forEach((info) => {
       const color =
-        info.role === "donor" ? 0xff4d6d : info.role === "bank" ? 0x38bdf8 : 0xffffff;
+        info.role === "donor" ? 0xff1a53 : info.role === "bank" ? 0x00f0ff : 0xffffff;
       const emissive =
-        info.role === "donor" ? 0x9f1239 : info.role === "bank" ? 0x0369a1 : 0xe11d48;
+        info.role === "donor" ? 0x9f1239 : info.role === "bank" ? 0x0284c7 : 0xe11d48;
       const mat = new THREE.MeshStandardMaterial({
         color,
         emissive,
-        emissiveIntensity: 0.75,
-        roughness: 0.25,
+        emissiveIntensity: 0.85,
+        roughness: 0.2,
       });
       disposables.push(mat);
 
@@ -307,13 +349,12 @@ export function HeroNetworkGrid3D({
       mesh.userData = { nodeId: info.id };
       worldGroup.add(mesh);
 
-      // Vertical light pedestal down to grid floor (-0.35)
       const heightToFloor = info.position[1] - -0.35;
       if (heightToFloor > 0.05) {
         const pedMat = new THREE.MeshBasicMaterial({
           color,
           transparent: true,
-          opacity: 0.28,
+          opacity: 0.35,
         });
         disposables.push(pedMat);
         const ped = new THREE.Mesh(pedestalGeo, pedMat);
@@ -325,7 +366,7 @@ export function HeroNetworkGrid3D({
       const floorRingMat = new THREE.MeshBasicMaterial({
         color,
         transparent: true,
-        opacity: 0.42,
+        opacity: 0.52,
         side: THREE.DoubleSide,
       });
       disposables.push(floorRingMat);
@@ -337,7 +378,7 @@ export function HeroNetworkGrid3D({
       nodeObjects.push({ info, mesh, ring: floorRing, mat });
     });
 
-    // 3D Tubular Conduits from Donors -> Banks -> H1 Hub + Dual Flowing Signal Packets
+    // 7. Hyper-Velocity Laser Conduits from Donors -> Banks -> Hospital
     const signalRoutes: {
       fromId: string;
       toId: string;
@@ -348,7 +389,7 @@ export function HeroNetworkGrid3D({
       offset: number;
     }[] = [];
 
-    const packetGeo = new THREE.SphereGeometry(0.06, 14, 14);
+    const packetGeo = new THREE.SphereGeometry(0.065, 14, 14);
     const packetMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
     disposables.push(packetGeo, packetMat);
 
@@ -374,11 +415,11 @@ export function HeroNetworkGrid3D({
       );
       const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
 
-      const tubeGeo = new THREE.TubeGeometry(curve, 32, 0.016, 8, false);
+      const tubeGeo = new THREE.TubeGeometry(curve, 36, 0.018, 8, false);
       const tubeMat = new THREE.MeshBasicMaterial({
-        color: from.role === "donor" ? 0xff4d6d : 0x38bdf8,
+        color: from.role === "donor" ? 0xff1a53 : 0x00f0ff,
         transparent: true,
-        opacity: 0.36,
+        opacity: 0.38,
       });
       disposables.push(tubeGeo, tubeMat);
       worldGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
@@ -410,7 +451,7 @@ export function HeroNetworkGrid3D({
       if (isDragging) {
         const dx = e.clientX - dragStartX;
         dragDist += Math.abs(dx);
-        targetYaw = Math.max(-0.55, Math.min(0.55, targetYaw + dx * 0.006));
+        targetYaw = Math.max(-0.6, Math.min(0.6, targetYaw + dx * 0.006));
         dragStartX = e.clientX;
       }
     };
@@ -453,7 +494,7 @@ export function HeroNetworkGrid3D({
     const tmpPt = new THREE.Vector3();
     const tmpPt2 = new THREE.Vector3();
     const projVec = new THREE.Vector3();
-    const desiredCamPos = new THREE.Vector3(0, 2.35, 5.4);
+    const desiredCamPos = new THREE.Vector3(0, 2.45, 5.5);
     const desiredLookAt = new THREE.Vector3(0, 0.25, 0);
     const currentLookAt = new THREE.Vector3(0, 0.25, 0);
     let lastLabelSync = 0;
@@ -473,27 +514,27 @@ export function HeroNetworkGrid3D({
       yaw += (targetYaw - yaw) * 0.08;
       worldGroup.rotation.y = Math.sin(elapsed * 0.22) * 0.16 + yaw;
 
-      desiredCamPos.set(0, 2.25, 5.25);
+      desiredCamPos.set(0, 2.35, 5.35);
       desiredLookAt.set(0, 0.25, 0);
       camera.position.lerp(desiredCamPos, 0.06);
       currentLookAt.lerp(desiredLookAt, 0.08);
       camera.lookAt(currentLookAt);
 
-      // Animate Holographic Radar Sector Sweep around Hospital Hub
-      sweepMesh.rotation.z = -elapsed * 0.95 * speedMult;
+      // Animate Holographic Radar Sector Sweep around Hospital Citadel
+      sweepMesh.rotation.z = -elapsed * 1.15 * speedMult;
 
       // Animate Hospital Cross Crown
-      crossGroup.rotation.y = elapsed * 0.9;
-      crossGroup.position.y = 0.46 + Math.sin(elapsed * 2.5) * 0.03;
+      crossGroup.rotation.y = elapsed * 1.1;
+      crossGroup.position.y = 0.48 + Math.sin(elapsed * 2.5) * 0.03;
 
       // Animate expanding floor radar rings
       radarRings.forEach((ring, idx) => {
-        const p = (elapsed * 0.42 * speedMult + idx * 0.33) % 1;
-        ring.scale.setScalar(0.5 + p * 2.7);
-        radarMats[idx].opacity = (1 - p) * 0.45;
+        const p = (elapsed * 0.45 * speedMult + idx * 0.33) % 1;
+        ring.scale.setScalar(0.5 + p * 2.8);
+        radarMats[idx].opacity = (1 - p) * 0.48;
       });
 
-      particleSystem.rotation.y = elapsed * 0.05 * speedMult;
+      particleSystem.rotation.y = elapsed * 0.06 * speedMult;
 
       // Animate 3D ECG heartbeat ribbon
       const ecgAttr = ecgGeo.attributes.position as THREE.BufferAttribute;
@@ -512,34 +553,34 @@ export function HeroNetworkGrid3D({
       }
       ecgAttr.needsUpdate = true;
 
-      // Animate signal packets & highlight active route
+      // Animate photon packets & highlight active route
       const curSel = selectedIdRef.current;
       signalRoutes.forEach((route) => {
-        const u = (elapsed * 0.45 * speedMult + route.offset) % 1;
+        const u = (elapsed * 0.52 * speedMult + route.offset) % 1;
         const u2 = (u + 0.5) % 1;
         route.curve.getPointAt(u, tmpPt);
         route.curve.getPointAt(u2, tmpPt2);
         route.packet.position.copy(tmpPt);
         route.packet2.position.copy(tmpPt2);
         const isHighlighted = route.fromId === curSel || route.toId === curSel || curSel === "H1";
-        route.tubeMat.opacity = isHighlighted ? 0.82 : 0.22;
-        route.packet.scale.setScalar(isHighlighted ? 1.3 : 0.78);
-        route.packet2.scale.setScalar(isHighlighted ? 1.0 : 0.6);
+        route.tubeMat.opacity = isHighlighted ? 0.9 : 0.24;
+        route.packet.scale.setScalar(isHighlighted ? 1.4 : 0.85);
+        route.packet2.scale.setScalar(isHighlighted ? 1.1 : 0.65);
       });
 
       nodeObjects.forEach((obj, idx) => {
         const isSel = obj.info.id === curSel;
-        obj.mat.emissiveIntensity = isSel ? 1.4 : 0.65;
-        obj.ring.scale.setScalar(isSel ? 1.45 + Math.sin(elapsed * 4) * 0.14 : 1 + Math.sin(elapsed * 2 + idx) * 0.05);
+        obj.mat.emissiveIntensity = isSel ? 1.6 : 0.75;
+        obj.ring.scale.setScalar(isSel ? 1.5 + Math.sin(elapsed * 4) * 0.15 : 1 + Math.sin(elapsed * 2 + idx) * 0.05);
         if (obj.info.role === "bank") {
-          obj.mesh.rotation.y = elapsed * 0.8 + idx;
+          obj.mesh.rotation.y = elapsed * 0.9 + idx;
         }
       });
 
-      hubMesh.scale.setScalar(1 + Math.sin(elapsed * 3.2) * 0.04 + ecgBoostRef.current * 0.08);
+      hubSpireMesh.scale.setScalar(1 + Math.sin(elapsed * 3.2) * 0.04 + ecgBoostRef.current * 0.08);
       renderer.render(scene, camera);
 
-      // Update sharp HTML ring badges projected from 3D coordinates (~20fps to minimize React work)
+      // Project 3D nodes into sharp 2D UI interactive pills
       if (elapsed - lastLabelSync > 0.045) {
         lastLabelSync = elapsed;
         const cw = container.clientWidth || w;
@@ -578,18 +619,18 @@ export function HeroNetworkGrid3D({
 
   return (
     <div className="hero-grid3d-shell">
-      {/* Network status bar */}
+      {/* High-Tech Telemetry Top Bar */}
       <div className="hero-3d-topbar">
         <div className="hero-3d-status">
           <span className="pulse-dot" />
-          <span>REGIONAL TRANSFUSION NETWORK · ABO/Rh ROUTING</span>
+          <span>AUTONOMOUS TRANSFUSION DIGITAL TWIN · QUANTUM ROUTING</span>
         </div>
-        <span className="hero-3d-sub">7 ACTIVE NODES</span>
+        <span className="hero-3d-sub">UHD LIVE · 7 ACTIVE NODES</span>
       </div>
 
       <div className="hero-grid3d-canvas" ref={mountRef} />
 
-      {/* Crisp interactive projected node badges (O-, O+, B-, A+, BK1, BK2, H1) */}
+      {/* Interactive 3D projected holographic pills */}
       <div className="projected-nodes-layer">
         {projectedLabels.map(
           (node) =>
@@ -603,7 +644,7 @@ export function HeroNetworkGrid3D({
                   const found = HERO_GRID_NODES.find((n) => n.id === node.id);
                   if (found) triggerNodeSelection(found);
                 }}
-                aria-label={`Select ${node.label} network node`}
+                aria-label={`Inspect ${node.label} node`}
               >
                 {node.label}
               </button>
@@ -611,7 +652,7 @@ export function HeroNetworkGrid3D({
         )}
       </div>
 
-      {/* Interactive live route readout bar */}
+      {/* Futuristic Telemetry Route Readout */}
       <div className="hero-grid3d-readout">
         <span className={`readout-badge is-${activeNode.role}`}>{activeNode.label}</span>
         <div className="readout-copy">
