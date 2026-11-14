@@ -151,6 +151,72 @@ const BOKEH_FRAGMENT_SHADER = `
   }
 `;
 
+const LIQUID_STREAM_VERTEX_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vWorldPos;
+  varying vec2 vUv;
+  uniform float uTime;
+  uniform float uSystole;
+
+  void main() {
+    vUv = uv;
+    vec3 pos = position;
+    // Multi-octave organic liquid wave undulation
+    float w1 = sin(pos.x * 0.72 + uTime * 2.1) * cos(pos.y * 0.85 + uTime * 1.3) * 0.45;
+    float w2 = sin(pos.x * 1.45 - uTime * 3.4 + pos.y * 1.1) * 0.22 * (1.0 + uSystole * 0.6);
+    float w3 = cos(pos.y * 2.2 + uTime * 1.8) * 0.12;
+    pos.z += w1 + w2 + w3;
+
+    vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+    vWorldPos = worldPosition.xyz;
+    vNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * viewMatrix * worldPosition;
+  }
+`;
+
+const LIQUID_STREAM_FRAGMENT_SHADER = `
+  varying vec3 vNormal;
+  varying vec3 vWorldPos;
+  varying vec2 vUv;
+  uniform vec3 uCameraPos;
+  uniform float uTime;
+  uniform float uSystole;
+
+  void main() {
+    vec3 N = normalize(vNormal);
+    vec3 V = normalize(uCameraPos - vWorldPos);
+    vec3 L = normalize(vec3(1.5, 3.2, 2.8));
+
+    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.8);
+    float diff = max(dot(N, L), 0.0);
+
+    // Liquid plasma caustic ripple shimmer
+    float c1 = sin(vUv.x * 22.0 + uTime * 3.8 + sin(vUv.y * 16.0 + uTime * 2.4));
+    float c2 = cos(vUv.y * 26.0 - uTime * 3.2 + cos(vUv.x * 18.0 + uTime * 2.8));
+    float caustic = pow(clamp(c1 * c2 * 0.5 + 0.5, 0.0, 1.0), 3.5) * 0.7;
+
+    vec3 plasmaDeep = vec3(0.24, 0.015, 0.06);
+    vec3 plasmaBright = vec3(0.88, 0.08, 0.22);
+    vec3 plasmaAmber = vec3(1.0, 0.58, 0.18);
+    vec3 liquidSheen = vec3(1.0, 0.85, 0.90);
+
+    vec3 col = mix(plasmaDeep, plasmaBright, diff * 0.6 + caustic * 0.4);
+    col += plasmaAmber * caustic * 0.55;
+    col += liquidSheen * fresnel * (0.8 + uSystole * 0.4);
+
+    // Specular liquid highlight
+    vec3 H = normalize(L + V);
+    float spec = pow(max(dot(N, H), 0.0), 40.0);
+    col += vec3(1.0, 0.95, 0.98) * spec * 0.65;
+
+    // Edge fade so liquid boundary dissolves into the dark background
+    float edgeFade = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x) *
+                     smoothstep(0.0, 0.16, vUv.y) * smoothstep(1.0, 0.84, vUv.y);
+
+    gl_FragColor = vec4(col, edgeFade * (0.46 + uSystole * 0.18));
+  }
+`;
+
 export function LiveBiomedicalBg3D({
   mode,
   boostFlow,
@@ -365,6 +431,56 @@ export function LiveBiomedicalBg3D({
     scene.add(bokehPoints);
     disposables.push(bokehGeo, bokehMat);
 
+    // 5. Undulating Viscous Liquid Plasma Stream Bed (Shader Driven)
+    const liquidUniforms = {
+      uTime: { value: 0 },
+      uSystole: { value: 0 },
+      uCameraPos: { value: new THREE.Vector3(0, 0.3, 8.2) },
+    };
+
+    const liquidGeo = new THREE.PlaneGeometry(26, 14, 72, 54);
+    const liquidMat = new THREE.ShaderMaterial({
+      vertexShader: LIQUID_STREAM_VERTEX_SHADER,
+      fragmentShader: LIQUID_STREAM_FRAGMENT_SHADER,
+      uniforms: liquidUniforms,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    });
+    const liquidMesh = new THREE.Mesh(liquidGeo, liquidMat);
+    liquidMesh.position.set(0, -0.65, -1.6);
+    liquidMesh.rotation.set(-1.18, 0.12, 0.25);
+    scene.add(liquidMesh);
+    disposables.push(liquidGeo, liquidMat);
+
+    // 6. Instanced Viscous Blood Droplets Streaming along Flow Vectors
+    const dropletCount = 36;
+    const dropletGeo = new THREE.SphereGeometry(0.12, 16, 12);
+    dropletGeo.scale(0.7, 2.1, 0.7); // Elongated hydrodynamic teardrop shape
+    const dropletMat = new THREE.MeshPhysicalMaterial({
+      color: 0xe6193c,
+      emissive: 0x4a0510,
+      roughness: 0.14,
+      metalness: 0.08,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.06,
+      transmission: 0.45,
+      transparent: true,
+      opacity: 0.88,
+    });
+    const dropletMesh = new THREE.InstancedMesh(dropletGeo, dropletMat, dropletCount);
+    scene.add(dropletMesh);
+    disposables.push(dropletGeo, dropletMat);
+
+    const dropletSeeds = Array.from({ length: dropletCount }, (_, idx) => ({
+      u: idx / dropletCount,
+      yOffset: ((idx % 7) - 3) * 0.78,
+      zOffset: -2.2 + (idx % 5) * 0.95,
+      speed: 0.26 + (idx % 6) * 0.09,
+      scale: 0.65 + (idx % 4) * 0.18,
+    }));
+
     // Mouse Parallax & Scroll Tracking
     let pointerX = 0;
     let pointerY = 0;
@@ -425,6 +541,8 @@ export function LiveBiomedicalBg3D({
       rbcUniforms.uSystole.value = combinedSystole;
       bokehUniforms.uTime.value = elapsed;
       bokehUniforms.uSystole.value = combinedSystole;
+      liquidUniforms.uTime.value = elapsed;
+      liquidUniforms.uSystole.value = combinedSystole;
 
       // Determine active 3D formation mode (either explicit or scroll-choreographed)
       let activeFormation: "arterial" | "helix" | "vortex" = "arterial";
@@ -447,6 +565,7 @@ export function LiveBiomedicalBg3D({
       camera.position.z += (targetCamZ - camera.position.z) * 0.05;
       camera.lookAt(pointerX * 0.25, pointerY * 0.18, 0);
       rbcUniforms.uCameraPos.value.copy(camera.position);
+      liquidUniforms.uCameraPos.value.copy(camera.position);
 
       // Animate Flagship Macro Hero Erythrocyte
       heroCellMesh.position.x = -2.85 + Math.cos(elapsed * 0.45) * 0.22 - scrollProgress * 1.4;
@@ -505,6 +624,24 @@ export function LiveBiomedicalBg3D({
         cap.mesh.scale.setScalar(0.85 + combinedSystole * 0.55);
       });
 
+      // Animate elongated viscous blood plasma droplets streaming across laminar vectors
+      for (let i = 0; i < dropletCount; i += 1) {
+        const seed = dropletSeeds[i];
+        const dropU = (seed.u + elapsed * seed.speed * speedMult * 0.16 + arterialPhase * 0.06) % 1;
+        const x = (dropU - 0.5) * 22.0;
+        const waveY = Math.sin(dropU * Math.PI * 3 + elapsed * 1.6) * 0.45;
+        const y = seed.yOffset + waveY - 0.25;
+        const z = seed.zOffset + Math.cos(dropU * Math.PI * 2.2) * 0.55;
+        dummy.position.set(x, y, z);
+        const pitch = Math.cos(dropU * Math.PI * 3 + elapsed * 1.6) * 0.28;
+        dummy.rotation.set(pitch, 0, -Math.PI / 2 + pitch * 0.35);
+        const stretchZ = 1.0 + combinedSystole * 0.4;
+        dummy.scale.set(seed.scale, seed.scale * stretchZ, seed.scale);
+        dummy.updateMatrix();
+        dropletMesh.setMatrixAt(i, dummy.matrix);
+      }
+      dropletMesh.instanceMatrix.needsUpdate = true;
+
       ribbonGroup.rotation.z = Math.sin(elapsed * 0.18) * 0.06;
       renderer.render(scene, camera);
 
@@ -513,6 +650,31 @@ export function LiveBiomedicalBg3D({
         const cw = window.innerWidth || 1280;
         const ch = window.innerHeight || 800;
         hudCtx.clearRect(0, 0, cw, ch);
+
+        // Fluid plasma ribbons drifting organically across canvas
+        hudCtx.save();
+        for (let wave = 0; wave < 3; wave += 1) {
+          const waveY = ch * (0.34 + wave * 0.24);
+          const grad = hudCtx.createLinearGradient(0, waveY - 45, cw, waveY + 45);
+          grad.addColorStop(0, "rgba(225, 29, 72, 0.0)");
+          grad.addColorStop(0.28, wave === 0 ? "rgba(255, 77, 109, 0.22)" : "rgba(244, 63, 94, 0.14)");
+          grad.addColorStop(0.72, wave === 1 ? "rgba(251, 191, 36, 0.16)" : "rgba(225, 29, 72, 0.18)");
+          grad.addColorStop(1, "rgba(225, 29, 72, 0.0)");
+
+          hudCtx.beginPath();
+          hudCtx.moveTo(0, waveY);
+          for (let x = 0; x <= cw; x += 18) {
+            const u = x / cw;
+            const yDisp =
+              Math.sin(u * 5.2 + elapsed * (1.1 + wave * 0.4) * speedMult) * (20 + wave * 8) +
+              Math.cos(u * 8.6 - elapsed * (0.8 + wave * 0.3)) * (12 + wave * 5);
+            hudCtx.lineTo(x, waveY + yDisp);
+          }
+          hudCtx.strokeStyle = grad;
+          hudCtx.lineWidth = 3.6 + wave * 1.4;
+          hudCtx.stroke();
+        }
+        hudCtx.restore();
 
         // Continuous ambient ECG / Arterial PPG waveform along the lower background
         hudCtx.save();
