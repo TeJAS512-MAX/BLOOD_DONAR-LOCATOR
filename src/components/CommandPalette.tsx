@@ -332,20 +332,20 @@ export function CommandPalette({
             })
           ) : (
             <div className="cmd-empty">
-              <span>No telemetry records or commands match &quot;{query}&quot;</span>
+              <span>No donors, blood banks, or commands match &quot;{query}&quot;</span>
               <small>Try &quot;O-&quot;, &quot;Radar&quot;, &quot;Emergency&quot;, or &quot;Apollo&quot;</small>
             </div>
           )}
         </div>
 
-        {/* Telemetry Footer */}
+        {/* Footer */}
         <div className="cmd-footer">
           <div className="cmd-footer-keys">
             <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
             <span><kbd>↵</kbd> Select</span>
             <span><kbd>esc</kbd> Dismiss</span>
           </div>
-          <span className="cmd-footer-telemetry">TRANSFUSION-OS · HIGH SPEED KERNEL</span>
+          <span className="cmd-footer-telemetry">BloodLink Verified Clinical Network</span>
         </div>
       </div>
     </div>

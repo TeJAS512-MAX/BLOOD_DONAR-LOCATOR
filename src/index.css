@@ -4176,10 +4176,6 @@ select option {
     margin-bottom: 28px;
   }
 
-  .telemetry-ribbon .ribbon-metric:not(.is-time) {
-    display: none;
-  }
-
   .problem-grid,
   .donor-grid {
     grid-template-columns: 1fr;
@@ -4239,14 +4235,6 @@ select option {
     padding: 7px 6px;
     font-size: 11px;
     gap: 4px;
-  }
-
-  .telemetry-ribbon .ribbon-marquee {
-    display: none;
-  }
-
-  .telemetry-ribbon .ribbon-inner {
-    gap: 8px;
   }
 
   .registry-stats-pills {
@@ -4339,129 +4327,6 @@ select option {
 /* ==========================================================================
    HYPER-DEVELOPED MISSION CONTROL & TELEMETRY MODULES
    ========================================================================== */
-
-/* Top Clinical Mission Control Telemetry Ribbon */
-.telemetry-ribbon {
-  position: relative;
-  z-index: 60;
-  height: 36px;
-  background: rgba(6, 10, 20, 0.95);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-3);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  overflow: hidden;
-}
-
-.ribbon-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  gap: 16px;
-}
-
-.ribbon-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.ribbon-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 1px 7px;
-  border-radius: 4px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #10b981;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-.ribbon-metric {
-  letter-spacing: 0.04em;
-  color: var(--text-2);
-}
-
-.ribbon-metric.is-time {
-  color: #00f0ff;
-  font-weight: 700;
-}
-
-.ribbon-marquee {
-  flex: 1;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-}
-
-.ribbon-marquee-track {
-  display: inline-flex;
-  gap: 16px;
-  animation: ribbon-scroll 32s linear infinite;
-  color: var(--text-3);
-  letter-spacing: 0.03em;
-}
-
-.ribbon-marquee-track:hover {
-  animation-play-state: paused;
-}
-
-.marquee-sep {
-  color: rgba(255, 255, 255, 0.2);
-}
-
-.ribbon-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.ribbon-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-2);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.ribbon-btn:hover {
-  border-color: rgba(0, 240, 255, 0.45);
-  background: rgba(0, 240, 255, 0.09);
-  color: #fff;
-}
-
-.cmd-chip {
-  padding: 1px 5px;
-  border-radius: 3px;
-  background: rgba(0, 240, 255, 0.18);
-  border: 1px solid rgba(0, 240, 255, 0.35);
-  color: #00f0ff;
-  font-size: 9.5px;
-  font-weight: 700;
-}
-
-@keyframes ribbon-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
 
 /* Header Commands & Cross-Match Nav Trigger */
 .btn-cmd-trigger {

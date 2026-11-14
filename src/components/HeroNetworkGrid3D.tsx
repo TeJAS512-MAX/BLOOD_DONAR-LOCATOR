@@ -119,7 +119,7 @@ export function HeroNetworkGrid3D({
           <span>REAL-TIME CLINICAL COORDINATION HUB</span>
         </div>
         <span className="hub-status-pill">
-          {isEmergency ? "CRITICAL TRIAGE" : "TELEMETRY ACTIVE"}
+          {isEmergency ? "CRITICAL TRIAGE" : "VERIFIED NETWORK"}
         </span>
       </div>
 

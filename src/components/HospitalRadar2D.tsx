@@ -1097,7 +1097,7 @@ export function HospitalRadar2D({
         {locked ? (
           <div className="lock-card" aria-live="polite">
             <div className="lock-head">
-              <span className="panel-label">TARGET TELEMETRY</span>
+              <span className="panel-label">DISPATCH &amp; CONTACT DETAILS</span>
               <span className={`kind-tag is-${locked.kind}`}>
                 {KIND_LABEL[locked.kind]}
                 {locked.group ? ` · Group ${locked.group}` : ""}
@@ -1154,7 +1154,7 @@ export function HospitalRadar2D({
             </div>
           </div>
         ) : (
-          <p className="radar-empty">Click any blip on the radar scope or select a contact below to inspect telemetry.</p>
+          <p className="radar-empty">Select any donor or blood bank on the radar scope to view details and coordinate dispatch.</p>
         )}
 
         {/* Scrollable Contacts Feed */}

@@ -690,19 +690,6 @@ export function LiveBiomedicalBg3D({
         hudCtx.stroke();
         hudCtx.restore();
 
-        // High-Tech Ambient Telemetry Crosshairs in Corners
-        hudCtx.save();
-        hudCtx.strokeStyle = "rgba(0, 240, 255, 0.22)";
-        hudCtx.lineWidth = 1.2;
-        hudCtx.strokeRect(32, 32, 16, 16);
-        hudCtx.beginPath();
-        hudCtx.moveTo(40, 26);
-        hudCtx.lineTo(40, 54);
-        hudCtx.moveTo(26, 40);
-        hudCtx.lineTo(54, 40);
-        hudCtx.stroke();
-        hudCtx.restore();
-
         // Expanding systolic shockwave ring when pulse is triggered
         if (shockwaveRef.current > 0.01) {
           const p = 1.0 - shockwaveRef.current;
