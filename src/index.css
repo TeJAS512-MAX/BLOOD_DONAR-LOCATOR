@@ -7,8 +7,8 @@
    ========================================================= */
 
 :root {
-  --night: #0c0909;
-  --night-2: #151011;
+  --night: #0a0f1d;
+  --night-2: #111827;
   --paper: #f4efe8;
   --paper-2: #ebe3d9;
   --paper-card: #fffcf8;
@@ -254,8 +254,8 @@ h2 em {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 40%, rgba(12, 9, 9, 0.28) 0%, rgba(12, 9, 9, 0.06) 50%, rgba(12, 9, 9, 0.42) 100%),
-    linear-gradient(180deg, rgba(12, 9, 9, 0.18) 0%, transparent 50%, rgba(12, 9, 9, 0.38) 100%);
+    radial-gradient(circle at 30% 30%, rgba(227, 17, 47, 0.05) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(10, 15, 29, 0.15) 0%, transparent 50%, rgba(10, 15, 29, 0.4) 100%);
 }
 
 /* ---------- Shared pieces ---------- */
@@ -1004,10 +1004,13 @@ select option {
   position: relative;
   height: 540px;
   overflow: hidden;
-  border: 1px solid var(--line-2);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-xl);
-  background: radial-gradient(circle at 50% 40%, rgba(40, 14, 18, 0.6), rgba(12, 9, 9, 0.7));
-  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
+  background: radial-gradient(circle at 50% 25%, rgba(227, 17, 47, 0.1), transparent 65%),
+              linear-gradient(165deg, rgba(17, 24, 39, 0.78), rgba(15, 23, 42, 0.88));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .hero-grid3d-canvas {
@@ -1031,12 +1034,13 @@ select option {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 6px 6px 14px;
-  border: 1px solid var(--line);
+  padding: 8px 8px 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 99px;
-  background: rgba(12, 9, 9, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
 }
 
 .hero-3d-status {
@@ -1052,7 +1056,7 @@ select option {
 .hero-3d-sub {
   padding: 4px 10px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 600;
@@ -1076,7 +1080,7 @@ select option {
   height: 40px;
   padding: 0 6px;
   border-radius: 50%;
-  background: rgba(12, 9, 9, 0.9);
+  background: rgba(15, 23, 42, 0.92);
   font-family: var(--mono);
   font-size: 12.5px;
   font-weight: 700;
@@ -1085,7 +1089,8 @@ select option {
   transform: translate(-50%, -50%);
   transition:
     transform 0.2s var(--ease),
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .projected-node-pill.is-donor {
@@ -1115,12 +1120,13 @@ select option {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px;
-  background: rgba(12, 9, 9, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.4);
 }
 
 .readout-badge {

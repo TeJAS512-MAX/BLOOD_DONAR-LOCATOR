@@ -108,7 +108,7 @@ const RBC_FRAGMENT_SHADER = `
     // Atmospheric depth fade
     float depthDist = length(uCameraPos - vWorldPos);
     float fogFactor = smoothstep(24.0, 6.0, depthDist);
-    vec3 fogColor = vec3(0.045, 0.05, 0.09);
+    vec3 fogColor = vec3(0.065, 0.095, 0.165);
     vec3 finalCol = mix(fogColor, baseCol, fogFactor);
 
     gl_FragColor = vec4(finalCol, 0.98);
@@ -261,9 +261,9 @@ export function LiveBiomedicalBg3D({
     const h = window.innerHeight || 800;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     renderer.setSize(w, h);
-    renderer.setClearColor(0x070a12, 1);
+    renderer.setClearColor(0x0a101f, 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.48;
+    renderer.toneMappingExposure = 1.35;
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -307,28 +307,28 @@ export function LiveBiomedicalBg3D({
     });
     disposables.push(rbcShaderMat, rbcInstancedMat);
 
-    // 1. Flagship Hero Macro Biconcave Erythrocyte (sculpted high-poly anchor)
-    const heroCellGeo = createSubsurfaceRBCGeometry(1.38, 64, 42);
+    // 1. Subtle Ambient Erythrocyte Anchor in Deep Background
+    const heroCellGeo = createSubsurfaceRBCGeometry(0.52, 48, 32);
     const heroCellMesh = new THREE.Mesh(heroCellGeo, rbcShaderMat);
-    heroCellMesh.position.set(-2.9, 0.65, 1.6);
+    heroCellMesh.position.set(-3.2, 0.45, -2.2);
     heroCellMesh.rotation.set(0.68, 0.42, -0.35);
     scene.add(heroCellMesh);
     disposables.push(heroCellGeo);
 
-    // 2. Instanced Swarm of 42 Biconcave Erythrocytes with Systolic/Helix/Vortex morphing
-    const swarmCount = 42;
-    const swarmGeo = createSubsurfaceRBCGeometry(0.46, 36, 24);
+    // 2. Instanced Swarm of 36 Graceful Biconcave Erythrocytes
+    const swarmCount = 36;
+    const swarmGeo = createSubsurfaceRBCGeometry(0.24, 32, 20);
     const swarmMesh = new THREE.InstancedMesh(swarmGeo, rbcInstancedMat, swarmCount);
     scene.add(swarmMesh);
     disposables.push(swarmGeo);
 
     const cellSeeds = Array.from({ length: swarmCount }, (_, idx) => ({
       u: idx / swarmCount,
-      radial: 1.1 + (idx % 7) * 0.52,
+      radial: 1.1 + (idx % 7) * 0.48,
       angleOffset: idx * 0.87,
-      ySpread: ((idx % 9) - 4) * 0.68,
-      zSpread: ((idx % 6) - 2.5) * 1.15,
-      scale: 0.58 + (idx % 5) * 0.14,
+      ySpread: ((idx % 9) - 4) * 0.62,
+      zSpread: -2.2 - (idx % 5) * 0.9,
+      scale: 0.36 + (idx % 4) * 0.12,
       rotSpeed: 0.35 + (idx % 4) * 0.18,
     }));
 
@@ -567,13 +567,14 @@ export function LiveBiomedicalBg3D({
       rbcUniforms.uCameraPos.value.copy(camera.position);
       liquidUniforms.uCameraPos.value.copy(camera.position);
 
-      // Animate Flagship Macro Hero Erythrocyte
-      heroCellMesh.position.x = -2.85 + Math.cos(elapsed * 0.45) * 0.22 - scrollProgress * 1.4;
-      heroCellMesh.position.y = 0.68 + Math.sin(elapsed * 0.75) * 0.16 + combinedSystole * 0.05;
+      // Animate Ambient Erythrocyte in Deep Background
+      heroCellMesh.position.x = -3.2 + Math.cos(elapsed * 0.45) * 0.18 - scrollProgress * 1.2;
+      heroCellMesh.position.y = 0.45 + Math.sin(elapsed * 0.75) * 0.12 + combinedSystole * 0.04;
+      heroCellMesh.position.z = -2.2;
       heroCellMesh.rotation.y = elapsed * 0.34;
       heroCellMesh.rotation.x = 0.62 + Math.sin(elapsed * 0.6) * 0.18;
       heroCellMesh.rotation.z = -0.3 + Math.cos(elapsed * 0.5) * 0.14;
-      const heroScale = Math.max(0.45, 1.0 - scrollProgress * 0.45);
+      const heroScale = Math.max(0.35, 0.75 - scrollProgress * 0.35);
       heroCellMesh.scale.setScalar(heroScale * (1 + combinedSystole * 0.035));
 
       // Animate 42 Instanced Biconcave Erythrocytes according to active 3D mode

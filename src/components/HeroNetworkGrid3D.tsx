@@ -83,29 +83,6 @@ export const HERO_GRID_NODES: GridNodeInfo[] = [
   },
 ];
 
-/**
- * Creates an anatomically accurate biconcave erythrocyte (red blood cell) geometry
- * using the Evans-Fung parametric thickness equation.
- */
-function createBiconcaveRBCGeometry(radius = 1, widthSegments = 48, heightSegments = 32): THREE.BufferGeometry {
-  const geo = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
-  const pos = geo.attributes.position as THREE.BufferAttribute;
-  for (let i = 0; i < pos.count; i += 1) {
-    const x = pos.getX(i) / radius;
-    const y = pos.getY(i) / radius;
-    const z = pos.getZ(i) / radius;
-    const r2 = Math.min(1, x * x + z * z);
-    const signY = y >= 0 ? 1 : -1;
-    const radialEnvelope = Math.sqrt(Math.max(0, 1 - r2));
-    const poly = 0.21 + 1.98 * r2 - 1.12 * r2 * r2;
-    const biconcaveY = signY * 0.52 * radialEnvelope * poly * radius;
-    pos.setXYZ(i, x * radius, biconcaveY, z * radius);
-  }
-  pos.needsUpdate = true;
-  geo.computeVertexNormals();
-  return geo;
-}
-
 interface HeroNetworkGrid3DProps {
   boostFlow?: boolean;
   onSelectDonorGroup?: (group: BloodGroup) => void;
@@ -175,20 +152,20 @@ export function HeroNetworkGrid3D({
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x080b13, 0.062);
+    renderer.setClearColor(0x000000, 0);
 
     const camera = new THREE.PerspectiveCamera(44, w / h, 0.1, 40);
     camera.position.set(0, 2.35, 5.4);
     camera.lookAt(0, 0.1, 0);
 
-    scene.add(new THREE.AmbientLight(0x334155, 2.1));
-    const rubyLight = new THREE.PointLight(0xff3b5c, 22, 18, 1.3);
+    scene.add(new THREE.AmbientLight(0x475569, 2.4));
+    const rubyLight = new THREE.PointLight(0xff3b5c, 18, 18, 1.2);
     rubyLight.position.set(1.2, 2.4, 2.2);
     scene.add(rubyLight);
-    const blueLight = new THREE.PointLight(0x38bdf8, 15, 18, 1.4);
+    const blueLight = new THREE.PointLight(0x38bdf8, 16, 18, 1.3);
     blueLight.position.set(-2.5, 2.2, -1.5);
     scene.add(blueLight);
-    const rimLight = new THREE.DirectionalLight(0xffccd5, 1.8);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.6);
     rimLight.position.set(-3, 4, -3);
     scene.add(rimLight);
 
@@ -196,45 +173,31 @@ export function HeroNetworkGrid3D({
     scene.add(worldGroup);
 
     // 3D Medical Telemetry Floor Grid + Concentric Range Rings
-    const grid = new THREE.GridHelper(12, 28, 0x334155, 0x162032);
+    const grid = new THREE.GridHelper(12, 28, 0x3b82f6, 0x1e293b);
     grid.position.y = -0.35;
     worldGroup.add(grid);
 
-    // Sculpted Macro Biconcave Erythrocyte Hero Anchor suspended in the upper arterial stream
-    const heroRbcGeo = createBiconcaveRBCGeometry(0.62, 52, 36);
-    const heroRbcMat = new THREE.MeshPhysicalMaterial({
-      color: 0xd90429,
-      emissive: 0x4a0414,
-      roughness: 0.26,
-      metalness: 0.06,
-      clearcoat: 0.9,
-      clearcoatRoughness: 0.18,
-    });
-    const heroRbcMesh = new THREE.Mesh(heroRbcGeo, heroRbcMat);
-    heroRbcMesh.position.set(0, 1.25, -0.35);
-    heroRbcMesh.rotation.set(0.55, 0.3, -0.25);
-    worldGroup.add(heroRbcMesh);
-
-    // Orbital oxygen & plasma micro-ring around the hero erythrocyte
-    const haloRingGeo = new THREE.TorusGeometry(0.88, 0.014, 12, 72);
-    const haloRingMat = new THREE.MeshBasicMaterial({
-      color: 0xff758f,
+    // Holographic Radar Sector Sweep around Central Hospital
+    const sweepGeo = new THREE.RingGeometry(0.2, 3.8, 48, 1, 0, Math.PI * 0.42);
+    const sweepMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.18,
+      side: THREE.DoubleSide,
     });
-    const haloRingMesh = new THREE.Mesh(haloRingGeo, haloRingMat);
-    haloRingMesh.position.copy(heroRbcMesh.position);
-    haloRingMesh.rotation.x = Math.PI * 0.42;
-    worldGroup.add(haloRingMesh);
+    const sweepMesh = new THREE.Mesh(sweepGeo, sweepMat);
+    sweepMesh.rotation.x = -Math.PI / 2;
+    sweepMesh.position.set(0, -0.33, 0.2);
+    worldGroup.add(sweepMesh);
 
     // Central Hospital Hub Core + 3D Medical Cross Crown + Radar Rings
-    const hubGeo = new THREE.CylinderGeometry(0.34, 0.42, 0.36, 6);
+    const hubGeo = new THREE.CylinderGeometry(0.34, 0.44, 0.38, 6);
     const hubMat = new THREE.MeshPhysicalMaterial({
       color: 0xe11d48,
-      emissive: 0x590d22,
-      roughness: 0.22,
-      metalness: 0.2,
-      clearcoat: 0.8,
+      emissive: 0x660814,
+      roughness: 0.18,
+      metalness: 0.25,
+      clearcoat: 0.9,
     });
     const hubMesh = new THREE.Mesh(hubGeo, hubMat);
     hubMesh.position.set(0, 0.05, 0.2);
@@ -268,49 +231,21 @@ export function HeroNetworkGrid3D({
       radarMats.push(rMat);
     }
 
-    // Stream of 14 anatomical biconcave Erythrocytes flowing across the 3D field
-    const rbcGeo = createBiconcaveRBCGeometry(0.24, 28, 20);
-    const rbcMat = new THREE.MeshPhysicalMaterial({
-      color: 0xb91c1c,
-      emissive: 0x380610,
-      roughness: 0.32,
-      clearcoat: 0.72,
-    });
-    const rbcCoords: [number, number, number, number][] = [
-      [-1.3, 1.35, -1.5, 0.95],
-      [1.35, 1.22, -1.35, 1.05],
-      [0.55, 0.98, -1.0, 0.82],
-      [-1.85, 1.05, -0.35, 0.9],
-      [1.95, 1.18, 0.15, 0.88],
-      [-0.75, 1.68, -0.65, 0.72],
-      [0.85, 1.62, -0.45, 0.76],
-      [-2.35, 1.38, -1.1, 0.68],
-      [2.3, 1.42, -0.95, 0.74],
-      [0.0, 1.85, -1.4, 0.65],
-    ];
-    const rbcMeshes = rbcCoords.map(([x, y, z, scale]) => {
-      const m = new THREE.Mesh(rbcGeo, rbcMat);
-      m.position.set(x, y, z);
-      m.scale.setScalar(scale);
-      worldGroup.add(m);
-      return { mesh: m, baseX: x, baseY: y, baseZ: z };
-    });
-
-    // Ambient plasma & platelet bioparticles (Points)
-    const particleCount = 90;
+    // Ambient subtle telemetry micro-particles
+    const particleCount = 60;
     const particlePos = new Float32Array(particleCount * 3);
     for (let i = 0; i < particleCount; i += 1) {
       particlePos[i * 3] = (Math.random() - 0.5) * 7.2;
-      particlePos[i * 3 + 1] = -0.15 + Math.random() * 2.5;
+      particlePos[i * 3 + 1] = -0.15 + Math.random() * 2.2;
       particlePos[i * 3 + 2] = (Math.random() - 0.5) * 5.2;
     }
     const particleGeo = new THREE.BufferGeometry();
     particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePos, 3));
     const particleMat = new THREE.PointsMaterial({
-      color: 0xfda4af,
-      size: 0.045,
+      color: 0x38bdf8,
+      size: 0.038,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.45,
     });
     const particleSystem = new THREE.Points(particleGeo, particleMat);
     worldGroup.add(particleSystem);
@@ -330,18 +265,14 @@ export function HeroNetworkGrid3D({
     const pedestalGeo = new THREE.CylinderGeometry(0.018, 0.018, 1, 10);
     const nodeRingGeo = new THREE.RingGeometry(0.18, 0.22, 32);
     const disposables: { dispose: () => void }[] = [
-      heroRbcGeo,
-      heroRbcMat,
-      haloRingGeo,
-      haloRingMat,
+      sweepGeo,
+      sweepMat,
       hubGeo,
       hubMat,
       crossBarVGeo,
       crossBarHGeo,
       crossMat,
       radarGeo,
-      rbcGeo,
-      rbcMat,
       particleGeo,
       particleMat,
       ecgGeo,
@@ -548,12 +479,8 @@ export function HeroNetworkGrid3D({
       currentLookAt.lerp(desiredLookAt, 0.08);
       camera.lookAt(currentLookAt);
 
-      // Animate Hero Biconcave Erythrocyte & Orbital Ring
-      heroRbcMesh.rotation.y = elapsed * 0.48;
-      heroRbcMesh.rotation.x = 0.52 + Math.sin(elapsed * 0.9) * 0.14;
-      heroRbcMesh.position.y = 1.25 + Math.sin(elapsed * 1.4) * 0.06;
-      haloRingMesh.position.copy(heroRbcMesh.position);
-      haloRingMesh.rotation.z = elapsed * 0.65;
+      // Animate Holographic Radar Sector Sweep around Hospital Hub
+      sweepMesh.rotation.z = -elapsed * 0.95 * speedMult;
 
       // Animate Hospital Cross Crown
       crossGroup.rotation.y = elapsed * 0.9;
@@ -564,14 +491,6 @@ export function HeroNetworkGrid3D({
         const p = (elapsed * 0.42 * speedMult + idx * 0.33) % 1;
         ring.scale.setScalar(0.5 + p * 2.7);
         radarMats[idx].opacity = (1 - p) * 0.45;
-      });
-
-      // Gently float companion red blood cells
-      rbcMeshes.forEach((item, idx) => {
-        item.mesh.position.y = item.baseY + Math.sin(elapsed * 1.05 + idx) * 0.09;
-        item.mesh.position.x = item.baseX + Math.cos(elapsed * 0.45 + idx) * 0.06;
-        item.mesh.rotation.y = elapsed * 0.42 + idx;
-        item.mesh.rotation.x = 0.35 + Math.sin(elapsed * 0.6 + idx) * 0.18;
       });
 
       particleSystem.rotation.y = elapsed * 0.05 * speedMult;
