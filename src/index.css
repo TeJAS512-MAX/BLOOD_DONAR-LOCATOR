@@ -7,20 +7,23 @@
    ========================================================= */
 
 :root {
-  --night: #0a0f1d;
-  --night-2: #111827;
-  --paper: rgba(12, 20, 36, 0.72);
-  --paper-2: rgba(8, 14, 26, 0.68);
-  --paper-card: rgba(18, 28, 50, 0.72);
+  --night: #080e1a;
+  --night-2: #0c1424;
+  --paper: rgba(12, 20, 36, 0.70);
+  --paper-2: rgba(8, 14, 26, 0.76);
+  --paper-card: rgba(14, 24, 44, 0.72);
 
-  --blood: #e3112f;
-  --blood-deep: #a50d24;
-  --blood-glow: #ff3a52;
-  --teal: #2ee6c9;
-  --teal-deep: #08695d;
-  --amber: #f2a20c;
-  --amber-deep: #8f5600;
-  --slate: #64748b;
+  /* Formal Clinical Palette */
+  --blood: #e11d48;
+  --blood-deep: #9f1239;
+  --blood-glow: #f43f5e;
+  --teal: #10b981;
+  --teal-deep: #065f46;
+  --cyan: #38bdf8;
+  --cyan-deep: #0284c7;
+  --amber: #f59e0b;
+  --amber-deep: #b45309;
+  --slate: #94a3b8;
 
   --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
@@ -28,74 +31,46 @@
   --mono: "Geist Mono", ui-monospace, monospace;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius-xl: 28px;
-  --radius-lg: 22px;
-  --radius: 16px;
-  --radius-sm: 10px;
-}
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius: 14px;
+  --radius-sm: 8px;
 
-/* Night theme (default) */
-:root,
-.theme-dark {
-  --text: #f7f1ec;
-  --text-2: #d3c9c3;
-  --text-3: #a0948e;
-  --line: rgba(247, 241, 236, 0.1);
-  --line-2: rgba(247, 241, 236, 0.18);
-  --surface: linear-gradient(155deg, rgba(30, 22, 24, 0.74), rgba(18, 13, 15, 0.68));
-  --surface-solid: #171213;
-  --surface-sunken: rgba(0, 0, 0, 0.3);
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --chip: rgba(255, 255, 255, 0.05);
-  --input-bg: rgba(0, 0, 0, 0.35);
-  --accent: var(--blood-glow);
-  --accent-soft: rgba(255, 58, 82, 0.14);
-  --accent-line: rgba(255, 58, 82, 0.45);
-  --positive: var(--teal);
-  --positive-soft: rgba(46, 230, 201, 0.12);
-  --positive-line: rgba(46, 230, 201, 0.42);
-  --warn: var(--amber);
-  --warn-soft: rgba(242, 162, 12, 0.13);
-  --warn-line: rgba(242, 162, 12, 0.4);
-  --blur: blur(18px) saturate(150%);
-  --shadow-card: 0 24px 50px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  --shadow-hover: 0 30px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  --em: var(--blood-glow);
-  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23d3c9c3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 7.5 5 5 5-5'/%3E%3C/svg%3E");
-  color: var(--text);
-}
-
-/* Translucent Frosted Glass System (seamless with LiveBiomedicalBg3D) */
-.theme-light {
+  /* Formal Frosted Glass System (Seamlessly matches LiveBiomedicalBg3D 0x080e1a) */
   --text: #f8fafc;
   --text-2: #cbd5e1;
   --text-3: #94a3b8;
   --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.15);
-  --surface: linear-gradient(155deg, rgba(18, 30, 52, 0.72), rgba(10, 18, 34, 0.82));
+  --line-2: rgba(255, 255, 255, 0.14);
+  --surface: linear-gradient(145deg, rgba(13, 22, 38, 0.72) 0%, rgba(8, 14, 26, 0.84) 100%);
   --surface-solid: #0d1526;
-  --surface-sunken: rgba(4, 8, 16, 0.45);
+  --surface-sunken: rgba(4, 8, 16, 0.55);
   --surface-hover: rgba(255, 255, 255, 0.08);
   --chip: rgba(255, 255, 255, 0.06);
-  --input-bg: rgba(6, 12, 22, 0.65);
-  --accent: var(--blood-glow);
-  --accent-soft: rgba(255, 46, 86, 0.14);
-  --accent-line: rgba(255, 46, 86, 0.38);
-  --positive: var(--teal);
-  --positive-soft: rgba(46, 230, 201, 0.12);
-  --positive-line: rgba(46, 230, 201, 0.38);
-  --warn: var(--amber);
-  --warn-soft: rgba(242, 162, 12, 0.14);
-  --warn-line: rgba(242, 162, 12, 0.38);
-  --blur: blur(8px);
-  --shadow-card: 0 20px 48px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-hover: 0 28px 60px -16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(0, 240, 255, 0.2);
-  --em: var(--blood-glow);
+  --input-bg: rgba(6, 12, 22, 0.7);
+  --accent: #f43f5e;
+  --accent-soft: rgba(244, 63, 94, 0.12);
+  --accent-line: rgba(244, 63, 94, 0.35);
+  --positive: #10b981;
+  --positive-soft: rgba(16, 185, 129, 0.12);
+  --positive-line: rgba(16, 185, 129, 0.35);
+  --warn: #f59e0b;
+  --warn-soft: rgba(245, 158, 11, 0.12);
+  --warn-line: rgba(245, 158, 11, 0.35);
+  --blur: blur(20px) saturate(160%);
+  --shadow-card: 0 20px 48px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-hover: 0 28px 60px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(56, 189, 248, 0.25);
+  --em: #f43f5e;
   --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 7.5 5 5 5-5'/%3E%3C/svg%3E");
   color: var(--text);
-  background: linear-gradient(180deg, rgba(10, 16, 28, 0.94) 0%, rgba(7, 12, 22, 0.97) 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Formal unified theme for all sections (pure transparency with frosted glass cards) */
+.theme-dark,
+.theme-light {
+  color: var(--text);
+  background: transparent !important;
+  border: none !important;
 }
 
 /* ---------- Base ---------- */
@@ -267,6 +242,12 @@ h2 em {
   backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur);
   box-shadow: var(--shadow-card);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass:hover {
+  border-color: rgba(56, 189, 248, 0.25);
 }
 
 .glass-lift {
@@ -596,30 +577,34 @@ select option {
 }
 
 .btn-primary {
-  background: var(--blood);
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
   color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 12px 26px -10px rgba(227, 17, 47, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    0 10px 24px -8px rgba(225, 29, 72, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: #f21a3a;
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
   box-shadow:
-    0 18px 34px -12px rgba(227, 17, 47, 0.85),
-    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    0 14px 30px -8px rgba(225, 29, 72, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn-glass {
-  border-color: var(--line-2);
-  background: var(--chip);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .btn-glass:hover:not(:disabled) {
   transform: translateY(-2px);
-  border-color: var(--text);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-light {
@@ -1713,9 +1698,7 @@ select option {
 /* ---------- Find donors (paper) ---------- */
 
 .finder-section {
-  background: linear-gradient(180deg, rgba(10, 16, 28, 0.65) 0%, rgba(14, 24, 42, 0.75) 100%);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
+  background: transparent;
 }
 
 /* ---------- Donor Registry Console ---------- */
@@ -2020,15 +2003,17 @@ select option {
   padding: 22px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(155deg, rgba(16, 26, 48, 0.72) 0%, rgba(10, 18, 34, 0.82) 100%);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .donor-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(0, 240, 255, 0.3);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), 0 0 20px rgba(0, 240, 255, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), 0 0 20px rgba(56, 189, 248, 0.12);
 }
 
 /* Donor Card Top */
@@ -2521,9 +2506,7 @@ select option {
 /* ---------- Requests (night) ---------- */
 
 .requests-section {
-  background:
-    radial-gradient(ellipse 60% 50% at 85% 0%, rgba(227, 17, 47, 0.16), transparent 70%),
-    rgba(12, 9, 9, 0.84);
+  background: transparent;
 }
 
 .requests-section .filter-pills {
@@ -2686,7 +2669,7 @@ select option {
 /* ---------- Hospital radar (night - tactical geospatial console) ---------- */
 
 .radar-section {
-  background: radial-gradient(circle at 50% 20%, rgba(14, 28, 52, 0.45) 0%, rgba(8, 14, 26, 0.95) 70%, rgba(4, 7, 14, 0.98) 100%);
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -5542,6 +5525,33 @@ select option {
   grid-template-columns: repeat(12, 1fr);
   gap: 24px;
   margin-top: 20px;
+}
+
+.bento-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: var(--shadow-card);
+}
+
+.bento-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  margin-bottom: 8px;
+  align-self: flex-start;
 }
 
 .bento-span-8 {
