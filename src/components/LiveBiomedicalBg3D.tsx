@@ -562,10 +562,11 @@ export function LiveBiomedicalBg3D({
     scene.add(shockwaveRingMesh);
     disposables.push(shockwaveRingGeo, shockwaveRingMat);
 
-    // Mouse Parallax & Scroll Tracking
+    // Mouse Parallax & Scroll Tracking (Smooth Lerped)
     let pointerX = 0;
     let pointerY = 0;
-    let scrollProgress = 0;
+    let targetScrollProgress = 0;
+    let smoothScroll = 0;
 
     const onPointerMove = (e: PointerEvent) => {
       pointerX = (e.clientX / Math.max(window.innerWidth, 1) - 0.5) * 2;
@@ -574,12 +575,13 @@ export function LiveBiomedicalBg3D({
 
     const onScroll = () => {
       const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      scrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      targetScrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll));
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+    smoothScroll = targetScrollProgress;
 
     const onResize = () => {
       const nw = window.innerWidth || 1280;
@@ -626,64 +628,44 @@ export function LiveBiomedicalBg3D({
       quantumUniforms.uTime.value = elapsed;
       quantumUniforms.uSystole.value = combinedSystole;
 
-      let activeFormation: "arterial" | "helix" | "vortex" = "arterial";
-      if (modeRef.current !== "auto") {
-        activeFormation = modeRef.current;
-      } else if (scrollProgress < 0.34) {
-        activeFormation = "arterial";
-      } else if (scrollProgress < 0.68) {
-        activeFormation = "helix";
-      } else {
-        activeFormation = "vortex";
-      }
+      // Smooth lerp for scroll progress to prevent any sudden teleportation or glitch during fast scroll
+      smoothScroll += (targetScrollProgress - smoothScroll) * 0.06;
 
       // Smooth camera position with parallax
-      const targetCamX = pointerX * 0.75 + Math.sin(scrollProgress * Math.PI * 2) * 0.55;
-      const targetCamY = 0.25 + pointerY * 0.45 - scrollProgress * 0.4;
-      const targetCamZ = activeFormation === "vortex" ? 7.4 : 8.2;
+      const targetCamX = pointerX * 0.65 + Math.sin(smoothScroll * Math.PI) * 0.45;
+      const targetCamY = 0.25 + pointerY * 0.35 - smoothScroll * 0.35;
+      const targetCamZ = 8.0;
       camera.position.x += (targetCamX - camera.position.x) * 0.05;
       camera.position.y += (targetCamY - camera.position.y) * 0.05;
       camera.position.z += (targetCamZ - camera.position.z) * 0.05;
-      camera.lookAt(pointerX * 0.25, pointerY * 0.18, 0);
+      camera.lookAt(pointerX * 0.2, pointerY * 0.15, 0);
 
       rbcUniforms.uCameraPos.value.copy(camera.position);
       liquidUniforms.uCameraPos.value.copy(camera.position);
       quantumUniforms.uCameraPos.value.copy(camera.position);
 
-      // Animate Hero Erythrocyte
-      heroCellMesh.position.x = -2.85 + Math.cos(elapsed * 0.45) * 0.22 - scrollProgress * 1.4;
+      // Animate Hero Erythrocyte smoothly without snapping
+      heroCellMesh.position.x = -2.85 + Math.cos(elapsed * 0.45) * 0.22 - smoothScroll * 1.1;
       heroCellMesh.position.y = 0.68 + Math.sin(elapsed * 0.75) * 0.16 + combinedSystole * 0.05;
       heroCellMesh.rotation.y = elapsed * 0.34;
       heroCellMesh.rotation.x = 0.62 + Math.sin(elapsed * 0.6) * 0.18;
       heroCellMesh.rotation.z = -0.3 + Math.cos(elapsed * 0.5) * 0.14;
-      const heroScale = Math.max(0.45, 1.0 - scrollProgress * 0.45);
+      const heroScale = Math.max(0.55, 1.0 - smoothScroll * 0.35);
       heroCellMesh.scale.setScalar(heroScale * (1 + combinedSystole * 0.035));
 
-      // Animate 42 Instanced Biconcave Erythrocytes
+      // Animate 42 Instanced Biconcave Erythrocytes along continuous, glitch-free hemodynamic streamlines
       for (let i = 0; i < swarmCount; i += 1) {
         const seed = cellSeeds[i];
         const flowU = (seed.u + arterialPhase * 0.12) % 1;
 
-        if (activeFormation === "arterial") {
-          const x = (flowU - 0.5) * 16.5;
-          const archY = Math.sin(flowU * Math.PI * 2 + seed.angleOffset) * 1.15 + seed.ySpread * 0.55;
-          const z = seed.zSpread + Math.cos(flowU * Math.PI + seed.angleOffset) * 0.9;
-          dummy.position.set(x, archY, z);
-        } else if (activeFormation === "helix") {
-          const strand = i % 2 === 0 ? 1 : -1;
-          const theta = flowU * Math.PI * 4 + (strand === 1 ? 0 : Math.PI);
-          const x = (flowU - 0.5) * 15.0;
-          const y = Math.sin(theta) * 2.15;
-          const z = Math.cos(theta) * 2.15 - 1.0;
-          dummy.position.set(x, y, z);
-        } else {
-          const theta = elapsed * 0.65 * speedMult + seed.angleOffset + flowU * Math.PI * 2;
-          const ringRadius = 1.6 + (i % 3) * 1.35;
-          const x = Math.cos(theta) * ringRadius * 1.35;
-          const y = Math.sin(theta) * ringRadius * 0.85;
-          const z = -1.2 + Math.sin(theta * 2 + i) * 1.1;
-          dummy.position.set(x, y, z);
-        }
+        // Unified continuous streamline geometry with smooth scroll twist (no discrete mode jumps)
+        const x = (flowU - 0.5) * 16.5;
+        const strand = i % 2 === 0 ? 1 : -1;
+        const helixWave = Math.sin(flowU * Math.PI * 3.5 + (strand === 1 ? 0 : Math.PI)) * (smoothScroll * 1.5);
+        const archY = Math.sin(flowU * Math.PI * 2 + seed.angleOffset) * 1.1 + seed.ySpread * 0.55 + helixWave * 0.6;
+        const archZ = seed.zSpread + Math.cos(flowU * Math.PI + seed.angleOffset) * 0.85 + Math.cos(flowU * Math.PI * 3.5) * (smoothScroll * 1.1);
+
+        dummy.position.set(x, archY, archZ);
 
         dummy.rotation.set(
           elapsed * seed.rotSpeed + seed.angleOffset,

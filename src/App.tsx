@@ -308,7 +308,7 @@ function App() {
           }
         });
       },
-      { threshold: 0.08 },
+      { threshold: 0.02, rootMargin: "140px 0px 140px 0px" },
     );
     elements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
