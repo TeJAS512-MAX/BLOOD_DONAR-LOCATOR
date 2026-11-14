@@ -80,6 +80,23 @@ const ELIGIBILITY = [
   { label: "Whole-Blood Interval", value: "90 days (men) · 120 days (women)" },
 ];
 
+const QUICK_CITIES = [
+  "All Cities",
+  "Bengaluru",
+  "Mumbai",
+  "Delhi",
+  "Hyderabad",
+  "Chennai",
+  "Kolkata",
+  "Ahmedabad",
+] as const;
+
+function getInitials(name: string) {
+  const clean = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.)\s*/i, "").trim();
+  const parts = clean.split(" ");
+  return parts.length > 1 ? `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase() : clean.slice(0, 2).toUpperCase();
+}
+
 function shortHospital(name: string) {
   return name.split(" — ")[0];
 }
@@ -161,6 +178,9 @@ function App() {
   const [checkerOpen, setCheckerOpen] = useState(false);
   const [checkDonor, setCheckDonor] = useState<BloodGroup>("O-");
   const [checkPatient, setCheckPatient] = useState<BloodGroup>("A+");
+  const [donorSort, setDonorSort] = useState<"distance" | "eta" | "donations">("distance");
+  const [donorView, setDonorView] = useState<"grid" | "table">("grid");
+  const [pingedDonorId, setPingedDonorId] = useState<string | null>(null);
 
   const [requests, setRequests] = useState<BloodRequest[]>(INITIAL_URGENT_REQUESTS);
   const [scenarioFilter, setScenarioFilter] = useState<ScenarioFilter>("all");
@@ -219,6 +239,30 @@ function App() {
     [showToast],
   );
 
+  const handlePingDonor = useCallback(
+    (donor: DonorProfile) => {
+      setPingedDonorId(donor.id);
+      setBgPulse((c) => c + 1);
+      showToast(
+        `📲 Priority Ping dispatched to ${donor.name} (${donor.group}) via ${donor.verifiedBy}. Standby acknowledged.`,
+      );
+      window.setTimeout(() => setPingedDonorId(null), 3200);
+    },
+    [showToast],
+  );
+
+  const handleTrackDonorOnRadar = useCallback(
+    (donor: DonorProfile) => {
+      const req =
+        requests.find((r) => COMPATIBILITY_MAP[r.group].receiveRedCellsFrom.includes(donor.group)) ?? requests[0];
+      openRadarFor(
+        req.id,
+        `Dispatch radar focused on ${donor.name} (${donor.group}) · Proximity ${donor.distanceKm} km.`,
+      );
+    },
+    [openRadarFor, requests],
+  );
+
   useEffect(() => {
     const elements = document.querySelectorAll(".reveal");
     const observer = new IntersectionObserver(
@@ -261,12 +305,25 @@ function App() {
           ? COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom
           : [bloodGroup];
 
-    return DONOR_PROFILES.filter(
+    const list = DONOR_PROFILES.filter(
       (donor) =>
         allowed.includes(donor.group) &&
-        (!query || donor.city.toLowerCase().includes(query) || donor.location.toLowerCase().includes(query)) &&
+        (!query ||
+          donor.city.toLowerCase().includes(query) ||
+          donor.location.toLowerCase().includes(query) ||
+          donor.name.toLowerCase().includes(query)) &&
         (!availableNowOnly || donor.availability === "Available Immediately"),
-    ).sort((a, b) => {
+    );
+
+    return list.sort((a, b) => {
+      if (donorSort === "eta") {
+        const etaA = Number.parseInt(a.responseWindow, 10) || 30;
+        const etaB = Number.parseInt(b.responseWindow, 10) || 30;
+        return etaA - etaB;
+      }
+      if (donorSort === "donations") {
+        return (b.donationsCount ?? 0) - (a.donationsCount ?? 0);
+      }
       if (bloodGroup !== "all") {
         const exactA = a.group === bloodGroup ? 0 : 1;
         const exactB = b.group === bloodGroup ? 0 : 1;
@@ -274,7 +331,15 @@ function App() {
       }
       return a.distanceKm - b.distanceKm;
     });
-  }, [availableNowOnly, bloodGroup, city, includeCompatible]);
+  }, [availableNowOnly, bloodGroup, city, donorSort, includeCompatible]);
+
+  const donorCountsByGroup = useMemo(() => {
+    const counts: Record<string, number> = { all: DONOR_PROFILES.length };
+    BLOOD_GROUPS.forEach((g) => {
+      counts[g] = DONOR_PROFILES.filter((d) => d.group === g).length;
+    });
+    return counts;
+  }, []);
 
   const filteredRequests = useMemo(
     () => requests.filter((request) => scenarioFilter === "all" || request.scenario === scenarioFilter),
@@ -547,125 +612,412 @@ function App() {
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
-                <span className="eyebrow">Donor Registry</span>
+                <span className="eyebrow is-crimson">
+                  <span className="pulse-dot" /> Verified Clinical Repository
+                </span>
                 <h2>
                   Locate <em>compatible</em> voluntary donors
                 </h2>
                 <p>
-                  Search results include all ABO/Rh-compatible red-cell donor groups, ordered by exact match and
-                  proximity. Personal contact details remain confidential until a donor accepts a requisition.
+                  Search verified voluntary donors in real time, cross-matched by ABO/Rh compatibility, response readiness,
+                  and transport latency across active trauma hubs.
                 </p>
               </div>
-            </div>
 
-            <div className="search-panel glass">
-              <form className="search-form" onSubmit={handleSearch}>
-                <label className="field">
-                  <span>Recipient Blood Group</span>
-                  <select
-                    className="input"
-                    value={bloodGroup}
-                    onChange={(event) => setBloodGroup(event.target.value as "all" | BloodGroup)}
-                  >
-                    <option value="all">All Blood Groups</option>
-                    {BLOOD_GROUPS.map((group) => (
-                      <option key={group} value={group}>
-                        {group}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="field">
-                  <span>City or Locality</span>
-                  <input
-                    className="input"
-                    type="search"
-                    value={city}
-                    onChange={(event) => setCity(event.target.value)}
-                    placeholder="Bengaluru, Mumbai, New Delhi, Hyderabad…"
-                  />
-                </label>
-                <label className="field">
-                  <span>Availability Status</span>
-                  <select
-                    className="input"
-                    value={availableNowOnly ? "now" : "any"}
-                    onChange={(event) => setAvailableNowOnly(event.target.value === "now")}
-                  >
-                    <option value="any">All Registered Donors</option>
-                    <option value="now">Available Immediately</option>
-                  </select>
-                </label>
-                <button type="submit" className="btn btn-primary btn-lg search-submit">
-                  <SearchIcon /> Search Registry
-                </button>
-              </form>
-              <div className="search-sub">
-                <label className={`check ${bloodGroup === "all" ? "is-disabled" : ""}`}>
-                  <input
-                    type="checkbox"
-                    checked={includeCompatible}
-                    disabled={bloodGroup === "all"}
-                    onChange={(event) => setIncludeCompatible(event.target.checked)}
-                  />
-                  <span>
-                    Include all ABO/Rh-compatible red-cell donor groups
-                    {bloodGroup !== "all" && ` (${COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(", ")})`}
-                  </span>
-                </label>
-                <span className="result-count" aria-live="polite">
-                  {matches.length} registered {matches.length === 1 ? "donor" : "donors"} matched
+              {/* Quick Summary Pill Bar */}
+              <div className="registry-stats-pills" aria-label="Registry statistics">
+                <span className="stat-pill">
+                  <b>{DONOR_PROFILES.length}</b> Donors Registered
+                </span>
+                <span className="stat-pill is-highlight">
+                  <b>{matches.length}</b> Matched
+                </span>
+                <span className="stat-pill">
+                  <b>&lt; 20m</b> Trauma ETA
                 </span>
               </div>
             </div>
 
-            {matches.length > 0 ? (
-              <div className="donor-grid">
-                {matches.slice(0, 6).map((donor) => {
-                  const exact = bloodGroup !== "all" && donor.group === bloodGroup;
-                  return (
-                    <article key={donor.id} className="donor-card glass glass-lift">
-                      <div className="card-top">
-                        <span className="group-badge">{donor.group}</span>
-                        {bloodGroup !== "all" && (
-                          <span className={`match-tag ${exact ? "is-exact" : "is-compat"}`}>
-                            {exact ? "Exact Match" : "Compatible Match"}
-                          </span>
-                        )}
-                      </div>
-                      <h3>{donor.name}</h3>
-                      <p className="donor-loc">
-                        {donor.location} · {donor.distanceKm} km
-                      </p>
-                      <p className="donor-status">
-                        <span className={`status-dot ${donor.availability === "Available Immediately" ? "is-live" : ""}`} />
-                        {donor.availability} · {donor.responseWindow}
-                      </p>
-                      <div className="kv-list">
-                        <div className="kv">
-                          <span>Verified Centre</span>
-                          <strong>{donor.verifiedBy}</strong>
-                        </div>
-                        <div className="kv">
-                          <span>Compatible Recipients</span>
-                          <strong>{COMPATIBILITY_MAP[donor.group].donateRedCellsTo.join(", ")}</strong>
-                        </div>
-                      </div>
-                      <div className="card-actions">
-                        <span className="donor-id">ID · {donor.id}</span>
-                        <button type="button" className="btn btn-primary btn-sm" onClick={() => setActiveDonor(donor)}>
-                          Initiate Request
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
+            {/* MAIN COMMAND CONSOLE */}
+            <div className="donor-console glass">
+              {/* Row 1: Blood Group Quick-Pills with Counts */}
+              <div className="group-pills-bar" role="group" aria-label="Filter by Blood Group">
+                <span className="console-bar-label">RECIPIENT BLOOD GROUP:</span>
+                <div className="group-pills-scroll">
+                  <button
+                    type="button"
+                    className={`console-group-pill ${bloodGroup === "all" ? "is-active" : ""}`}
+                    onClick={() => {
+                      setBloodGroup("all");
+                      setBgPulse((c) => c + 1);
+                    }}
+                  >
+                    <span className="pill-name">All Groups</span>
+                    <span className="pill-count">{donorCountsByGroup["all"]}</span>
+                  </button>
+                  {BLOOD_GROUPS.map((group) => {
+                    const isSelected = bloodGroup === group;
+                    return (
+                      <button
+                        key={group}
+                        type="button"
+                        className={`console-group-pill ${isSelected ? "is-active" : ""}`}
+                        onClick={() => {
+                          setBloodGroup(group);
+                          setIncludeCompatible(true);
+                          setBgPulse((c) => c + 1);
+                        }}
+                      >
+                        <span className="pill-name">{group}</span>
+                        <span className="pill-count">{donorCountsByGroup[group] ?? 0}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
+
+              {/* Row 2: Omni Search + City Filter Chips */}
+              <div className="console-search-row">
+                <form className="console-search-form" onSubmit={handleSearch}>
+                  <div className="console-search-input-wrap">
+                    <SearchIcon />
+                    <input
+                      type="search"
+                      className="console-search-input"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="Search by donor name, locality, landmark, or city…"
+                      aria-label="Search donor directory"
+                    />
+                    {city && (
+                      <button
+                        type="button"
+                        className="console-clear-btn"
+                        onClick={() => setCity("")}
+                        aria-label="Clear search"
+                      >
+                        <CloseIcon />
+                      </button>
+                    )}
+                  </div>
+                </form>
+
+                {/* City Chips */}
+                <div className="city-chips-scroll" role="group" aria-label="Filter by city">
+                  {QUICK_CITIES.map((c) => {
+                    const active = (c === "All Cities" && !city) || city.toLowerCase() === c.toLowerCase();
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        className={`city-chip ${active ? "is-active" : ""}`}
+                        onClick={() => {
+                          setCity(c === "All Cities" ? "" : c);
+                          setBgPulse((count) => count + 1);
+                        }}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Row 3: Tactical Filter Bar (Readiness, Compatible, Sort, View Mode) */}
+              <div className="console-sub-bar">
+                <div className="console-toggles">
+                  <label className={`check ${bloodGroup === "all" ? "is-disabled" : ""}`}>
+                    <input
+                      type="checkbox"
+                      checked={includeCompatible}
+                      disabled={bloodGroup === "all"}
+                      onChange={(e) => setIncludeCompatible(e.target.checked)}
+                    />
+                    <span>
+                      Include all ABO/Rh-compatible groups
+                      {bloodGroup !== "all" && ` (${COMPATIBILITY_MAP[bloodGroup].receiveRedCellsFrom.join(", ")})`}
+                    </span>
+                  </label>
+
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      checked={availableNowOnly}
+                      onChange={(e) => setAvailableNowOnly(e.target.checked)}
+                    />
+                    <span>
+                      <span className="status-dot is-live" /> Available Immediately (&lt; 30 min)
+                    </span>
+                  </label>
+                </div>
+
+                <div className="console-tools">
+                  {/* Sort Dropdown */}
+                  <div className="console-sort-wrap">
+                    <label htmlFor="donor-sort-select">Sort:</label>
+                    <select
+                      id="donor-sort-select"
+                      className="input input-sm console-select"
+                      value={donorSort}
+                      onChange={(e) => setDonorSort(e.target.value as "distance" | "eta" | "donations")}
+                    >
+                      <option value="distance">📍 Proximity (Nearest)</option>
+                      <option value="eta">⚡ Fastest Response ETA</option>
+                      <option value="donations">⭐ Lifetime Donations</option>
+                    </select>
+                  </div>
+
+                  {/* View Mode Switcher */}
+                  <div className="segmented segmented-sm" role="group" aria-label="Layout view">
+                    <button
+                      type="button"
+                      aria-pressed={donorView === "grid"}
+                      onClick={() => setDonorView("grid")}
+                      title="Grid Card View"
+                    >
+                      Cards
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={donorView === "table"}
+                      onClick={() => setDonorView("table")}
+                      title="Telemetry Table View"
+                    >
+                      Table
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RESULTS RENDERING */}
+            {matches.length > 0 ? (
+              donorView === "grid" ? (
+                <div className="donor-grid">
+                  {matches.map((donor) => {
+                    const exact = bloodGroup !== "all" && donor.group === bloodGroup;
+                    const initials = getInitials(donor.name);
+                    const isPinged = pingedDonorId === donor.id;
+                    return (
+                      <article key={donor.id} className="donor-card glass glass-lift">
+                        {/* Top Bar with Avatar, Name, and Group */}
+                        <div className="donor-card-top">
+                          <div className="donor-avatar-wrap">
+                            <span className="donor-avatar">{initials}</span>
+                            <span
+                              className={`donor-live-dot ${donor.availability === "Available Immediately" ? "is-live" : ""}`}
+                            />
+                          </div>
+
+                          <div className="donor-card-identity">
+                            <div className="donor-name-row">
+                              <h3>{donor.name}</h3>
+                              <span className="verified-shield" title="Verified Volunteer">
+                                ✓
+                              </span>
+                            </div>
+                            <span className="donor-loc">
+                              📍 {donor.location} · <b>{donor.distanceKm} km</b>
+                            </span>
+                          </div>
+
+                          <div className="donor-card-badges">
+                            <span className="group-badge is-glow">{donor.group}</span>
+                          </div>
+                        </div>
+
+                        {/* Match & Badge Tags */}
+                        <div className="donor-tags-row">
+                          {bloodGroup !== "all" && (
+                            <span className={`match-tag ${exact ? "is-exact" : "is-compat"}`}>
+                              {exact ? "✨ Exact Match" : "🧬 Cross-Compatible"}
+                            </span>
+                          )}
+                          {donor.donorBadge && <span className="honor-badge">{donor.donorBadge}</span>}
+                          <span className="eta-badge">⚡ {donor.responseWindow}</span>
+                        </div>
+
+                        {/* Clinical Dossier Metric Grid */}
+                        <div className="donor-metrics-grid">
+                          <div className="metric-box">
+                            <span className="metric-lbl">Donations</span>
+                            <strong className="metric-val">{donor.donationsCount ?? 8}+</strong>
+                          </div>
+                          <div className="metric-box">
+                            <span className="metric-lbl">Impact</span>
+                            <strong className="metric-val">{donor.livesImpacted ?? 24} Lives</strong>
+                          </div>
+                          <div className="metric-box">
+                            <span className="metric-lbl">Hemoglobin</span>
+                            <strong className="metric-val">{donor.hemoglobin ?? "14.0 g/dL"}</strong>
+                          </div>
+                          <div className="metric-box">
+                            <span className="metric-lbl">Blood Pressure</span>
+                            <strong className="metric-val">{donor.bloodPressure ?? "120/80"}</strong>
+                          </div>
+                        </div>
+
+                        {/* Supervision and Compatibility */}
+                        <div className="donor-meta-footer">
+                          <div className="meta-line">
+                            <span className="meta-k">Supervising Centre:</span>
+                            <span className="meta-v">{donor.verifiedBy}</span>
+                          </div>
+                          <div className="meta-line">
+                            <span className="meta-k">Can donate to:</span>
+                            <div className="recipient-chips">
+                              {COMPATIBILITY_MAP[donor.group].donateRedCellsTo.map((rg) => (
+                                <span key={rg} className={`recipient-chip ${rg === bloodGroup ? "is-target" : ""}`}>
+                                  {rg}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="donor-card-actions">
+                          <button
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => setActiveDonor(donor)}
+                          >
+                            🚨 Initiate Request
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-glass btn-sm"
+                            onClick={() => handlePingDonor(donor)}
+                            disabled={isPinged}
+                          >
+                            {isPinged ? "✅ Ping Sent" : "📲 Direct Ping"}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-glass btn-sm btn-icon-only"
+                            onClick={() => handleTrackDonorOnRadar(donor)}
+                            title="Locate on Radar"
+                          >
+                            🎯
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* LIVE TELEMETRY TABLE VIEW */
+                <div className="donor-table-wrap glass">
+                  <table className="donor-table">
+                    <thead>
+                      <tr>
+                        <th>Donor Identity</th>
+                        <th>Blood Group</th>
+                        <th>Match Status</th>
+                        <th>Location &amp; Distance</th>
+                        <th>Response Readiness</th>
+                        <th>Supervision &amp; Impact</th>
+                        <th className="th-actions">Direct Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {matches.map((donor) => {
+                        const exact = bloodGroup !== "all" && donor.group === bloodGroup;
+                        const initials = getInitials(donor.name);
+                        const isPinged = pingedDonorId === donor.id;
+                        return (
+                          <tr key={donor.id} className="donor-table-row">
+                            <td>
+                              <div className="td-donor-identity">
+                                <span className="donor-avatar sm">{initials}</span>
+                                <div>
+                                  <strong>{donor.name}</strong>
+                                  <small className="td-sub">
+                                    {donor.id} · {donor.donorBadge ?? "Verified Volunteer"}
+                                  </small>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className="group-badge is-glow">{donor.group}</span>
+                            </td>
+                            <td>
+                              {bloodGroup !== "all" ? (
+                                <span className={`match-tag ${exact ? "is-exact" : "is-compat"}`}>
+                                  {exact ? "Exact Match" : "Compatible"}
+                                </span>
+                              ) : (
+                                <span className="match-tag is-compat">ABO Safe</span>
+                              )}
+                            </td>
+                            <td>
+                              <div>
+                                <span>{donor.location}</span>
+                                <small className="td-dist">{donor.distanceKm} km radial</small>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="td-readiness">
+                                <span
+                                  className={`status-dot ${donor.availability === "Available Immediately" ? "is-live" : ""}`}
+                                />
+                                <span>{donor.responseWindow}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div>
+                                <span className="td-center">{donor.verifiedBy}</span>
+                                <small className="td-impact">
+                                  {donor.donationsCount ?? 8} donations ({donor.livesImpacted ?? 24} lives)
+                                </small>
+                              </div>
+                            </td>
+                            <td className="td-actions">
+                              <div className="table-actions-stack">
+                                <button
+                                  type="button"
+                                  className="btn btn-primary btn-xs"
+                                  onClick={() => setActiveDonor(donor)}
+                                >
+                                  Request
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-glass btn-xs"
+                                  onClick={() => handlePingDonor(donor)}
+                                  disabled={isPinged}
+                                >
+                                  {isPinged ? "Pinged" : "Ping"}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )
             ) : (
-              <p className="empty-state">
-                No registered donors match the current filter criteria. Broaden the locality filter or enable compatible
-                blood groups.
-              </p>
+              <div className="empty-state-card glass">
+                <div className="empty-icon">🔍</div>
+                <h3>No compatible voluntary donors match your filters</h3>
+                <p>
+                  Try widening your location perimeter, selecting &quot;All Groups&quot;, or enabling cross-compatible matching.
+                </p>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setBloodGroup("all");
+                    setCity("");
+                    setAvailableNowOnly(false);
+                    setIncludeCompatible(true);
+                  }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
             )}
 
             <div className={`checker glass ${checkerOpen ? "is-open" : ""}`}>

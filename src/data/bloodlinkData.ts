@@ -10,6 +10,12 @@ export interface DonorProfile {
   availability: "Available Immediately" | "On-Call (< 45 min)" | "Scheduled Window";
   verifiedBy: string;
   responseWindow: string;
+  donationsCount?: number;
+  livesImpacted?: number;
+  lastDonated?: string;
+  donorBadge?: "Universal Hero" | "Platinum Donor" | "Rapid Responder" | "Verified Volunteer";
+  bloodPressure?: string;
+  hemoglobin?: string;
 }
 
 export interface BloodRequest {
@@ -116,6 +122,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Bengaluru Regional Blood Centre",
     responseWindow: "18 min ETA",
+    donationsCount: 14,
+    livesImpacted: 42,
+    lastDonated: "94 days ago",
+    donorBadge: "Universal Hero",
+    bloodPressure: "118/76 mmHg",
+    hemoglobin: "14.2 g/dL",
   },
   {
     id: "BL-7290",
@@ -127,6 +139,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Southern Regional Trauma Blood Bank",
     responseWindow: "24 min ETA",
+    donationsCount: 9,
+    livesImpacted: 27,
+    lastDonated: "105 days ago",
+    donorBadge: "Platinum Donor",
+    bloodPressure: "120/80 mmHg",
+    hemoglobin: "13.6 g/dL",
   },
   {
     id: "BL-6514",
@@ -138,6 +156,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "On-Call (< 45 min)",
     verifiedBy: "Metropolitan Cardiac Institute Blood Bank",
     responseWindow: "32 min ETA",
+    donationsCount: 6,
+    livesImpacted: 18,
+    lastDonated: "112 days ago",
+    donorBadge: "Rapid Responder",
+    bloodPressure: "122/82 mmHg",
+    hemoglobin: "14.8 g/dL",
   },
   {
     id: "BL-9102",
@@ -149,6 +173,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Western Regional Blood Centre",
     responseWindow: "20 min ETA",
+    donationsCount: 11,
+    livesImpacted: 33,
+    lastDonated: "98 days ago",
+    donorBadge: "Rapid Responder",
+    bloodPressure: "120/78 mmHg",
+    hemoglobin: "14.0 g/dL",
   },
   {
     id: "BL-5408",
@@ -160,6 +190,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Western Metropolitan Hospital Blood Bank",
     responseWindow: "22 min ETA",
+    donationsCount: 8,
+    livesImpacted: 24,
+    lastDonated: "120 days ago",
+    donorBadge: "Platinum Donor",
+    bloodPressure: "116/74 mmHg",
+    hemoglobin: "13.2 g/dL",
   },
   {
     id: "BL-3917",
@@ -171,6 +207,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Deccan Central Hospital Blood Bank",
     responseWindow: "19 min ETA",
+    donationsCount: 7,
+    livesImpacted: 21,
+    lastDonated: "102 days ago",
+    donorBadge: "Universal Hero",
+    bloodPressure: "118/76 mmHg",
+    hemoglobin: "13.4 g/dL",
   },
   {
     id: "BL-4723",
@@ -182,6 +224,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "On-Call (< 45 min)",
     verifiedBy: "National Capital Regional Blood Centre",
     responseWindow: "28 min ETA",
+    donationsCount: 5,
+    livesImpacted: 15,
+    lastDonated: "92 days ago",
+    donorBadge: "Rapid Responder",
+    bloodPressure: "124/80 mmHg",
+    hemoglobin: "14.4 g/dL",
   },
   {
     id: "BL-8036",
@@ -193,6 +241,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Southern Regional Trauma Blood Bank",
     responseWindow: "26 min ETA",
+    donationsCount: 10,
+    livesImpacted: 30,
+    lastDonated: "96 days ago",
+    donorBadge: "Platinum Donor",
+    bloodPressure: "118/78 mmHg",
+    hemoglobin: "13.8 g/dL",
   },
   {
     id: "BL-9410",
@@ -204,6 +258,12 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Northern Apex Trauma Blood Centre",
     responseWindow: "16 min ETA",
+    donationsCount: 16,
+    livesImpacted: 48,
+    lastDonated: "91 days ago",
+    donorBadge: "Universal Hero",
+    bloodPressure: "120/78 mmHg",
+    hemoglobin: "15.0 g/dL",
   },
   {
     id: "BL-6190",
@@ -215,6 +275,46 @@ export const DONOR_PROFILES: DonorProfile[] = [
     availability: "Available Immediately",
     verifiedBy: "Coastal Regional Transfusion Centre",
     responseWindow: "21 min ETA",
+    donationsCount: 12,
+    livesImpacted: 36,
+    lastDonated: "100 days ago",
+    donorBadge: "Platinum Donor",
+    bloodPressure: "122/80 mmHg",
+    hemoglobin: "14.6 g/dL",
+  },
+  {
+    id: "BL-7531",
+    name: "Pooja Banerjee",
+    group: "A-",
+    location: "Salt Lake Sector V, Kolkata",
+    city: "Kolkata",
+    distanceKm: 3.2,
+    availability: "Available Immediately",
+    verifiedBy: "Eastern Apex Transfusion Centre",
+    responseWindow: "23 min ETA",
+    donationsCount: 6,
+    livesImpacted: 18,
+    lastDonated: "115 days ago",
+    donorBadge: "Rapid Responder",
+    bloodPressure: "116/76 mmHg",
+    hemoglobin: "13.1 g/dL",
+  },
+  {
+    id: "BL-5192",
+    name: "Devendra Patel",
+    group: "B+",
+    location: "Navrangpura, Ahmedabad",
+    city: "Ahmedabad",
+    distanceKm: 2.4,
+    availability: "Available Immediately",
+    verifiedBy: "Western Trauma Resuscitation Bank",
+    responseWindow: "19 min ETA",
+    donationsCount: 13,
+    livesImpacted: 39,
+    lastDonated: "94 days ago",
+    donorBadge: "Platinum Donor",
+    bloodPressure: "120/78 mmHg",
+    hemoglobin: "14.5 g/dL",
   },
 ];
 
