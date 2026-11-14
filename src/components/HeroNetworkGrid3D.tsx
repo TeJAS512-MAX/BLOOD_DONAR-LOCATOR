@@ -619,13 +619,13 @@ export function HeroNetworkGrid3D({
 
   return (
     <div className="hero-grid3d-shell">
-      {/* High-Tech Telemetry Top Bar */}
+      {/* Real-Time Clinical Logistics Top Bar */}
       <div className="hero-3d-topbar">
         <div className="hero-3d-status">
           <span className="pulse-dot" />
-          <span>AUTONOMOUS TRANSFUSION DIGITAL TWIN · QUANTUM ROUTING</span>
+          <span>REGIONAL BLOOD DISPATCH NETWORK · ABO/Rh COMPATIBILITY RADAR</span>
         </div>
-        <span className="hero-3d-sub">UHD LIVE · 7 ACTIVE NODES</span>
+        <span className="hero-3d-sub">7 VERIFIED HUBS · LIVE</span>
       </div>
 
       <div className="hero-grid3d-canvas" ref={mountRef} />
