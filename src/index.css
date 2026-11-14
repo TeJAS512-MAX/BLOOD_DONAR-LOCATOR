@@ -1024,15 +1024,15 @@ select option {
   border-radius: var(--radius-xl);
   background: radial-gradient(circle at 50% 15%, rgba(225, 29, 72, 0.09), transparent 60%),
               linear-gradient(165deg, rgba(15, 23, 42, 0.9), rgba(10, 15, 28, 0.95));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
   box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.65), 0 0 35px -10px rgba(225, 29, 72, 0.16);
   padding: 22px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   animation: hero-card-float 6.8s ease-in-out infinite;
-  will-change: transform, box-shadow;
+  transition: border-color 0.25s ease, box-shadow 0.35s ease;
 }
 
 .hero-smart-hub-card:hover {
@@ -1731,8 +1731,8 @@ select option {
 
 .finder-section {
   background: linear-gradient(180deg, rgba(10, 16, 28, 0.65) 0%, rgba(14, 24, 42, 0.75) 100%);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
 }
 
 /* ---------- Donor Registry Console ---------- */
@@ -2729,8 +2729,8 @@ select option {
   border-radius: var(--radius-xl);
   background: linear-gradient(145deg, rgba(10, 19, 36, 0.72) 0%, rgba(6, 12, 22, 0.82) 100%);
   box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.75), 0 0 32px -8px rgba(0, 240, 255, 0.15);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
 }
 
 .radar-scope-col {
@@ -4169,6 +4169,17 @@ select option {
     padding-top: 18px;
   }
 
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .telemetry-ribbon .ribbon-metric:not(.is-time) {
+    display: none;
+  }
+
   .problem-grid,
   .donor-grid {
     grid-template-columns: 1fr;
@@ -4206,8 +4217,41 @@ select option {
     flex: 1 1 100%;
   }
 
-  .hero-grid3d-shell {
-    height: 420px;
+  .hero-smart-hub-card {
+    padding: 16px 14px;
+    border-radius: var(--radius-lg);
+  }
+
+  .group-picker-grid {
+    gap: 6px;
+  }
+
+  .group-chip {
+    padding: 8px 4px;
+    min-height: 48px;
+  }
+
+  .group-chip .group-name {
+    font-size: 13.5px;
+  }
+
+  .hub-tab-btn {
+    padding: 7px 6px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .telemetry-ribbon .ribbon-marquee {
+    display: none;
+  }
+
+  .telemetry-ribbon .ribbon-inner {
+    gap: 8px;
+  }
+
+  .registry-stats-pills {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .hero-visual::before,
