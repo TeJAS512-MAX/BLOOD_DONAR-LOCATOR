@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { HospitalRadar2D } from "./components/HospitalRadar2D";
+import { AdvancedTransfusionLab } from "./components/AdvancedTransfusionLab";
 import { LiveBiomedicalBg3D } from "./components/LiveBiomedicalBg3D";
 import { CommandPalette } from "./components/CommandPalette";
 import { CompatibilityMatrixModal } from "./components/CompatibilityMatrixModal";
@@ -32,6 +33,7 @@ const NAV_LINKS = [
   { href: "#find-blood", label: "Donor Registry" },
   { href: "#requests", label: "Requisitions" },
   { href: "#radar", label: "Dispatch Radar" },
+  { href: "#advanced-lab", label: "Innovation Lab" },
   { href: "#banks", label: "Blood Banks" },
   { href: "#donate", label: "Guidelines" },
 ];
@@ -1298,6 +1300,24 @@ function App() {
               banks={BLOOD_BANKS}
               onNotify={notify}
             />
+          </div>
+        </section>
+
+        <section className="section theme-light lab-section" id="advanced-lab">
+          <div className="container reveal">
+            <div className="section-head">
+              <div className="section-head-copy">
+                <span className="eyebrow is-crimson">Cutting-Edge Clinical Innovations</span>
+                <h2>
+                  Autonomous Medical UAV &amp; <em>Immunological</em> Lab
+                </h2>
+                <p>
+                  Pioneering rapid autonomous drone cold-chain transit to bypass dense urban traffic alongside real-time
+                  microscopic agglutination screening for rare phenotypes (Bombay Oh, Rh-Null &amp; Kell-alloantibody matching).
+                </p>
+              </div>
+            </div>
+            <AdvancedTransfusionLab onNotify={notify} />
           </div>
         </section>
 

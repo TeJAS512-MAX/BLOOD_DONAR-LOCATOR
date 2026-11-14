@@ -128,6 +128,17 @@ export function CommandPalette({
         },
       },
       {
+        id: "nav-lab",
+        category: "Navigation",
+        title: "Autonomous UAV & Phenotype Lab",
+        subtitle: "Explore medical drone dispatch and microscopic rare blood agglutination lab",
+        badge: "#advanced-lab",
+        action: () => {
+          onNavigate("#advanced-lab");
+          onClose();
+        },
+      },
+      {
         id: "nav-requests",
         category: "Navigation",
         title: "Live Hospital Requisitions",
