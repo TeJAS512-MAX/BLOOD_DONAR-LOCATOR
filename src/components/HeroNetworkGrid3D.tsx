@@ -6,6 +6,7 @@ import {
   DONOR_PROFILES,
   type BloodGroup,
 } from "../data/bloodlinkData";
+import { tacticalAudio } from "../utils/tacticalAudio";
 
 interface HeroNetworkGrid3DProps {
   boostFlow?: boolean;
@@ -76,6 +77,7 @@ export function HeroNetworkGrid3D({
   }, [compatibleDonorGroups]);
 
   const handleGroupSelect = (group: BloodGroup) => {
+    tacticalAudio.playBlip(950);
     setSelectedGroup(group);
     setSosSent(false);
     if (onSelectDonorGroup) {
@@ -84,6 +86,7 @@ export function HeroNetworkGrid3D({
   };
 
   const handleTriggerSOS = () => {
+    tacticalAudio.playSosAlert();
     setSosSent(true);
     if (onSelectDonorGroup) {
       onSelectDonorGroup(selectedGroup);
@@ -95,6 +98,7 @@ export function HeroNetworkGrid3D({
   };
 
   const handleBookSlot = (time: string) => {
+    tacticalAudio.playDispatchChime();
     setBookedSlot(time);
     const msg = `Priority donor slot confirmed for today at ${time} at Bengaluru Regional Blood Centre. SMS pass dispatched.`;
     if (onNotify) {
@@ -126,7 +130,10 @@ export function HeroNetworkGrid3D({
           role="tab"
           aria-selected={activeTab === "emergency"}
           className={`hub-tab-btn ${activeTab === "emergency" ? "is-active" : ""}`}
-          onClick={() => setActiveTab("emergency")}
+          onClick={() => {
+            tacticalAudio.playClick(1100);
+            setActiveTab("emergency");
+          }}
         >
           <span className="tab-icon">
             <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -142,7 +149,10 @@ export function HeroNetworkGrid3D({
           role="tab"
           aria-selected={activeTab === "donor"}
           className={`hub-tab-btn ${activeTab === "donor" ? "is-active" : ""}`}
-          onClick={() => setActiveTab("donor")}
+          onClick={() => {
+            tacticalAudio.playClick(1200);
+            setActiveTab("donor");
+          }}
         >
           <span className="tab-icon">
             <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -156,7 +166,10 @@ export function HeroNetworkGrid3D({
           role="tab"
           aria-selected={activeTab === "inventory"}
           className={`hub-tab-btn ${activeTab === "inventory" ? "is-active" : ""}`}
-          onClick={() => setActiveTab("inventory")}
+          onClick={() => {
+            tacticalAudio.playClick(1300);
+            setActiveTab("inventory");
+          }}
         >
           <span className="tab-icon">
             <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -13,6 +13,7 @@ import {
   type DonorProfile,
   type NetworkPartner,
 } from "../data/bloodlinkData";
+import { tacticalAudio } from "../utils/tacticalAudio";
 
 type ContactKind = "donor" | "bank";
 type ContactFilter = "all" | "compatible" | "donors" | "banks";
@@ -795,6 +796,7 @@ export function HospitalRadar2D({
     if (best) {
       setLockedId(best);
       triggerRadarPulse(COLOR.bank, 1400, 0.6);
+      tacticalAudio.playBlip(900);
     }
   };
 
@@ -813,6 +815,7 @@ export function HospitalRadar2D({
   };
 
   const dispatchContact = (contact: RadarContact) => {
+    tacticalAudio.playDispatchChime();
     const bearing = contact.bearingDeg;
     const startedAt = Date.now();
     setDispatched((prev) => ({ ...prev, [contact.id]: { startedAt, bearingDeg: bearing } }));
@@ -824,6 +827,7 @@ export function HospitalRadar2D({
   };
 
   const reserveFromBank = (contact: RadarContact) => {
+    tacticalAudio.playBlip(720);
     setReserved((prev) => ({ ...prev, [contact.id]: true }));
     triggerRadarPulse(COLOR.bank, 2200, 0.9);
     notifyRef.current(
@@ -848,6 +852,7 @@ export function HospitalRadar2D({
 
   // Emergency SOS Radial Broadcast
   const handleBroadcastSOS = () => {
+    tacticalAudio.playSosAlert();
     triggerRadarPulse("#ff1f4b", 4000, 1.3);
     const count = visible.filter((c) => c.compatible && c.kind === "donor").length;
     notifyRef.current(
@@ -857,6 +862,7 @@ export function HospitalRadar2D({
 
   // Simulate Direct SMS Dispatch Relay
   const handleSimulateSms = (contact: RadarContact) => {
+    tacticalAudio.playClick(950);
     setSimulatedSmsSent(contact.id);
     notifyRef.current(
       `SMS DISPATCH TRANSMITTED to ${contact.label} (${contact.phoneMasked}): "URGENT BloodLink Requisition: Group ${request.group} required at ${hospital}. Emergency token generated."`,
@@ -1023,6 +1029,7 @@ export function HospitalRadar2D({
                   type="button"
                   aria-pressed={rangeKm === km}
                   onClick={() => {
+                    tacticalAudio.playClick(1200);
                     setRangeKm(km);
                     triggerRadarPulse(COLOR.bank, 1800);
                   }}
@@ -1046,7 +1053,10 @@ export function HospitalRadar2D({
                   type="button"
                   className={`toggle-chip ${filterMode === f.id ? "is-active" : ""}`}
                   aria-pressed={filterMode === f.id}
-                  onClick={() => setFilterMode(f.id)}
+                  onClick={() => {
+                    tacticalAudio.playClick(1300);
+                    setFilterMode(f.id);
+                  }}
                 >
                   {f.label}
                 </button>

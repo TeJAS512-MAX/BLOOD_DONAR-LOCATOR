@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { HeroNetworkGrid3D } from "./components/HeroNetworkGrid3D";
 import { HospitalRadar2D } from "./components/HospitalRadar2D";
 import { LiveBiomedicalBg3D } from "./components/LiveBiomedicalBg3D";
+import { CommandPalette } from "./components/CommandPalette";
+import { CompatibilityMatrixModal } from "./components/CompatibilityMatrixModal";
+import { tacticalAudio } from "./utils/tacticalAudio";
 import {
   BLOOD_BANKS,
   BLOOD_GROUPS,
@@ -197,8 +200,34 @@ function App() {
   const [createRequestOpen, setCreateRequestOpen] = useState(false);
   const [activeRequest, setActiveRequest] = useState<BloodRequest | null>(null);
   const [activeDonor, setActiveDonor] = useState<DonorProfile | null>(null);
+  const [isCmdOpen, setIsCmdOpen] = useState(false);
+  const [isMatrixOpen, setIsMatrixOpen] = useState(false);
+  const [isAudioOn, setIsAudioOn] = useState(tacticalAudio.enabled);
+  const [liveClock, setLiveClock] = useState(() => new Date());
 
-  const modalOpen = registerOpen || createRequestOpen || activeRequest !== null || activeDonor !== null;
+  useEffect(() => {
+    const timer = setInterval(() => setLiveClock(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCmdOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
+  const modalOpen =
+    registerOpen ||
+    createRequestOpen ||
+    activeRequest !== null ||
+    activeDonor !== null ||
+    isCmdOpen ||
+    isMatrixOpen;
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -219,9 +248,12 @@ function App() {
     setCreateRequestOpen(false);
     setActiveRequest(null);
     setActiveDonor(null);
+    setIsCmdOpen(false);
+    setIsMatrixOpen(false);
   }, []);
 
   const openRegister = useCallback(() => {
+    tacticalAudio.playClick(1000);
     setDonorPass(null);
     setRegisterOpen(true);
   }, []);
@@ -241,6 +273,7 @@ function App() {
 
   const handlePingDonor = useCallback(
     (donor: DonorProfile) => {
+      tacticalAudio.playBlip(1100);
       setPingedDonorId(donor.id);
       setBgPulse((c) => c + 1);
       showToast(
@@ -253,6 +286,7 @@ function App() {
 
   const handleTrackDonorOnRadar = useCallback(
     (donor: DonorProfile) => {
+      tacticalAudio.playDispatchChime();
       const req =
         requests.find((r) => COMPATIBILITY_MAP[r.group].receiveRedCellsFrom.includes(donor.group)) ?? requests[0];
       openRadarFor(
@@ -362,10 +396,12 @@ function App() {
 
   const toggleEmergency = () => {
     if (emergencyMode) {
+      tacticalAudio.playClick(600);
       setEmergencyMode(false);
       showToast("Priority dispatch protocol deactivated.");
       return;
     }
+    tacticalAudio.playSosAlert();
     setEmergencyMode(true);
     const critical = requests.find((request) => request.priority === "Critical") ?? requests[0];
     openRadarFor(
@@ -475,6 +511,98 @@ function App() {
     <>
       <LiveBiomedicalBg3D mode="auto" boostFlow={emergencyMode} activeBloodGroup={bloodGroup} pulseTriggerCount={bgPulse} />
 
+      {/* Top Clinical Mission Control Telemetry Ribbon */}
+      <div className="telemetry-ribbon">
+        <div className="container ribbon-inner">
+          <div className="ribbon-left">
+            <span className="ribbon-tag is-pulse">
+              <span className="pulse-dot is-green" /> SYS: NOMINAL
+            </span>
+            <span className="ribbon-metric">NODES: 7 HUBS</span>
+            <span className="ribbon-metric">LATENCY: 14ms</span>
+            <span className="ribbon-metric is-time">
+              {liveClock.toLocaleTimeString()} IST
+            </span>
+          </div>
+
+          <div className="ribbon-marquee" aria-hidden="true">
+            <div className="ribbon-marquee-track">
+              <span>BL-8841 Indiranagar (O-) priority courier en route to Manipal Trauma Desk</span>
+              <span className="marquee-sep">/</span>
+              <span>Narayana Health: 24 units A+ cold-chain verified</span>
+              <span className="marquee-sep">/</span>
+              <span>Apollo Trauma: 2 units uncrossmatched O- issued for emergency surgery</span>
+              <span className="marquee-sep">/</span>
+              <span>Southern Regional Blood Vault: +3.8°C nominal storage</span>
+              <span className="marquee-sep">/</span>
+              <span>Green Corridor Active: Indiranagar to Old Airport Rd (18 min ETA)</span>
+            </div>
+          </div>
+
+          <div className="ribbon-right">
+            <button
+              type="button"
+              className="ribbon-btn"
+              onClick={() => {
+                tacticalAudio.playClick(1000);
+                setIsMatrixOpen(true);
+              }}
+              title="Open ABO/Rh Clinical Transfusion Cross-Match Matrix"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span>Cross-Match Matrix</span>
+            </button>
+
+            <button
+              type="button"
+              className="ribbon-btn"
+              onClick={() => {
+                const next = !isAudioOn;
+                tacticalAudio.enabled = next;
+                setIsAudioOn(next);
+                if (next) tacticalAudio.playBlip(1000);
+                showToast(next ? "Tactical audio synthesizer enabled." : "Tactical audio synthesizer muted.");
+              }}
+              title="Toggle Tactical Audio Telemetry"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                {isAudioOn ? (
+                  <>
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  </>
+                ) : (
+                  <>
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    <line x1="23" y1="9" x2="17" y2="15" />
+                    <line x1="17" y1="9" x2="23" y2="15" />
+                  </>
+                )}
+              </svg>
+              <span>{isAudioOn ? "Audio: On" : "Audio: Mute"}</span>
+            </button>
+
+            <button
+              type="button"
+              className="ribbon-btn is-kbd"
+              onClick={() => {
+                tacticalAudio.playClick(1200);
+                setIsCmdOpen(true);
+              }}
+              title="Open Command Palette (Ctrl+K or ⌘K)"
+            >
+              <span>Command</span>
+              <kbd className="cmd-chip">⌘K</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <header className="site-header">
         <div className="container header-inner">
           <a className="brand" href="#top" aria-label="BloodLink home" onClick={() => setMenuOpen(false)}>
@@ -490,6 +618,17 @@ function App() {
                 {link.label}
               </a>
             ))}
+            <button
+              type="button"
+              className="nav-action-link"
+              onClick={() => {
+                setMenuOpen(false);
+                tacticalAudio.playClick(1000);
+                setIsMatrixOpen(true);
+              }}
+            >
+              Cross-Match
+            </button>
             <div className="mobile-actions">
               {emergencyButton(() => {
                 setMenuOpen(false);
@@ -509,6 +648,22 @@ function App() {
           </nav>
 
           <div className="header-actions">
+            <button
+              type="button"
+              className="btn btn-glass btn-cmd-trigger"
+              onClick={() => {
+                tacticalAudio.playClick(1200);
+                setIsCmdOpen(true);
+              }}
+              title="Open Command Palette (Ctrl+K or ⌘K)"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <span>Search</span>
+              <kbd className="cmd-pill-kbd">⌘K</kbd>
+            </button>
             {emergencyButton(toggleEmergency)}
             <button type="button" className="btn btn-primary" onClick={openRegister}>
               Register as Donor
@@ -1726,6 +1881,42 @@ function App() {
           </section>
         </div>
       )}
+
+      {/* Universal Command Palette (⌘K) */}
+      <CommandPalette
+        isOpen={isCmdOpen}
+        onClose={() => setIsCmdOpen(false)}
+        onSelectGroup={(g) => {
+          setBloodGroup(g);
+          showToast(`Filtered registry by Group ${g}.`);
+        }}
+        onToggleEmergency={toggleEmergency}
+        onOpenRegister={openRegister}
+        onToggleAudio={() => {
+          const next = !isAudioOn;
+          tacticalAudio.enabled = next;
+          setIsAudioOn(next);
+          if (next) tacticalAudio.playBlip(1000);
+          showToast(next ? "Tactical audio synthesizer active." : "Tactical audio synthesizer muted.");
+        }}
+        isAudioOn={isAudioOn}
+        onNavigate={(hash) => {
+          const el = document.querySelector(hash);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
+
+      {/* Clinical Transfusion Cross-Match Decision Matrix Modal */}
+      <CompatibilityMatrixModal
+        isOpen={isMatrixOpen}
+        onClose={() => setIsMatrixOpen(false)}
+        onSelectGroup={(g) => {
+          setBloodGroup(g);
+          showToast(`Registry focused on Group ${g}.`);
+          const el = document.querySelector("#find-blood");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
     </>
   );
 }
