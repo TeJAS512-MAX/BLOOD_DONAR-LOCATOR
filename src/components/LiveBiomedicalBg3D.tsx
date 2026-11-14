@@ -89,29 +89,29 @@ const RBC_FRAGMENT_SHADER = `
     float dimpleTranslucency = smoothstep(0.75, 0.12, vUv.x);
     float backLight = pow(max(dot(-V, L1), 0.0), 2.0) * 0.65 + 0.35;
 
-    vec3 deepOxblood = vec3(0.24, 0.015, 0.055);
-    vec3 arterialCrimson = vec3(0.84, 0.05, 0.19);
-    vec3 sssCoral = vec3(1.0, 0.28, 0.40);
-    vec3 rimGlow = vec3(1.0, 0.48, 0.58);
+    vec3 deepOxblood = vec3(0.36, 0.02, 0.08);
+    vec3 arterialCrimson = vec3(0.96, 0.08, 0.22);
+    vec3 sssCoral = vec3(1.0, 0.36, 0.48);
+    vec3 rimGlow = vec3(1.0, 0.58, 0.70);
 
-    vec3 baseCol = mix(deepOxblood, arterialCrimson, diff1 * 0.82 + diff2 * 0.25);
+    vec3 baseCol = mix(deepOxblood, arterialCrimson, diff1 * 0.85 + diff2 * 0.35);
     // Add warm subsurface scattering in thin biconcave center & backlit edges
-    baseCol += sssCoral * dimpleTranslucency * backLight * (0.34 + uSystole * 0.18);
+    baseCol += sssCoral * dimpleTranslucency * backLight * (0.48 + uSystole * 0.25);
     // Silky Fresnel rim light
-    baseCol += rimGlow * fresnel * (0.62 + uSystole * 0.25);
+    baseCol += rimGlow * fresnel * (0.85 + uSystole * 0.35);
 
     // Specular clearcoat highlight
     vec3 H = normalize(L1 + V);
-    float spec = pow(max(dot(N, H), 0.0), 36.0);
-    baseCol += vec3(1.0, 0.85, 0.88) * spec * 0.38;
+    float spec = pow(max(dot(N, H), 0.0), 32.0);
+    baseCol += vec3(1.0, 0.88, 0.92) * spec * 0.52;
 
     // Atmospheric depth fade
     float depthDist = length(uCameraPos - vWorldPos);
-    float fogFactor = smoothstep(16.0, 4.5, depthDist);
-    vec3 fogColor = vec3(0.035, 0.045, 0.08);
+    float fogFactor = smoothstep(24.0, 6.0, depthDist);
+    vec3 fogColor = vec3(0.045, 0.05, 0.09);
     vec3 finalCol = mix(fogColor, baseCol, fogFactor);
 
-    gl_FragColor = vec4(finalCol, 0.96);
+    gl_FragColor = vec4(finalCol, 0.98);
   }
 `;
 
@@ -197,7 +197,7 @@ export function LiveBiomedicalBg3D({
     renderer.setSize(w, h);
     renderer.setClearColor(0x070a12, 1);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.18;
+    renderer.toneMappingExposure = 1.48;
     renderer.domElement.style.display = "block";
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
@@ -293,11 +293,11 @@ export function LiveBiomedicalBg3D({
         pts.push(new THREE.Vector3(x, y, z));
       }
       const curve = new THREE.CatmullRomCurve3(pts);
-      const tubeGeo = new THREE.TubeGeometry(curve, 72, 0.018, 8, false);
+      const tubeGeo = new THREE.TubeGeometry(curve, 72, 0.026, 8, false);
       const tubeMat = new THREE.MeshBasicMaterial({
         color: col,
         transparent: true,
-        opacity: 0.22,
+        opacity: 0.48,
       });
       ribbonGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
       disposables.push(tubeGeo, tubeMat);
@@ -530,8 +530,11 @@ export function LiveBiomedicalBg3D({
           if (x === 0) hudCtx.moveTo(x, y);
           else hudCtx.lineTo(x, y);
         }
-        hudCtx.strokeStyle = "rgba(255, 77, 109, 0.22)";
-        hudCtx.lineWidth = 1.6;
+        hudCtx.save();
+        hudCtx.strokeStyle = "rgba(255, 77, 109, 0.55)";
+        hudCtx.lineWidth = 2.4;
+        hudCtx.shadowColor = "#ff4d6d";
+        hudCtx.shadowBlur = 8;
         hudCtx.stroke();
         hudCtx.restore();
 
