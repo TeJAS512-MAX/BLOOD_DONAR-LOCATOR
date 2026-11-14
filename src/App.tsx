@@ -5,6 +5,9 @@ import { AdvancedTransfusionLab } from "./components/AdvancedTransfusionLab";
 import { LiveBiomedicalBg3D } from "./components/LiveBiomedicalBg3D";
 import { CommandPalette } from "./components/CommandPalette";
 import { CompatibilityMatrixModal } from "./components/CompatibilityMatrixModal";
+import { BloodJourneyTracker } from "./components/BloodJourneyTracker";
+import { CrisisSurgeForecaster } from "./components/CrisisSurgeForecaster";
+import { RapidPassModal } from "./components/RapidPassModal";
 import { tacticalAudio } from "./utils/tacticalAudio";
 import {
   BLOOD_BANKS,
@@ -22,17 +25,12 @@ import {
 type ScenarioFilter = "all" | BloodRequest["scenario"];
 type BankFilter = "all" | "Blood bank" | "Hospital partner";
 
-interface DonorPass {
-  id: string;
-  name: string;
-  group: BloodGroup;
-  city: string;
-}
-
 const NAV_LINKS = [
+  { href: "#journey", label: "Blood Journey" },
   { href: "#find-blood", label: "Donor Registry" },
   { href: "#requests", label: "Requisitions" },
   { href: "#radar", label: "Dispatch Radar" },
+  { href: "#crisis-forecast", label: "Surge Forecaster" },
   { href: "#advanced-lab", label: "Innovation Lab" },
   { href: "#banks", label: "Blood Banks" },
   { href: "#donate", label: "Guidelines" },
@@ -148,13 +146,6 @@ function CloseIcon() {
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg aria-hidden="true" className="icon" viewBox="0 0 20 20">
-      <path d="m4.5 10.5 3.5 3.5 7.5-8" />
-    </svg>
-  );
-}
 
 function ChevronIcon({ open = false }: { open?: boolean }) {
   return (
@@ -198,7 +189,6 @@ function App() {
   const [mythIndex, setMythIndex] = useState(0);
 
   const [registerOpen, setRegisterOpen] = useState(false);
-  const [donorPass, setDonorPass] = useState<DonorPass | null>(null);
   const [createRequestOpen, setCreateRequestOpen] = useState(false);
   const [activeRequest, setActiveRequest] = useState<BloodRequest | null>(null);
   const [activeDonor, setActiveDonor] = useState<DonorProfile | null>(null);
@@ -218,7 +208,6 @@ function App() {
   }, []);
 
   const modalOpen =
-    registerOpen ||
     createRequestOpen ||
     activeRequest !== null ||
     activeDonor !== null ||
@@ -250,7 +239,6 @@ function App() {
 
   const openRegister = useCallback(() => {
     tacticalAudio.playClick(1000);
-    setDonorPass(null);
     setRegisterOpen(true);
   }, []);
 
@@ -435,17 +423,6 @@ function App() {
   const sendDonorRequest = (donor: DonorProfile) => {
     setActiveDonor(null);
     notify(`Requisition relayed to ${donor.name} via ${donor.verifiedBy}. Contact details remain confidential until accepted.`);
-  };
-
-  const handleRegistration = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const name = String(form.get("name") ?? "").trim();
-    const group = String(form.get("group") ?? "") as BloodGroup;
-    const donorCity = String(form.get("city") ?? "").trim();
-    if (!name || !donorCity || !BLOOD_GROUPS.includes(group)) return;
-    setDonorPass({ id: `BL-${Math.floor(100000 + Math.random() * 900000)}`, name, group, city: donorCity });
-    setBgPulse((count) => count + 1);
   };
 
   const handleCreateRequest = (event: FormEvent<HTMLFormElement>) => {
@@ -666,6 +643,8 @@ function App() {
             </div>
           </div>
         </section>
+
+        <BloodJourneyTracker />
 
         <section className="section theme-light finder-section" id="find-blood">
           <div className="container reveal">
@@ -1303,6 +1282,15 @@ function App() {
           </div>
         </section>
 
+        <CrisisSurgeForecaster
+          onMobilizeDonors={(scen) => {
+            setBgPulse((c) => c + 1);
+            showToast(
+              `Emergency alert dispatched: ${scen.affectedComponent} mobilization broadcast sent to ${scen.targetDonors}.`,
+            );
+          }}
+        />
+
         <section className="section theme-light lab-section" id="advanced-lab">
           <div className="container reveal">
             <div className="section-head">
@@ -1574,6 +1562,15 @@ function App() {
         </div>
       )}
 
+      <RapidPassModal
+        isOpen={registerOpen}
+        onClose={() => setRegisterOpen(false)}
+        onPassCreated={(pass) => {
+          setBgPulse((c) => c + 1);
+          showToast(`RapidPass® verified for ${pass.name} (${pass.group}). Direct triage pass ready.`);
+        }}
+      />
+
       {modalOpen && (
         <div
           className="modal-backdrop"
@@ -1586,79 +1583,6 @@ function App() {
             <button ref={modalCloseRef} type="button" className="modal-close" aria-label="Close" onClick={closeModals}>
               <CloseIcon />
             </button>
-
-            {registerOpen &&
-              (donorPass ? (
-                <>
-                  <span className="success-mark">
-                    <CheckIcon />
-                  </span>
-                  <span className="eyebrow is-teal">Registration Confirmed</span>
-                  <h2 id="modal-title">{donorPass.name}</h2>
-                  <p className="modal-intro">
-                    Present this registration credential at an authorized blood centre during donor check-in.
-                  </p>
-                  <div className="donor-pass">
-                    <div className="pass-top">
-                      <span>Voluntary Donor Credential</span>
-                      <span>{donorPass.id}</span>
-                    </div>
-                    <div className="pass-body">
-                      <div>
-                        <strong>{donorPass.name}</strong>
-                        <span>{donorPass.city}</span>
-                      </div>
-                      <span className="group-badge is-lg">{donorPass.group}</span>
-                    </div>
-                  </div>
-                  <button type="button" className="btn btn-primary btn-lg btn-block" onClick={closeModals}>
-                    Close
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span className="eyebrow">Voluntary Donor Registration</span>
-                  <h2 id="modal-title">Register with the Donor Network</h2>
-                  <p className="modal-intro">
-                    Participating hospitals view only your blood group and locality. Personal contact information is
-                    shared only when you accept a requisition.
-                  </p>
-                  <form className="form" onSubmit={handleRegistration}>
-                    <label className="field">
-                      <span>Full Name</span>
-                      <input className="input" name="name" required autoComplete="name" placeholder="e.g. Aarav Nair" />
-                    </label>
-                    <div className="form-row">
-                      <label className="field">
-                        <span>Blood Group</span>
-                        <select className="input" name="group" defaultValue="" required>
-                          <option value="" disabled>
-                            Select
-                          </option>
-                          {BLOOD_GROUPS.map((group) => (
-                            <option key={group} value={group}>
-                              {group}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className="field">
-                        <span>City or Locality</span>
-                        <input
-                          className="input"
-                          name="city"
-                          required
-                          autoComplete="address-level2"
-                          placeholder="e.g. Bengaluru"
-                        />
-                      </label>
-                    </div>
-                    <button type="submit" className="btn btn-primary btn-lg btn-block">
-                      Issue Donor Credential <ArrowIcon />
-                    </button>
-                  </form>
-                </>
-              ))}
 
             {createRequestOpen && (
               <>

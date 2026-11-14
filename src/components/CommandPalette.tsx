@@ -106,6 +106,28 @@ export function CommandPalette({
 
       // Navigation
       {
+        id: "nav-journey",
+        category: "Navigation",
+        title: "Vein-to-Vein Transfusion Journey",
+        subtitle: "5-stage lifecycle from phlebotomy & NAT testing to cold-chain cryo-vault",
+        badge: "#journey",
+        action: () => {
+          onNavigate("#journey");
+          onClose();
+        },
+      },
+      {
+        id: "nav-crisis-forecast",
+        category: "Navigation",
+        title: "Epidemic & Surge Forecaster",
+        subtitle: "Predictive demand modeling for dengue platelet shortages and mass-casualty incidents",
+        badge: "#crisis-forecast",
+        action: () => {
+          onNavigate("#crisis-forecast");
+          onClose();
+        },
+      },
+      {
         id: "nav-find-blood",
         category: "Navigation",
         title: "Donor Registry Console",
