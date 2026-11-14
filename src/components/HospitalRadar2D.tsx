@@ -348,7 +348,7 @@ export function HospitalRadar2D({
         gradient.addColorStop(1, "rgba(0, 245, 212, 0)");
         ctx.fillStyle = gradient;
       } else {
-        ctx.fillStyle = "rgba(0, 245, 212, 0.12)";
+        ctx.fillStyle = "rgba(0, 245, 212, 0.24)";
       }
       ctx.fill();
       ctx.restore();
