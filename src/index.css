@@ -912,18 +912,12 @@ select option {
   background: linear-gradient(100deg, rgba(12, 9, 9, 0.88) 0%, rgba(12, 9, 9, 0.5) 55%, rgba(12, 9, 9, 0.22) 100%);
 }
 
-/* Faint clinical grid behind the headline */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 60% 70% at 25% 45%, #000 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 25% 45%, #000 0%, transparent 75%);
-  pointer-events: none;
+/* Hero Section */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-top: 56px;
+  background: linear-gradient(100deg, rgba(12, 9, 9, 0.88) 0%, rgba(12, 9, 9, 0.5) 55%, rgba(12, 9, 9, 0.22) 100%);
 }
 
 .hero-grid {

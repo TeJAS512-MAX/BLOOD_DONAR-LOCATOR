@@ -206,60 +206,6 @@ const LIQUID_STREAM_FRAGMENT_SHADER = `
   }
 `;
 
-const QUANTUM_GRID_VERTEX_SHADER = `
-  varying vec3 vWorldPos;
-  varying vec2 vUv;
-  varying float vElevation;
-  uniform float uTime;
-  uniform float uSystole;
-
-  void main() {
-    vUv = uv;
-    vec3 pos = position;
-    float w1 = sin(pos.x * 0.4 + uTime * 1.5) * cos(pos.y * 0.35 + uTime * 1.1) * 0.5;
-    float w2 = sin(pos.x * 0.8 - uTime * 2.0 + pos.y * 0.6) * 0.25 * (1.0 + uSystole * 0.5);
-    float elevation = w1 + w2;
-    pos.z += elevation;
-    vElevation = elevation;
-
-    vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
-    vWorldPos = worldPosition.xyz;
-    gl_Position = projectionMatrix * viewMatrix * worldPosition;
-  }
-`;
-
-const QUANTUM_GRID_FRAGMENT_SHADER = `
-  varying vec3 vWorldPos;
-  varying vec2 vUv;
-  varying float vElevation;
-  uniform float uTime;
-  uniform float uSystole;
-  uniform vec3 uCameraPos;
-
-  void main() {
-    vec2 gridUv = fract(vUv * 32.0);
-    vec2 gridLine = smoothstep(0.05, 0.0, abs(gridUv - 0.5));
-    float gridPattern = max(gridLine.x, gridLine.y);
-
-    float pulse = sin(vUv.y * 36.0 - uTime * 3.2 + vElevation * 2.0) * 0.5 + 0.5;
-    float pulseHighlight = pow(pulse, 5.0) * (0.7 + uSystole * 0.5);
-
-    vec3 cyanBeam = vec3(0.0, 0.88, 1.0);
-    vec3 crimsonGlow = vec3(1.0, 0.15, 0.35);
-    vec3 deepBlue = vec3(0.03, 0.06, 0.12);
-
-    vec3 col = mix(cyanBeam, crimsonGlow, smoothstep(-0.5, 0.5, vElevation));
-    col = mix(deepBlue, col, gridPattern * 0.8 + pulseHighlight * 0.6);
-
-    float dist = length(uCameraPos - vWorldPos);
-    float edgeFade = smoothstep(0.0, 0.15, vUv.x) * smoothstep(1.0, 0.85, vUv.x) *
-                     smoothstep(0.0, 0.15, vUv.y) * smoothstep(1.0, 0.85, vUv.y);
-    float distFade = smoothstep(28.0, 6.0, dist);
-
-    float alpha = (gridPattern * 0.35 + pulseHighlight * 0.45) * edgeFade * distFade * (0.55 + uSystole * 0.2);
-    gl_FragColor = vec4(col, alpha);
-  }
-`;
 
 export function LiveBiomedicalBg3D({
   mode,
@@ -525,30 +471,7 @@ export function LiveBiomedicalBg3D({
       scale: 0.65 + (idx % 4) * 0.18,
     }));
 
-    // 7. Futuristic Topographical Quantum Wave Matrix (Integrated Layer)
-    const quantumUniforms = {
-      uTime: { value: 0 },
-      uSystole: { value: 0 },
-      uCameraPos: { value: new THREE.Vector3(0, 0.3, 8.2) },
-    };
-
-    const quantumGeo = new THREE.PlaneGeometry(32, 18, 64, 48);
-    const quantumMat = new THREE.ShaderMaterial({
-      vertexShader: QUANTUM_GRID_VERTEX_SHADER,
-      fragmentShader: QUANTUM_GRID_FRAGMENT_SHADER,
-      uniforms: quantumUniforms,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-    });
-    const quantumMesh = new THREE.Mesh(quantumGeo, quantumMat);
-    quantumMesh.position.set(0, -1.9, -2.5);
-    quantumMesh.rotation.set(-1.24, 0.08, 0.12);
-    scene.add(quantumMesh);
-    disposables.push(quantumGeo, quantumMat);
-
-    // 8. 3D Volumetric Shockwave Ring
+    // 7. 3D Volumetric Shockwave Ring
     const shockwaveRingGeo = new THREE.RingGeometry(0.1, 0.3, 64);
     const shockwaveRingMat = new THREE.MeshBasicMaterial({
       color: 0x00f0ff,
@@ -625,8 +548,6 @@ export function LiveBiomedicalBg3D({
       bokehUniforms.uSystole.value = combinedSystole;
       liquidUniforms.uTime.value = elapsed;
       liquidUniforms.uSystole.value = combinedSystole;
-      quantumUniforms.uTime.value = elapsed;
-      quantumUniforms.uSystole.value = combinedSystole;
 
       // Smooth lerp for scroll progress to prevent any sudden teleportation or glitch during fast scroll
       smoothScroll += (targetScrollProgress - smoothScroll) * 0.06;
@@ -642,7 +563,6 @@ export function LiveBiomedicalBg3D({
 
       rbcUniforms.uCameraPos.value.copy(camera.position);
       liquidUniforms.uCameraPos.value.copy(camera.position);
-      quantumUniforms.uCameraPos.value.copy(camera.position);
 
       // Animate Hero Erythrocyte smoothly without snapping
       heroCellMesh.position.x = -2.85 + Math.cos(elapsed * 0.45) * 0.22 - smoothScroll * 1.1;
