@@ -67,20 +67,20 @@ const KIND_LABEL: Record<ContactKind, string> = {
 };
 
 const COLOR = {
-  donorCompat: "#ff2e56",
-  donorCompatGlow: "rgba(255, 46, 86, 0.65)",
+  donorCompat: "#38bdf8",
+  donorCompatGlow: "rgba(56, 189, 248, 0.65)",
   donorDim: "#64748b",
-  bank: "#00f0ff",
-  bankGlow: "rgba(0, 240, 255, 0.55)",
+  bank: "#34d399",
+  bankGlow: "rgba(52, 211, 153, 0.55)",
   transitCourier: "#ffb703",
-  ringMajor: "rgba(0, 240, 255, 0.42)",
-  ringMinor: "rgba(0, 240, 255, 0.16)",
-  gridAxis: "rgba(0, 240, 255, 0.28)",
+  ringMajor: "rgba(56, 189, 248, 0.35)",
+  ringMinor: "rgba(56, 189, 248, 0.15)",
+  gridAxis: "rgba(56, 189, 248, 0.25)",
   labelDim: "rgba(148, 163, 184, 0.8)",
   labelBright: "#ffffff",
-  sweepBeam: "#00f5d4",
-  sweepGlow: "rgba(0, 245, 212, 0.75)",
-  centerCitadel: "#ff1a53",
+  sweepBeam: "#38bdf8",
+  sweepGlow: "rgba(56, 189, 248, 0.75)",
+  centerCitadel: "#0ea5e9",
 };
 
 function bearingFromId(id: string): number {
@@ -650,8 +650,8 @@ export function HospitalRadar2D({
           const px = x + 8;
           const py = y - ph / 2;
 
-          ctx.fillStyle = contact.compatible ? "rgba(225, 29, 72, 0.92)" : "rgba(30, 41, 59, 0.85)";
-          ctx.strokeStyle = contact.compatible ? "rgba(255, 110, 140, 0.8)" : "rgba(100, 116, 139, 0.6)";
+          ctx.fillStyle = contact.compatible ? "rgba(14, 165, 233, 0.95)" : "rgba(30, 41, 59, 0.85)";
+          ctx.strokeStyle = contact.compatible ? "rgba(56, 189, 248, 0.9)" : "rgba(100, 116, 139, 0.6)";
           ctx.lineWidth = 1;
           ctx.beginPath();
           if (typeof ctx.roundRect === "function") {

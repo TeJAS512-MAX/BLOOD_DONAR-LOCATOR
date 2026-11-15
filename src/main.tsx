@@ -32,7 +32,7 @@ class RootErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
         <div
           style={{
             minHeight: "100vh",
-            backgroundColor: "#0c0909",
+            backgroundColor: "#080e1a",
             color: "#f8fafc",
             display: "flex",
             flexDirection: "column",
@@ -43,7 +43,7 @@ class RootErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
             textAlign: "center",
           }}
         >
-          <h1 style={{ color: "#ff4d6d", fontSize: "2rem", marginBottom: "1rem" }}>
+          <h1 style={{ color: "#38bdf8", fontSize: "2rem", marginBottom: "1rem" }}>
             BloodLink Encountered an Interface Error
           </h1>
           <p style={{ maxWidth: "600px", color: "#94a3b8", marginBottom: "1.5rem" }}>
@@ -55,7 +55,7 @@ class RootErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
             style={{
               padding: "0.75rem 1.75rem",
               borderRadius: "9999px",
-              background: "#ff4d6d",
+              background: "#0ea5e9",
               color: "#ffffff",
               border: "none",
               cursor: "pointer",

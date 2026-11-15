@@ -68,7 +68,7 @@ const SCENARIOS: Record<CrisisScenario, ScenarioData> = {
     title: "Mass-Casualty Highway Incident",
     tagline: "Severe blunt trauma haemorrhagic shock across 3 regional trauma bays",
     badge: "Red-Cell Deficit Code Red",
-    badgeColor: "rgba(244, 63, 94, 0.3)",
+    badgeColor: "rgba(14, 165, 233, 0.3)",
     affectedComponent: "Packed Red Blood Cells (O- / O+ / A-)",
     demandSurge: "+420% Emergency Requisition",
     hoursUntilDepletion: 5.4,

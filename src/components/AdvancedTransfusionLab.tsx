@@ -657,8 +657,8 @@ export function AdvancedTransfusionLab({
                 <svg viewBox="0 0 460 260" className="flight-map-svg" preserveAspectRatio="xMidYMid meet">
                   <defs>
                     <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#ff2e56" stopOpacity="0.8" />
+                      <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.9" />
                     </linearGradient>
                     <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.8" />
@@ -697,9 +697,9 @@ export function AdvancedTransfusionLab({
                   </text>
 
                   {/* Destination Hospital Helipad */}
-                  <circle cx="400" cy="120" r="14" fill="rgba(255, 46, 86, 0.25)" />
-                  <circle cx="400" cy="120" r="6" fill="#ff2e56" />
-                  <text x="400" y="150" textAnchor="middle" fill="#ff4d6d" fontSize="10.5" fontFamily="var(--mono)">
+                  <circle cx="400" cy="120" r="14" fill="rgba(14, 165, 233, 0.25)" />
+                  <circle cx="400" cy="120" r="6" fill="#38bdf8" />
+                  <text x="400" y="150" textAnchor="middle" fill="#7dd3fc" fontSize="10.5" fontFamily="var(--mono)">
                     TRAUMA ICU
                   </text>
 
@@ -891,7 +891,7 @@ export function AdvancedTransfusionLab({
                 {testResult === "agglutinated" && (
                   <div className="verdict-box is-danger">
                     <div className="verdict-title">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff2e56" strokeWidth="2.5">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <circle cx="12" cy="12" r="10" />
                         <line x1="12" y1="8" x2="12" y2="12" />
                         <line x1="12" y1="16" x2="12.01" y2="16" />
