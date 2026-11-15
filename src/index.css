@@ -545,8 +545,8 @@ h2 em {
 
 .input:focus {
   outline: none;
-  border-color: var(--positive);
-  box-shadow: 0 0 0 4px var(--positive-soft);
+  border-color: #00f0ff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.5);
 }
 
 .input::placeholder {
@@ -1062,11 +1062,12 @@ select option {
 .hero-smart-hub-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 3px solid #facc15;
   border-radius: var(--radius-xl);
-  background: linear-gradient(155deg, rgba(0, 240, 255, 0.08) 0%, rgba(10, 18, 34, 0.85) 100%);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 240, 255, 0.12);
-  padding: 22px;
+  background: linear-gradient(155deg, rgba(0, 240, 255, 0.1) 0%, rgba(8, 16, 32, 0.9) 100%);
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 0 45px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.75);
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1214,10 +1215,10 @@ select option {
 }
 
 .group-chip.is-selected {
-  background: #0284c7;
-  border-color: #0284c7;
-  color: #fff;
-  box-shadow: 0 4px 14px -2px rgba(2, 132, 199, 0.35);
+  background: rgba(250, 204, 21, 0.22);
+  border-color: #facc15;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.6);
   transform: translateY(-1px);
 }
 
@@ -1245,8 +1246,9 @@ select option {
 }
 
 .chip-stock.is-low {
-  color: #f43f5e;
-  font-weight: 700;
+  color: #facc15;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.65);
 }
 
 .hub-row {
@@ -1303,13 +1305,14 @@ select option {
 }
 
 .match-result-card {
-  padding: 14px;
+  padding: 16px;
   border-radius: 16px;
-  background: rgba(10, 20, 36, 0.85);
+  background: rgba(8, 16, 32, 0.9);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 2px solid #facc15;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1814,14 +1817,15 @@ select option {
 }
 
 .stat-pill.is-highlight {
-  border-color: #fecdd3;
-  background: #fff1f2;
-  color: #be123c;
-  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.1);
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.18);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.55);
 }
 
 .stat-pill.is-highlight b {
-  color: #e11d48;
+  color: #facc15;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
 }
 
 /* Command Console */
@@ -1887,9 +1891,10 @@ select option {
 }
 
 .console-group-pill:hover {
-  border-color: #fda4af;
-  background: #fff1f2;
-  color: #be123c;
+  border-color: #ff007f;
+  background: rgba(255, 0, 127, 0.22);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(255, 0, 127, 0.45);
   transform: translateY(-1px);
 }
 
@@ -2022,16 +2027,18 @@ select option {
 }
 
 .city-chip:hover {
-  border-color: #fda4af;
-  background: #fff1f2;
-  color: #be123c;
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.18);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.45);
 }
 
 .city-chip.is-active {
-  border-color: #e11d48;
-  background: #e11d48;
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.22);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.25);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.6);
+  font-weight: 700;
 }
 
 /* Sub-Bar (Toggles, Sorting & Layout Mode) */
@@ -2345,9 +2352,10 @@ select option {
   margin-top: 24px;
   overflow-x: auto;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(244, 63, 94, 0.35);
-  background: rgba(14, 10, 18, 0.85);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 0, 127, 0.45);
+  border-top: 3px solid #facc15;
+  background: #090e1b;
+  box-shadow: 0 0 25px rgba(255, 0, 127, 0.25), 0 0 35px rgba(250, 204, 21, 0.15), 0 16px 40px rgba(0, 0, 0, 0.75);
 }
 
 .donor-table {
@@ -2376,7 +2384,7 @@ select option {
 }
 
 .donor-table-row:hover {
-  background: rgba(244, 63, 94, 0.12);
+  background: rgba(255, 0, 127, 0.16);
 }
 
 .td-donor-identity {
@@ -2402,7 +2410,9 @@ select option {
   display: block;
   font-family: var(--mono);
   font-size: 11.5px;
-  color: #00f0ff;
+  font-weight: 700;
+  color: #facc15;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.65);
 }
 
 .td-readiness {
@@ -2411,8 +2421,9 @@ select option {
   gap: 6px;
   font-family: var(--mono);
   font-size: 12px;
-  font-weight: 600;
-  color: #10b981;
+  font-weight: 700;
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
 }
 
 .td-center {
@@ -3058,9 +3069,11 @@ select option {
 }
 
 .segmented button[aria-pressed="true"] {
-  background: #0284c7;
+  background: rgba(250, 204, 21, 0.22);
+  border: 1px solid #facc15;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.6);
+  font-weight: 700;
 }
 
 .toggle-chip {
@@ -3824,14 +3837,16 @@ select option {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: min(520px, calc(100% - 32px));
-  padding: 14px 22px;
-  border: 1px solid var(--line-2);
+  max-width: min(540px, calc(100% - 32px));
+  padding: 14px 24px;
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  border-top: 2px solid #facc15;
   border-radius: 99px;
-  background: rgba(23, 18, 19, 0.96);
-  font-size: 15px;
-  color: var(--text);
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.6);
+  background: rgba(6, 12, 24, 0.95);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.35), 0 0 35px rgba(250, 204, 21, 0.25), 0 24px 50px rgba(0, 0, 0, 0.85);
   transform: translateX(-50%);
   animation: toast-in 0.4s var(--ease);
 }
@@ -3857,9 +3872,10 @@ select option {
   width: min(100%, 540px);
   padding: 36px;
   border-radius: var(--radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: #0d1527;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 32px rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 3px solid #facc15;
+  background: #08101e;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 0 50px rgba(250, 204, 21, 0.2), 0 30px 80px rgba(0, 0, 0, 0.85);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   animation: pop-up 0.4s var(--ease);
@@ -3908,7 +3924,8 @@ select option {
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--blood);
+  color: #ff007f;
+  text-shadow: 0 0 20px rgba(255, 0, 127, 0.7);
 }
 
 .detail-list {
@@ -4511,9 +4528,10 @@ select option {
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  background: #0d1527;
-  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 3px solid #facc15;
+  background: #08101e;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.3), 0 0 45px rgba(250, 204, 21, 0.2), 0 25px 65px rgba(0, 0, 0, 0.85);
   overflow: hidden;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -4581,12 +4599,13 @@ select option {
 
 .cmd-item:hover,
 .cmd-item.is-selected {
-  background: rgba(0, 240, 255, 0.09);
-  border-color: rgba(0, 240, 255, 0.28);
+  background: rgba(0, 240, 255, 0.14);
+  border-left: 3px solid #facc15;
 }
 
 .cmd-item.is-selected .cmd-item-title {
-  color: #00f0ff;
+  color: #facc15;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.65);
 }
 
 .cmd-item-main {
@@ -4708,9 +4727,10 @@ select option {
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   border-radius: 20px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  background: #0d1527;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 3px solid #facc15;
+  background: #08101e;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.3), 0 0 50px rgba(250, 204, 21, 0.2), 0 30px 80px rgba(0, 0, 0, 0.85);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -4792,10 +4812,10 @@ select option {
 }
 
 .matrix-tab.is-active {
-  border-color: #00f0ff;
-  background: rgba(0, 240, 255, 0.12);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.22);
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.6);
 }
 
 .matrix-grid-wrap {
@@ -4853,8 +4873,9 @@ select option {
 }
 
 .matrix-cell.is-compat {
-  background: rgba(16, 185, 129, 0.08);
-  color: #10b981;
+  background: rgba(0, 255, 136, 0.14);
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.65);
 }
 
 .matrix-cell.is-compat:hover {
@@ -6015,24 +6036,24 @@ select option {
 }
 
 .prbc-tag {
-  background: rgba(14, 165, 233, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #e0f2fe;
-  box-shadow: 0 0 12px rgba(14, 165, 233, 0.25);
+  background: rgba(255, 0, 127, 0.22);
+  border: 1px solid #ff007f;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(255, 0, 127, 0.55);
 }
 
 .platelets-tag {
-  background: rgba(245, 158, 11, 0.18);
-  border: 1px solid rgba(245, 158, 11, 0.45);
+  background: rgba(250, 204, 21, 0.22);
+  border: 1px solid #facc15;
   color: #fef08a;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.6);
 }
 
 .ffp-tag {
-  background: rgba(56, 189, 248, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.45);
-  color: #e0f2fe;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  background: rgba(0, 240, 255, 0.22);
+  border: 1px solid #00f0ff;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.55);
 }
 
 .fraction-info {
@@ -6234,18 +6255,18 @@ select option {
 }
 
 .bar-demand {
-  background: linear-gradient(180deg, #fb7185, rgba(251, 113, 133, 0.35));
-  box-shadow: 0 0 10px rgba(251, 113, 133, 0.3);
+  background: linear-gradient(180deg, #ff007f, rgba(255, 0, 127, 0.45));
+  box-shadow: 0 0 16px rgba(255, 0, 127, 0.6);
 }
 
 .bar-supply {
-  background: linear-gradient(180deg, #38bdf8, rgba(56, 189, 248, 0.35));
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+  background: linear-gradient(180deg, #00f0ff, rgba(0, 240, 255, 0.45));
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.6);
 }
 
 .bar-supply.is-deficit {
-  background: linear-gradient(180deg, #facc15, rgba(250, 204, 21, 0.35));
-  box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+  background: linear-gradient(180deg, #facc15, rgba(250, 204, 21, 0.45));
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.75);
 }
 
 .bar-val-pop {
@@ -6277,7 +6298,8 @@ select option {
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 800;
-  color: #fb7185;
+  color: #facc15;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
   letter-spacing: 0.05em;
   margin-top: 2px;
 }
@@ -6541,9 +6563,10 @@ select option {
 .rapidpass-card {
   padding: 24px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(12, 20, 36, 0.88);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  border-top: 3px solid #facc15;
+  background: #08101e;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 0 45px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   display: flex;
@@ -6572,12 +6595,13 @@ select option {
 .pass-token-badge {
   font-family: var(--mono);
   font-size: 12px;
-  font-weight: 700;
-  color: var(--text);
-  background: rgba(15, 23, 42, 0.85);
+  font-weight: 800;
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
   padding: 4px 10px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
 }
 
 .pass-body-layout {
@@ -6639,8 +6663,9 @@ select option {
   font-family: var(--mono);
   font-size: 1.4rem;
   font-weight: 800;
-  color: #38bdf8;
+  color: #facc15;
   line-height: 1;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.75);
 }
 
 .pass-qr-col {
@@ -7470,4 +7495,31 @@ select option {
   color: #e2e8f0 !important;
   font-size: 15px !important;
   line-height: 1.6 !important;
+}
+
+/* Universal Futuristic Checkbox Styling */
+label.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #cbd5e1;
+  transition: color 0.2s ease;
+}
+
+label.check input[type="checkbox"] {
+  accent-color: #facc15;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+label.check:hover {
+  color: #ffffff;
+}
+
+label.check.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
