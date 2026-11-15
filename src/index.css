@@ -11,7 +11,7 @@
   --night-2: #0a0416;
   --paper: #0a0416;
   --paper-2: #0f0620;
-  --paper-card: rgba(10, 4, 22, 0.85);
+  --paper-card: rgba(7, 12, 24, 0.95);
 
   /* Vivid Futuristic Neon & Electric Yellow Palette */
   --neon-yellow: #facc15;
@@ -54,18 +54,18 @@
   --radius: 14px;
   --radius-sm: 8px;
 
-  /* Rich Translucent Theme Color System — 3D Background Vividly Visible */
+  /* High Opacity Solid Dark Theme — Deep Contrast & Sharp Text Readability */
   --text: #f8fafc;
   --text-2: #cbd5e1;
   --text-3: #94a3b8;
   --line: rgba(255, 255, 255, 0.12);
   --line-2: rgba(255, 255, 255, 0.18);
-  --surface: rgba(12, 20, 36, 0.82);
-  --surface-solid: #0d1728;
-  --surface-sunken: rgba(6, 12, 22, 0.75);
+  --surface: rgba(7, 12, 24, 0.95);
+  --surface-solid: #070c18;
+  --surface-sunken: rgba(5, 8, 18, 0.96);
   --surface-hover: rgba(255, 255, 255, 0.08);
   --chip: rgba(255, 255, 255, 0.08);
-  --input-bg: rgba(8, 16, 30, 0.85);
+  --input-bg: rgba(5, 8, 18, 0.95);
   --accent: #f43f5e;
   --accent-soft: rgba(244, 63, 94, 0.18);
   --accent-line: rgba(244, 63, 94, 0.4);
@@ -294,16 +294,16 @@ h2 em {
 .glass {
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 14, 28, 0.78);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+  background: rgba(7, 12, 24, 0.95);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
   border-radius: var(--radius-lg);
   transition: all 0.25s var(--ease);
 }
 
 .glass:hover {
   border-color: rgba(255, 43, 78, 0.4);
-  background: rgba(10, 18, 36, 0.85);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 43, 78, 0.2);
+  background: rgba(9, 15, 30, 0.97);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 43, 78, 0.2);
 }
 
 .glass-lift {
@@ -317,8 +317,8 @@ h2 em {
 .glass-lift:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 43, 78, 0.5);
-  background: rgba(10, 18, 36, 0.85);
-  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 43, 78, 0.25);
+  background: rgba(9, 15, 30, 0.97);
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 43, 78, 0.25);
 }
 
 /* Numbered chapter label: [01] THE PROBLEM —— */
@@ -661,7 +661,7 @@ select option {
 
 .btn-glass {
   border: 1px solid rgba(176, 38, 255, 0.45);
-  background: rgba(18, 8, 32, 0.7);
+  background: rgba(18, 8, 32, 0.92);
   color: #f8fafc;
   font-weight: 600;
   box-shadow: 0 0 16px rgba(176, 38, 255, 0.25);
@@ -849,7 +849,7 @@ select option {
   padding: 4px 8px;
   border: 1px solid rgba(0, 240, 255, 0.3);
   border-radius: 99px;
-  background: rgba(10, 18, 36, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   box-shadow: 0 0 16px rgba(0, 240, 255, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
@@ -922,7 +922,7 @@ select option {
   padding: 0 12px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(7, 12, 24, 0.95);
 }
 
 .menu-toggle span {
@@ -1420,7 +1420,7 @@ select option {
 .donor-gauge-card {
   padding: 14px;
   border-radius: 16px;
-  background: rgba(10, 20, 36, 0.85);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1519,7 +1519,7 @@ select option {
 .eligibility-box {
   padding: 12px 14px;
   border-radius: 14px;
-  background: rgba(10, 20, 36, 0.85);
+  background: rgba(7, 12, 24, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   display: flex;
@@ -1556,9 +1556,9 @@ select option {
 }
 
 .elig-result.is-eligible {
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1566,13 +1566,13 @@ select option {
 
 .slot-confirmed-note {
   font-size: 11.5px;
-  color: #047857;
+  color: #a7f3d0;
 }
 
 .elig-result.is-ineligible {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
 }
 
 /* Tab 3: City Inventory Matrix */
@@ -1943,7 +1943,7 @@ select option {
   width: 100%;
   border-radius: 16px;
   border: 1px solid rgba(244, 63, 94, 0.35);
-  background: rgba(18, 8, 16, 0.8);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   padding: 0 16px;
@@ -1989,14 +1989,14 @@ select option {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: #f1f5f9;
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-2);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .console-clear-btn:hover {
-  background: #e2e8f0;
+  background: rgba(255, 255, 255, 0.18);
   color: var(--text);
 }
 
@@ -2086,7 +2086,7 @@ select option {
   padding: 0 32px 0 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  background-color: rgba(15, 23, 42, 0.85);
+  background-color: rgba(7, 12, 24, 0.95);
   font-size: 12.5px;
   color: var(--text);
   cursor: pointer;
@@ -2236,23 +2236,23 @@ select option {
 .honor-badge {
   padding: 3px 8px;
   border-radius: 6px;
-  background: #fef3c7;
-  border: 1px solid #fde68a;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
-  color: #b45309;
+  color: #fde047;
 }
 
 .eta-badge {
   padding: 3px 8px;
   border-radius: 6px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
-  color: #047857;
+  color: #34d399;
 }
 
 /* Dossier Metrics Grid */
@@ -2987,7 +2987,7 @@ select option {
   padding: 16px;
   border: 1px solid rgba(0, 240, 255, 0.25);
   border-radius: 18px;
-  background: rgba(10, 20, 38, 0.8);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -3055,7 +3055,7 @@ select option {
   padding: 4px;
   border: 1px solid rgba(0, 240, 255, 0.25);
   border-radius: 99px;
-  background: rgba(6, 14, 28, 0.7);
+  background: rgba(5, 8, 18, 0.96);
 }
 
 .segmented button {
@@ -3172,7 +3172,7 @@ select option {
   padding: 18px 20px;
   border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 20px;
-  background: rgba(10, 20, 38, 0.8);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -3195,9 +3195,9 @@ select option {
 }
 
 .kind-tag.is-donor {
-  background: #ffe4e6;
-  border: 1px solid #fecdd3;
-  color: #be123c;
+  background: rgba(255, 43, 78, 0.15);
+  border: 1px solid rgba(255, 43, 78, 0.4);
+  color: #ff2b4e;
 }
 
 .kind-tag.is-bank {
@@ -3343,7 +3343,7 @@ select option {
 
 .contact-row:hover {
   border-color: rgba(0, 240, 255, 0.3);
-  background: rgba(18, 32, 60, 0.65);
+  background: rgba(7, 12, 24, 0.95);
 }
 
 .contact-row.is-locked {
@@ -3739,12 +3739,12 @@ select option {
   overflow: hidden;
   margin-top: 32px;
   padding: 44px 48px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 43, 78, 0.4);
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #fff1f2 0%, #f5f3ff 50%, #eff6ff 100%);
+  background: linear-gradient(135deg, rgba(255, 43, 78, 0.2) 0%, rgba(7, 12, 24, 0.96) 60%, rgba(0, 240, 255, 0.15) 100%);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 43, 78, 0.2);
 }
 
 .cta-band::after {
@@ -3754,11 +3754,11 @@ select option {
   bottom: -120px;
   width: 320px;
   height: 320px;
-  border: 1px solid rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(255, 43, 78, 0.1);
   border-radius: 50%;
   box-shadow:
-    0 0 0 40px rgba(15, 23, 42, 0.02),
-    0 0 0 80px rgba(15, 23, 42, 0.01);
+    0 0 0 40px rgba(255, 43, 78, 0.05),
+    0 0 0 80px rgba(255, 43, 78, 0.02);
   pointer-events: none;
 }
 
@@ -3869,7 +3869,7 @@ select option {
   place-items: center;
   padding: 20px;
   overflow-y: auto;
-  background: rgba(4, 8, 16, 0.75);
+  background: rgba(5, 8, 18, 0.96);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   animation: fade-in 0.2s ease;
@@ -4524,7 +4524,7 @@ select option {
   align-items: flex-start;
   justify-content: center;
   padding: 70px 20px 20px;
-  background: rgba(4, 8, 16, 0.75);
+  background: rgba(5, 8, 18, 0.96);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   animation: fade-in 0.15s ease-out;
@@ -4724,7 +4724,7 @@ select option {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(4, 8, 16, 0.75);
+  background: rgba(5, 8, 18, 0.96);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   animation: fade-in 0.2s ease-out;
@@ -4914,7 +4914,7 @@ select option {
 .matrix-group-dossier {
   border-radius: 12px;
   border: 1px solid rgba(0, 240, 255, 0.2);
-  background: rgba(10, 18, 34, 0.6);
+  background: rgba(5, 8, 18, 0.96);
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -5098,7 +5098,7 @@ select option {
   padding: 4px 12px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   font-family: var(--mono);
@@ -5152,7 +5152,7 @@ select option {
   padding: 16px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   cursor: pointer;
@@ -5293,7 +5293,7 @@ select option {
   padding: 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(168, 85, 247, 0.3);
-  background: rgba(16, 8, 28, 0.8);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -5371,7 +5371,7 @@ select option {
   padding: 16px;
   border-radius: 14px;
   border: 1px solid rgba(192, 132, 252, 0.3);
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -5407,7 +5407,7 @@ select option {
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   color: var(--text);
@@ -5463,7 +5463,7 @@ select option {
   padding: 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(168, 85, 247, 0.3);
-  background: rgba(16, 8, 28, 0.8);
+  background: rgba(7, 12, 24, 0.95);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -5634,7 +5634,7 @@ select option {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(8, 22, 24, 0.85);
+  background: rgba(7, 12, 24, 0.95);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(16, 185, 129, 0.35);
@@ -5695,6 +5695,10 @@ select option {
   padding: 24px 20px;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  background: rgba(7, 12, 24, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid #ff2b4e;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 43, 78, 0.15);
 }
 
 .stepper-progress-line {
@@ -5881,8 +5885,8 @@ select option {
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
-  background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
   padding: 8px 14px;
   border-radius: var(--radius-sm);
   backdrop-filter: none;
@@ -6020,7 +6024,7 @@ select option {
   align-items: flex-start;
   padding: 16px;
   border-radius: var(--radius-sm);
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(7, 12, 24, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -6111,7 +6115,7 @@ select option {
 .scenario-toggles-bar {
   display: flex;
   gap: 8px;
-  background: rgba(20, 16, 6, 0.85);
+  background: rgba(7, 12, 24, 0.95);
   padding: 6px;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(250, 204, 21, 0.35);
@@ -6350,8 +6354,8 @@ select option {
 .depletion-clock-block {
   padding: 20px;
   border-radius: var(--radius-sm);
-  background: #fefce8;
-  border: 1px solid #fef08a;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.3);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   text-align: center;
@@ -6902,8 +6906,8 @@ select option {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 20px !important;
-  background: rgba(8, 14, 28, 0.78) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 43, 78, 0.18) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 43, 78, 0.18) !important;
   padding: 24px !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -6970,12 +6974,12 @@ select option {
    ------------------------------------------------------------- */
 .problem-section .problem-card {
   position: relative !important;
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 18px !important;
   padding: 26px 22px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 0, 0, 0.5) !important;
   display: flex !important;
   flex-direction: column !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -6984,7 +6988,7 @@ select option {
 .problem-section .problem-card:hover {
   transform: translateY(-4px) !important;
   border-color: rgba(255, 43, 78, 0.5) !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 43, 78, 0.25) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 43, 78, 0.25) !important;
 }
 
 .problem-section .problem-index {
@@ -7062,11 +7066,11 @@ select option {
    4. DONOR JOURNEY TRACKER (#how-it-works)
    ------------------------------------------------------------- */
 .journey-section .journey-specimen-select {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 16px !important;
   padding: 16px 20px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
 }
 
 .journey-section .journey-stepper-track {
@@ -7075,10 +7079,10 @@ select option {
   padding: 28px 24px !important;
   border-radius: 20px !important;
   overflow: hidden !important;
-  background: rgba(8, 14, 28, 0.85) !important;
+  background: rgba(7, 12, 24, 0.96) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 43, 78, 0.15) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 43, 78, 0.15) !important;
 }
 
 .journey-section .stepper-progress-line {
@@ -7155,15 +7159,15 @@ select option {
 
 .journey-section .bento-card,
 .journey-section .stage-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
 .journey-section .fraction-item {
-  background: rgba(6, 10, 22, 0.85) !important;
+  background: rgba(5, 8, 18, 0.96) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 12px !important;
 }
@@ -7172,11 +7176,11 @@ select option {
    5. DONOR DIRECTORY & SEARCH CONSOLE (#find-blood)
    ------------------------------------------------------------- */
 .finder-section .donor-console {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 20px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85) !important;
   padding: 24px !important;
 }
 
@@ -7200,11 +7204,11 @@ select option {
 }
 
 .finder-section .donor-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 16px !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75) !important;
   padding: 20px !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -7212,7 +7216,7 @@ select option {
 .finder-section .donor-card:hover {
   transform: translateY(-3px) !important;
   border-color: rgba(255, 43, 78, 0.5) !important;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 43, 78, 0.25) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 43, 78, 0.25) !important;
 }
 
 .finder-section .donor-name-row h3 {
@@ -7233,8 +7237,8 @@ select option {
   border-radius: 16px !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
-  background: rgba(8, 14, 28, 0.78) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
 .donor-table th {
@@ -7282,11 +7286,11 @@ select option {
 }
 
 .requests-section .request-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
   padding: 24px !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -7294,7 +7298,7 @@ select option {
 .requests-section .request-card:hover {
   transform: translateY(-4px) !important;
   border-color: rgba(255, 43, 78, 0.5) !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 43, 78, 0.25) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 43, 78, 0.25) !important;
 }
 
 .requests-section .request-card h3 {
@@ -7323,11 +7327,11 @@ select option {
    7. GEOSPATIAL RADAR TERMINAL (#radar)
    ------------------------------------------------------------- */
 .radar-section .radar-shell {
-  background: rgba(6, 10, 22, 0.85) !important;
+  background: rgba(5, 8, 18, 0.96) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 22px !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9) !important;
 }
 
 .radar-section .radar-scope {
@@ -7337,11 +7341,11 @@ select option {
 }
 
 .radar-section .lock-card {
-  background: rgba(8, 14, 28, 0.82) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #00f0ff !important;
   border-radius: 16px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8) !important;
 }
 
 .radar-section .lock-card h3 {
@@ -7357,7 +7361,7 @@ select option {
    8. CRISIS SURGE FORECASTER (#forecaster)
    ------------------------------------------------------------- */
 .surge-section .scenario-toggles-bar {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 16px !important;
 }
@@ -7371,15 +7375,15 @@ select option {
 
 .surge-section .surge-chart-card,
 .surge-section .surge-telemetry-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
 .surge-section .depletion-clock-block {
-  background: rgba(6, 10, 22, 0.85) !important;
+  background: rgba(5, 8, 18, 0.96) !important;
   border: 1px solid rgba(250, 204, 21, 0.35) !important;
   border-radius: 12px !important;
   box-shadow: 0 0 20px rgba(250, 204, 21, 0.15) !important;
@@ -7396,11 +7400,11 @@ select option {
    9. CLINICAL INNOVATIONS LAB (#advanced-lab)
    ------------------------------------------------------------- */
 .lab-section .adv-lab-shell {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #a855f7 !important;
   border-radius: 20px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.18) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(168, 85, 247, 0.18) !important;
 }
 
 .lab-section .adv-lab-tab.is-active {
@@ -7412,7 +7416,7 @@ select option {
 
 .lab-section .flight-hud-frame,
 .lab-section .microscope-frame {
-  background: rgba(6, 10, 22, 0.85) !important;
+  background: rgba(5, 8, 18, 0.96) !important;
   border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
   border-radius: 16px !important;
   box-shadow: 0 0 24px rgba(168, 85, 247, 0.2) !important;
@@ -7422,11 +7426,11 @@ select option {
    10. REGIONAL BLOOD BANKS (#banks)
    ------------------------------------------------------------- */
 .banks-section .bank-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #00ff88 !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
   padding: 24px !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -7434,7 +7438,7 @@ select option {
 .banks-section .bank-card:hover {
   transform: translateY(-4px) !important;
   border-color: rgba(0, 255, 136, 0.5) !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 255, 136, 0.25) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 255, 136, 0.25) !important;
 }
 
 .banks-section .bank-card h3 {
@@ -7461,17 +7465,17 @@ select option {
    ------------------------------------------------------------- */
 .donate-section .guide-item,
 .donate-section .info-card {
-  background: rgba(8, 14, 28, 0.78) !important;
+  background: rgba(7, 12, 24, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-top: 2px solid #00f0ff !important;
   border-radius: 18px !important;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.8) !important;
   transition: all 0.25s ease !important;
 }
 
 .donate-section .guide-item:hover {
   border-color: rgba(0, 240, 255, 0.5) !important;
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.2) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.9), 0 0 25px rgba(0, 240, 255, 0.2) !important;
 }
 
 .donate-section .guide-trigger strong {
@@ -7492,11 +7496,11 @@ select option {
    12. FINAL CALL TO ACTION BANNER
    ------------------------------------------------------------- */
 .cta-band {
-  background: linear-gradient(135deg, rgba(255, 43, 78, 0.2) 0%, rgba(8, 14, 28, 0.9) 60%, rgba(0, 240, 255, 0.15) 100%) !important;
+  background: linear-gradient(135deg, rgba(255, 43, 78, 0.22) 0%, rgba(7, 12, 24, 0.96) 60%, rgba(0, 240, 255, 0.15) 100%) !important;
   border: 1px solid rgba(255, 43, 78, 0.4) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 22px !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(255, 43, 78, 0.2) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 43, 78, 0.2) !important;
   padding: 44px 36px !important;
 }
 
@@ -7515,11 +7519,11 @@ select option {
 .matrix-modal-panel,
 .cmd-palette-panel,
 .rapidpass-card {
-  background: rgba(8, 14, 28, 0.92) !important;
+  background: rgba(6, 10, 22, 0.98) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-top: 2px solid #ff2b4e !important;
   border-radius: 18px !important;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 43, 78, 0.2) !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 43, 78, 0.2) !important;
 }
 
 /* -------------------------------------------------------------

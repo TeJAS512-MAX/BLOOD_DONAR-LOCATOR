@@ -139,7 +139,7 @@ export function BloodJourneyTracker() {
   };
 
   return (
-    <section className="section theme-light journey-section" id="journey">
+    <section className="section journey-section" id="journey">
       <div className="container reveal">
         {/* Section Head */}
         <div className="section-head">

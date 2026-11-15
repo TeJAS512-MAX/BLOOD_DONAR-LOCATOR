@@ -95,7 +95,7 @@ export function RapidPassModal({ isOpen, onClose, onPassCreated }: RapidPassModa
   return (
     <div className="modal-backdrop" onClick={onClose} role="presentation">
       <div
-        className="modal theme-light rapidpass-modal"
+        className="modal rapidpass-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="rapidpass-title"

@@ -110,7 +110,7 @@ export function CrisisSurgeForecaster({ onMobilizeDonors }: CrisisSurgeForecaste
   };
 
   return (
-    <section className="section theme-light surge-section" id="crisis-forecast">
+    <section className="section surge-section" id="crisis-forecast">
       <div className="container reveal">
         <div className="section-head">
           <div className="section-head-copy">
