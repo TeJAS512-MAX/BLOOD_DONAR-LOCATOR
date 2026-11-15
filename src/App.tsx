@@ -31,8 +31,8 @@ const NAV_LINKS = [
   { href: "#requests", label: "Requisitions" },
   { href: "#radar", label: "Radar" },
   { href: "#crisis-forecast", label: "Forecaster" },
-  { href: "#advanced-lab", label: "Lab" },
-  { href: "#banks", label: "Banks" },
+  { href: "#advanced-lab", label: "Transfusion Lab" },
+  { href: "#banks", label: "Blood Banks" },
   { href: "#donate", label: "Guidelines" },
 ];
 
@@ -613,12 +613,11 @@ function App() {
                 }}
                 onNotify={notify}
               />
-              <p className="hero-hint">Instant life-saving coordination: Match emergency blood, gauge donor impact, or verify bank reserves</p>
             </div>
           </div>
         </section>
 
-        <section className="section theme-light problem-section" id="problem">
+        <section className="section problem-section" id="problem">
           <div className="container reveal">
             <div className="section-head is-center">
               <div className="section-head-copy">
@@ -656,7 +655,7 @@ function App() {
 
         <BloodJourneyTracker />
 
-        <section className="section theme-light finder-section" id="find-blood">
+        <section className="section finder-section" id="find-blood">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -1301,7 +1300,7 @@ function App() {
           }}
         />
 
-        <section className="section theme-light lab-section" id="advanced-lab">
+        <section className="section lab-section" id="advanced-lab">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -1319,7 +1318,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section theme-light banks-section" id="banks">
+        <section className="section banks-section" id="banks">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -1406,7 +1405,7 @@ function App() {
           </div>
         </section>
 
-        <section className="section theme-light donate-section" id="donate">
+        <section className="section donate-section" id="donate">
           <div className="container reveal">
             <div className="section-head">
               <div className="section-head-copy">
@@ -1589,7 +1588,7 @@ function App() {
             if (event.target === event.currentTarget) closeModals();
           }}
         >
-          <section className="modal theme-light" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <button ref={modalCloseRef} type="button" className="modal-close" aria-label="Close" onClick={closeModals}>
               <CloseIcon />
             </button>

@@ -25,10 +25,10 @@
   --amber-deep: #ca8a04;
   --slate: #94a3b8;
 
-  --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
-  --serif: "Instrument Serif", Georgia, serif;
-  --sans: "Geist", system-ui, sans-serif;
-  --mono: "Geist Mono", ui-monospace, monospace;
+  --display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --serif: "Plus Jakarta Sans", -apple-system, sans-serif;
+  --sans: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --radius-xl: 24px;
@@ -186,16 +186,16 @@ h3 {
 
 h1 em,
 h2 em {
-  font-family: var(--serif);
-  font-size: 1.08em;
-  font-style: italic;
-  font-weight: 500;
+  font-family: inherit;
+  font-size: 1.05em;
+  font-style: normal;
+  font-weight: 800;
   letter-spacing: -0.01em;
-  background: var(--section-heading-grad, linear-gradient(135deg, #e11d48 0%, #be123c 100%));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  text-shadow: none;
+  color: var(--section-accent, #f43f5e);
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: initial;
+  display: inline;
 }
 
 .container {
@@ -1029,7 +1029,7 @@ select option {
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: #94a3b8;
 }
 
 /* Hero Smart Life-Coordination Hub */
@@ -1679,9 +1679,10 @@ select option {
 }
 
 .problem-card h3 {
-  font-size: 1.5rem;
-  letter-spacing: -0.025em;
-  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: #ffffff;
 }
 
 .problem-row {
@@ -1729,8 +1730,8 @@ select option {
 }
 
 .problem-row.is-solution p {
-  font-weight: 500;
-  color: #0f172a;
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .problem-link {
@@ -2721,8 +2722,9 @@ select option {
 
 .request-card h3 {
   margin-top: 4px;
-  font-size: 1.3rem;
-  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .request-meta {
@@ -2953,7 +2955,8 @@ select option {
 .request-summary-meta strong {
   display: block;
   font-size: 15.5px;
-  color: #0f172a;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .request-summary-meta span {
@@ -3151,15 +3154,16 @@ select option {
 }
 
 .kind-tag.is-bank {
-  background: #e0f2fe;
-  border: 1px solid #bae6fd;
-  color: #0369a1;
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
 }
 
 .lock-card h3 {
   margin-top: 10px;
   font-size: 1.25rem;
-  color: #0f172a;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .lock-detail {
@@ -3187,11 +3191,11 @@ select option {
 
 .lock-stats dd {
   margin: 3px 0 0;
-  font-family: var(--display);
+  font-family: var(--mono);
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: #00f0ff;
 }
 
 /* Transit Live Progress Box */
@@ -3370,27 +3374,28 @@ select option {
 }
 
 .type-tag.is-bank {
-  border: 1px solid #99f6e4;
-  background: #ccfbf1;
-  color: #0f766e;
+  border: 1px solid rgba(45, 212, 191, 0.45);
+  background: rgba(45, 212, 191, 0.2);
+  color: #5eead4;
 }
 
 .type-tag.is-hosp {
-  border: 1px solid #bae6fd;
-  background: #e0f2fe;
-  color: #0369a1;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
 }
 
 .bank-dist {
   font-family: var(--mono);
   font-size: 12.5px;
-  color: var(--text-3);
+  color: #94a3b8;
 }
 
 .bank-card h3 {
   margin-top: 6px;
   font-size: 1.25rem;
-  color: #0f172a;
+  font-weight: 700;
+  color: #ffffff;
 }
 
 .bank-meta {
@@ -3406,7 +3411,7 @@ select option {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #0d9488;
+  color: #2dd4bf;
 }
 
 /* Stock cells with a level bar showing units on hand */
@@ -3717,14 +3722,15 @@ select option {
 
 .cta-band h3 {
   font-size: clamp(1.4rem, 2.4vw, 1.95rem);
-  letter-spacing: -0.03em;
-  color: #0f172a;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
 .cta-band p {
   max-width: 540px;
   margin: 10px 0 0;
-  color: #334155;
+  color: #e2e8f0;
 }
 
 /* ---------- Footer (light clean clinical) ---------- */
@@ -6731,64 +6737,182 @@ select option {
   color: #cbd5e1 !important;
 }
 
-/* 1. Problem / Clinical Challenges — Warm Amber & Golden Topaz */
+/* =========================================================
+   Judge-Impressive Multi-Section Bespoke UI Architecture
+   Each section features its own distinctive material feel,
+   structural elevation, glowing contrast trims, and zero opacity clashes.
+   ========================================================= */
+
+/* Common Section Typography & Eyebrow Styling */
+.section .eyebrow {
+  color: var(--section-accent, #00f0ff) !important;
+  background: var(--section-accent-bg, rgba(0, 240, 255, 0.12)) !important;
+  border: 1px solid var(--section-accent-border, rgba(0, 240, 255, 0.4)) !important;
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 16px var(--section-glow, rgba(0, 240, 255, 0.2));
+}
+
+.section .eyebrow .pulse-dot {
+  background: var(--section-accent, #00f0ff) !important;
+  box-shadow: 0 0 8px var(--section-accent, #00f0ff) !important;
+}
+
+.section-head h2 {
+  color: #ffffff !important;
+  font-family: var(--display) !important;
+  font-size: clamp(1.85rem, 3.4vw, 2.6rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.15 !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+}
+
+.section-head h2 em {
+  color: var(--section-accent, #00f0ff) !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+.section-head p {
+  color: #cbd5e1 !important;
+  font-size: 15.5px !important;
+  line-height: 1.6 !important;
+  max-width: 620px;
+}
+
+/* -------------------------------------------------------------
+   1. PROBLEM & CLINICAL CHALLENGES: Clinical Investigation Dossier
+   Solid dark obsidian slate, top amber trim, two-tone problem/solution callouts
+   ------------------------------------------------------------- */
 .problem-section {
   --section-accent: #fbbf24;
-  --section-accent-bg: rgba(245, 158, 11, 0.14);
-  --section-accent-border: rgba(251, 191, 36, 0.45);
-  --section-glow: rgba(245, 158, 11, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(245, 158, 11, 0.12) 0%, rgba(18, 18, 30, 0.85) 100%);
-  --section-card-border: rgba(245, 158, 11, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(245, 158, 11, 0.12);
+  --section-accent-bg: rgba(245, 158, 11, 0.15);
+  --section-accent-border: rgba(251, 191, 36, 0.5);
+  --section-glow: rgba(245, 158, 11, 0.3);
 }
 
 .problem-section .problem-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  position: relative;
+  background: #0b1322 !important;
+  border: 1px solid rgba(251, 191, 36, 0.25) !important;
+  border-top: 3px solid #fbbf24 !important;
+  border-radius: 18px !important;
+  padding: 28px 24px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.1) !important;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .problem-section .problem-card:hover {
+  transform: translateY(-4px);
   border-color: #fbbf24 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.8), 0 0 32px rgba(245, 158, 11, 0.28) !important;
 }
 
 .problem-section .problem-index {
+  display: inline-block;
+  align-self: flex-start;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em;
   color: #fbbf24 !important;
-  text-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;
+  background: rgba(251, 191, 36, 0.14) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 14px;
 }
 
 .problem-section .problem-card h3 {
   color: #ffffff !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  margin: 0 0 16px !important;
 }
 
-.problem-section .problem-row.is-solution p {
-  color: #ffffff !important;
+.problem-section .problem-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+  margin-bottom: 8px !important;
+  background: rgba(239, 68, 68, 0.06) !important;
+  border: 1px solid rgba(239, 68, 68, 0.18) !important;
+}
+
+.problem-section .problem-row span {
+  color: #f87171 !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em;
+}
+
+.problem-section .problem-row p {
+  color: #e2e8f0 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin-top: 4px !important;
+}
+
+.problem-section .problem-row.is-solution {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border-left: 3px solid #10b981 !important;
 }
 
 .problem-section .problem-row.is-solution span {
   color: #34d399 !important;
 }
 
-.problem-section .problem-link {
-  color: #fbbf24 !important;
+.problem-section .problem-row.is-solution p {
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
-/* 2. Donor-to-Vein Journey Tracker — Bio-Emerald & Luminous Mint */
+.problem-section .problem-link {
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  margin-top: auto;
+  padding-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.problem-section .problem-link:hover {
+  text-decoration: underline;
+  color: #fef08a !important;
+}
+
+/* -------------------------------------------------------------
+   2. DONOR JOURNEY TRACKER: Connected Medical Logistics Pipeline
+   ------------------------------------------------------------- */
 .journey-section {
   --section-accent: #34d399;
   --section-accent-bg: rgba(16, 185, 129, 0.14);
   --section-accent-border: rgba(52, 211, 153, 0.45);
   --section-glow: rgba(16, 185, 129, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(16, 185, 129, 0.12) 0%, rgba(8, 24, 26, 0.85) 100%);
-  --section-card-border: rgba(16, 185, 129, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(16, 185, 129, 0.12);
 }
 
 .journey-section .journey-specimen-select {
-  background: rgba(8, 22, 24, 0.85) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: 0 0 18px rgba(16, 185, 129, 0.15) !important;
+  background: #081518 !important;
+  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
 }
 
 .journey-section .specimen-pill {
@@ -6805,88 +6929,64 @@ select option {
 
 .journey-section .specimen-pill.is-active {
   border-color: #34d399 !important;
-  background: rgba(16, 185, 129, 0.3) !important;
+  background: #059669 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4) !important;
-}
-
-.journey-section .specimen-pill .pack-group {
-  color: #34d399 !important;
-}
-
-.journey-section .stepper-node .node-indicator {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 2px solid rgba(255, 255, 255, 0.18) !important;
-  color: #e2e8f0 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
 }
 
 .journey-section .stepper-node.is-passed .node-indicator {
   background: #10b981 !important;
   border-color: #34d399 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45) !important;
 }
 
 .journey-section .stepper-node.is-active .node-indicator {
   background: #059669 !important;
   border-color: #34d399 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 24px rgba(52, 211, 153, 0.6) !important;
-}
-
-.journey-section .stepper-node .node-short {
-  color: #94a3b8 !important;
-}
-
-.journey-section .stepper-node.is-active .node-short {
-  color: #ffffff !important;
+  box-shadow: 0 0 24px rgba(52, 211, 153, 0.7) !important;
 }
 
 .journey-section .bento-card,
 .journey-section .stage-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
-}
-
-.journey-section .bento-card:hover,
-.journey-section .stage-card:hover {
-  border-color: #34d399 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(16, 185, 129, 0.35) !important;
+  background: #071518 !important;
+  border: 1px solid rgba(52, 211, 153, 0.25) !important;
+  border-left: 4px solid #10b981 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
 }
 
 .journey-section .stage-title-wrap h3 {
   color: #ffffff !important;
-}
-
-.journey-section .journey-fraction-card h4 {
-  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .journey-section .fraction-item {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border: 1px solid rgba(52, 211, 153, 0.25) !important;
+  border-radius: 12px !important;
 }
 
 .journey-section .fraction-info strong {
   color: #ffffff !important;
 }
 
-/* 3. Live Donor Finder / Registry — Vivid Crimson & Ruby Rose */
+/* -------------------------------------------------------------
+   3. DONOR DIRECTORY & CONSOLE: Clinical Workstation & Credentials
+   ------------------------------------------------------------- */
 .finder-section {
   --section-accent: #fb7185;
   --section-accent-bg: rgba(244, 63, 94, 0.14);
   --section-accent-border: rgba(251, 113, 133, 0.45);
   --section-glow: rgba(244, 63, 94, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(225, 29, 72, 0.12) 0%, rgba(24, 10, 20, 0.85) 100%);
-  --section-card-border: rgba(244, 63, 94, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(244, 63, 94, 0.12);
 }
 
 .finder-section .donor-console {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #090e1b !important;
+  border: 1px solid rgba(244, 63, 94, 0.3) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7) !important;
+  padding: 24px !important;
 }
 
 .finder-section .console-group-pill {
@@ -6905,106 +7005,123 @@ select option {
   border-color: #fb7185 !important;
   background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(244, 63, 94, 0.45) !important;
-}
-
-.finder-section .console-group-pill.is-active .pill-count {
-  background: rgba(255, 255, 255, 0.25) !important;
-  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
 }
 
 .finder-section .donor-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #0c1424 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-left: 3px solid #f43f5e !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55) !important;
+  padding: 20px !important;
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .finder-section .donor-card:hover {
+  transform: translateY(-3px);
   border-color: #fb7185 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(244, 63, 94, 0.35) !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(244, 63, 94, 0.3) !important;
 }
 
 .finder-section .donor-name-row h3 {
   color: #ffffff !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
 }
 
 .finder-section .donor-group {
   color: #fb7185 !important;
+  font-weight: 800 !important;
   text-shadow: 0 0 12px rgba(251, 113, 133, 0.5) !important;
 }
 
 .finder-section .metric-val {
   color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
-/* 4. Urgent Hospital Requisitions — Sunset Tangerine & Warm Coral */
+/* -------------------------------------------------------------
+   4. URGENT REQUISITIONS: Hospital Emergency Triage Board
+   ------------------------------------------------------------- */
 .requests-section {
   --section-accent: #fb923c;
   --section-accent-bg: rgba(249, 115, 22, 0.14);
   --section-accent-border: rgba(251, 146, 60, 0.45);
   --section-glow: rgba(249, 115, 22, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(249, 115, 22, 0.12) 0%, rgba(26, 14, 10, 0.85) 100%);
-  --section-card-border: rgba(249, 115, 22, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(249, 115, 22, 0.12);
 }
 
 .requests-section .filter-pill.is-active {
   background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
   color: #ffffff !important;
   border-color: #fb923c !important;
-  box-shadow: 0 0 18px rgba(249, 115, 22, 0.45) !important;
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.5) !important;
 }
 
 .requests-section .request-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #120e1c !important;
+  border: 1px solid rgba(249, 115, 22, 0.3) !important;
+  border-top: 3px solid #f97316 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6) !important;
+  padding: 24px !important;
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .requests-section .request-card:hover {
+  transform: translateY(-4px);
   border-color: #fb923c !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(249, 115, 22, 0.35) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 28px rgba(249, 115, 22, 0.3) !important;
 }
 
 .requests-section .request-card h3 {
   color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
 }
 
 .requests-section .request-units {
   color: #ffffff !important;
+  font-weight: 800 !important;
 }
 
 .requests-section .request-need {
-  background: rgba(249, 115, 22, 0.14) !important;
-  border-left: 2px solid #f97316 !important;
-  color: #fed7aa !important;
+  background: rgba(249, 115, 22, 0.12) !important;
+  border-left: 3px solid #f97316 !important;
+  color: #ffedd5 !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  border-radius: 0 8px 8px 0 !important;
 }
 
-/* 5. Radial Proximity Radar — Electric Neon Cyan & Tactical Sky */
+/* -------------------------------------------------------------
+   5. GEOSPATIAL DISPATCH RADAR: Tactical Radar Station
+   ------------------------------------------------------------- */
 .radar-section {
   --section-accent: #00f0ff;
   --section-accent-bg: rgba(0, 240, 255, 0.14);
   --section-accent-border: rgba(0, 240, 255, 0.45);
   --section-glow: rgba(0, 240, 255, 0.25);
-  --section-card-border: rgba(0, 240, 255, 0.35);
 }
 
 .radar-section .radar-shell {
-  background: linear-gradient(155deg, rgba(0, 240, 255, 0.1) 0%, rgba(8, 16, 32, 0.88) 100%) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 32px rgba(0, 240, 255, 0.2) !important;
+  background: #020712 !important;
+  border: 1px solid rgba(0, 240, 255, 0.35) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), inset 0 0 32px rgba(0, 240, 255, 0.05) !important;
 }
 
 .radar-section .radar-scope {
-  background: #040a14 !important;
-  border: 2px solid rgba(0, 240, 255, 0.6) !important;
+  background: #030814 !important;
+  border: 2px solid rgba(0, 240, 255, 0.5) !important;
   box-shadow: 0 0 36px rgba(0, 240, 255, 0.25) !important;
 }
 
 .radar-section .lock-card {
-  background: rgba(10, 20, 38, 0.8) !important;
-  border: 1px solid rgba(56, 189, 248, 0.35) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  background: #061122 !important;
+  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
 
 .radar-section .lock-card h3 {
@@ -7016,20 +7133,20 @@ select option {
   text-shadow: 0 0 12px rgba(0, 240, 255, 0.5) !important;
 }
 
-/* 6. Crisis Surge Forecaster — Electric Canary Gold & Solar Flame */
+/* -------------------------------------------------------------
+   6. CRISIS SURGE FORECASTER: War-Room Disaster Simulation Console
+   ------------------------------------------------------------- */
 .surge-section {
   --section-accent: #facc15;
   --section-accent-bg: rgba(250, 204, 21, 0.14);
   --section-accent-border: rgba(250, 204, 21, 0.45);
   --section-glow: rgba(250, 204, 21, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(250, 204, 21, 0.12) 0%, rgba(26, 20, 8, 0.85) 100%);
-  --section-card-border: rgba(250, 204, 21, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(250, 204, 21, 0.12);
 }
 
 .surge-section .scenario-toggles-bar {
-  background: rgba(20, 16, 6, 0.85) !important;
-  border: 1px solid var(--section-card-border) !important;
+  background: #141108 !important;
+  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  border-radius: 16px !important;
 }
 
 .surge-section .scenario-toggle-btn.is-active {
@@ -7041,28 +7158,28 @@ select option {
 
 .surge-section .surge-chart-card,
 .surge-section .surge-telemetry-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
-}
-
-.surge-section .surge-chart-card:hover,
-.surge-section .surge-telemetry-card:hover {
-  border-color: #fde047 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(250, 204, 21, 0.35) !important;
+  background: #141108 !important;
+  border: 1px solid rgba(250, 204, 21, 0.28) !important;
+  border-top: 3px solid #facc15 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
 }
 
 .surge-section .surge-chart-header h3 {
   color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
 .surge-section .depletion-clock-block {
-  background: rgba(250, 204, 21, 0.1) !important;
-  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  background: rgba(250, 204, 21, 0.12) !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
+  border-radius: 12px !important;
 }
 
 .surge-section .clock-digits .big-num {
   color: #facc15 !important;
+  font-family: var(--mono) !important;
+  font-weight: 800 !important;
   text-shadow: 0 0 20px rgba(250, 204, 21, 0.55) !important;
 }
 
@@ -7070,21 +7187,22 @@ select option {
   color: #ffffff !important;
 }
 
-/* 7. Advanced Transfusion Medicine Lab — Cyber Violet & Royal Amethyst */
+/* -------------------------------------------------------------
+   7. TRANSFUSION MEDICINE LAB: Precision Laboratory Bench Instrument
+   ------------------------------------------------------------- */
 .lab-section {
   --section-accent: #c084fc;
   --section-accent-bg: rgba(168, 85, 247, 0.14);
   --section-accent-border: rgba(192, 132, 252, 0.45);
   --section-glow: rgba(168, 85, 247, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(168, 85, 247, 0.12) 0%, rgba(20, 10, 34, 0.85) 100%);
-  --section-card-border: rgba(168, 85, 247, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(168, 85, 247, 0.15);
 }
 
 .lab-section .adv-lab-shell {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #0f0a1c !important;
+  border: 1px solid rgba(192, 132, 252, 0.35) !important;
+  border-top: 3px solid #a855f7 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7) !important;
 }
 
 .lab-section .adv-lab-tab.is-active {
@@ -7096,8 +7214,9 @@ select option {
 
 .lab-section .flight-hud-frame,
 .lab-section .microscope-frame {
-  background: rgba(16, 8, 28, 0.8) !important;
-  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  background: #080310 !important;
+  border: 2px solid rgba(192, 132, 252, 0.35) !important;
+  border-radius: 16px !important;
 }
 
 .lab-section .donor-candidate-btn {
@@ -7120,36 +7239,48 @@ select option {
   color: #ffffff !important;
 }
 
-/* 8. Regional Blood Banks Directory — Oceanic Aquamarine & Bio-Teal */
+/* -------------------------------------------------------------
+   8. REGIONAL BLOOD BANKS: Municipal Cold-Chain Inventory Network
+   ------------------------------------------------------------- */
 .banks-section {
   --section-accent: #2dd4bf;
   --section-accent-bg: rgba(45, 212, 191, 0.14);
   --section-accent-border: rgba(45, 212, 191, 0.45);
   --section-glow: rgba(45, 212, 191, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(45, 212, 191, 0.12) 0%, rgba(8, 26, 26, 0.85) 100%);
-  --section-card-border: rgba(45, 212, 191, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(45, 212, 191, 0.12);
 }
 
 .banks-section .bank-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #081618 !important;
+  border: 1px solid rgba(45, 212, 191, 0.28) !important;
+  border-top: 3px solid #2dd4bf !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+  padding: 24px !important;
+  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .banks-section .bank-card:hover {
+  transform: translateY(-4px);
   border-color: #2dd4bf !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(45, 212, 191, 0.3) !important;
 }
 
 .banks-section .bank-card h3 {
   color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
 }
 
 .banks-section .type-tag.is-bank {
   background: rgba(45, 212, 191, 0.2) !important;
   border: 1px solid rgba(45, 212, 191, 0.45) !important;
-  color: #99f6e4 !important;
+  color: #5eead4 !important;
+}
+
+.banks-section .type-tag.is-hosp {
+  background: rgba(56, 189, 248, 0.2) !important;
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+  color: #7dd3fc !important;
 }
 
 .banks-section .bank-hours {
@@ -7167,63 +7298,119 @@ select option {
 }
 
 .banks-section .stock-chip.is-low {
-  border-color: rgba(250, 204, 21, 0.45) !important;
-  background: rgba(250, 204, 21, 0.15) !important;
+  border-color: rgba(250, 204, 21, 0.5) !important;
+  background: rgba(250, 204, 21, 0.18) !important;
   color: #fef08a !important;
 }
 
-/* 9. Clinical Donation Guidelines & Mythbusters — Deep Sapphire & Sky Azure */
+/* -------------------------------------------------------------
+   9. CLINICAL GUIDELINES & STANDARDS: Accredited Medical Handbook
+   ------------------------------------------------------------- */
 .donate-section {
   --section-accent: #38bdf8;
   --section-accent-bg: rgba(56, 189, 248, 0.14);
   --section-accent-border: rgba(56, 189, 248, 0.45);
   --section-glow: rgba(56, 189, 248, 0.25);
-  --section-card-bg: linear-gradient(155deg, rgba(56, 189, 248, 0.12) 0%, rgba(10, 20, 36, 0.85) 100%);
-  --section-card-border: rgba(56, 189, 248, 0.35);
-  --section-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(56, 189, 248, 0.12);
 }
 
 .donate-section .guide-item {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #081122 !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border-left: 3px solid #38bdf8 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .donate-section .guide-item:hover {
   border-color: #38bdf8 !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 32px rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(56, 189, 248, 0.25) !important;
 }
 
 .donate-section .guide-item.is-open {
   border-color: #38bdf8 !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 28px rgba(56, 189, 248, 0.35) !important;
+  background: #0a152a !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 28px rgba(56, 189, 248, 0.3) !important;
 }
 
 .donate-section .guide-trigger strong {
   color: #ffffff !important;
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
 }
 
 .donate-section .guide-body {
-  color: #cbd5e1 !important;
+  color: #e2e8f0 !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
 }
 
 .donate-section .info-card {
-  background: var(--section-card-bg) !important;
-  border: 1px solid var(--section-card-border) !important;
-  box-shadow: var(--section-card-shadow) !important;
+  background: #091326 !important;
+  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6) !important;
 }
 
-/* 10. Final Call To Action — Iridescent Aurora Multi-Color */
+.donate-section .info-card .panel-label {
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+}
+
+.donate-section .eligibility-list li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.donate-section .eligibility-list span {
+  color: #cbd5e1 !important;
+}
+
+.donate-section .eligibility-list strong {
+  color: #ffffff !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+}
+
+.donate-section .myth-text {
+  font-family: inherit !important;
+  font-style: normal !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  color: #f87171 !important;
+  text-decoration: line-through !important;
+  text-decoration-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+.donate-section .fact-text {
+  color: #ffffff !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+.donate-section .fact-text strong {
+  color: #34d399 !important;
+}
+
+/* -------------------------------------------------------------
+   10. FINAL CALL TO ACTION: Unified Hospital & Donor Network Banner
+   ------------------------------------------------------------- */
 .cta-band {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.22) 0%, rgba(168, 85, 247, 0.24) 50%, rgba(0, 240, 255, 0.22) 100%) !important;
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.25) 0%, rgba(168, 85, 247, 0.25) 50%, rgba(14, 165, 233, 0.25) 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(168, 85, 247, 0.25) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 40px rgba(168, 85, 247, 0.25) !important;
+  padding: 44px 36px !important;
 }
 
 .cta-band h3 {
   color: #ffffff !important;
+  font-size: clamp(1.4rem, 2.4vw, 1.95rem) !important;
+  font-weight: 800 !important;
 }
 
 .cta-band p {
-  color: #e0f2fe !important;
+  color: #e2e8f0 !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
 }
