@@ -282,20 +282,30 @@ function App() {
   );
 
   useEffect(() => {
-    const elements = document.querySelectorAll(".reveal");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.02, rootMargin: "140px 0px 140px 0px" },
-    );
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    const observeAll = () => {
+      const elements = document.querySelectorAll(".reveal:not(.is-visible)");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
+      );
+      elements.forEach((element) => observer.observe(element));
+      return observer;
+    };
+
+    const obs = observeAll();
+    const timer = window.setTimeout(observeAll, 350);
+
+    return () => {
+      window.clearTimeout(timer);
+      obs.disconnect();
+    };
   }, []);
 
   useEffect(() => {

@@ -190,11 +190,11 @@ h2 em {
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #38bdf8 0%, #7dd3fc 50%, #e0f2fe 100%);
+  background: var(--section-heading-grad, linear-gradient(135deg, #38bdf8 0%, #7dd3fc 50%, #e0f2fe 100%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
-  text-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+  text-shadow: 0 0 20px var(--section-glow-hover, rgba(56, 189, 248, 0.25));
 }
 
 .container {
@@ -215,7 +215,7 @@ h2 em {
   transform: translateX(-50%);
   width: min(1200px, 92%);
   height: 1px;
-  background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.35) 0%, rgba(255, 255, 255, 0.14) 35%, transparent 75%);
+  background: radial-gradient(ellipse at center, var(--section-divider, rgba(56, 189, 248, 0.35)) 0%, rgba(255, 255, 255, 0.14) 35%, transparent 75%);
   pointer-events: none;
 }
 
@@ -273,19 +273,19 @@ h2 em {
 
 .glass {
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--section-rim, rgba(255, 255, 255, 0.16));
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
   backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur);
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 20px rgba(56, 189, 248, 0.03);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 20px var(--section-glow, rgba(56, 189, 248, 0.03));
   border-radius: var(--radius-lg);
   transition: all 0.25s ease;
 }
 
 .glass:hover {
-  border-color: rgba(56, 189, 248, 0.5);
+  border-color: var(--section-rim-hover, rgba(255, 255, 255, 0.5));
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 28px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 28px var(--section-glow-hover, rgba(255, 255, 255, 0.15));
 }
 
 .glass-lift {
@@ -297,10 +297,10 @@ h2 em {
 }
 
 .glass-lift:hover {
-  transform: translateY(-4px) !important;
-  border-color: rgba(56, 189, 248, 0.55) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px rgba(56, 189, 248, 0.2) !important;
+  transform: translateY(-4px);
+  border-color: var(--section-rim-hover, rgba(255, 255, 255, 0.55));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 28px var(--section-glow-hover, rgba(255, 255, 255, 0.2));
 }
 
 /* Numbered chapter label: [01] THE PROBLEM —— */
@@ -4002,15 +4002,93 @@ select option {
 /* ---------- Motion: Pop Inside Out Animation (Zero Disappearing Lag) ---------- */
 
 .reveal {
-  opacity: 1;
-  transform: none;
+  opacity: 0;
+  transform: translateY(36px) scale(0.985);
+  filter: blur(6px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 
-.reveal,
 .reveal.is-visible {
   opacity: 1;
-  transform: none;
-  animation: none;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Staggered card entrance cascade when parent section scrolls into view */
+.reveal.is-visible .problem-card,
+.reveal.is-visible .donor-card,
+.reveal.is-visible .request-card,
+.reveal.is-visible .bank-card,
+.reveal.is-visible .guide-item,
+.reveal.is-visible .radar-shell,
+.reveal.is-visible .adv-lab-shell,
+.reveal.is-visible .stage-card,
+.reveal.is-visible .surge-chart-card,
+.reveal.is-visible .surge-alert-card,
+.reveal.is-visible .bento-card {
+  animation: scrollCardCascade 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.reveal.is-visible .problem-card:nth-child(1),
+.reveal.is-visible .donor-card:nth-child(1),
+.reveal.is-visible .request-card:nth-child(1),
+.reveal.is-visible .bank-card:nth-child(1),
+.reveal.is-visible .guide-item:nth-child(1),
+.reveal.is-visible .bento-card:nth-child(1) {
+  animation-delay: 0.08s;
+}
+
+.reveal.is-visible .problem-card:nth-child(2),
+.reveal.is-visible .donor-card:nth-child(2),
+.reveal.is-visible .request-card:nth-child(2),
+.reveal.is-visible .bank-card:nth-child(2),
+.reveal.is-visible .guide-item:nth-child(2),
+.reveal.is-visible .bento-card:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.reveal.is-visible .problem-card:nth-child(3),
+.reveal.is-visible .donor-card:nth-child(3),
+.reveal.is-visible .request-card:nth-child(3),
+.reveal.is-visible .bank-card:nth-child(3),
+.reveal.is-visible .guide-item:nth-child(3),
+.reveal.is-visible .bento-card:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+.reveal.is-visible .problem-card:nth-child(4),
+.reveal.is-visible .donor-card:nth-child(4),
+.reveal.is-visible .request-card:nth-child(4),
+.reveal.is-visible .bank-card:nth-child(4),
+.reveal.is-visible .guide-item:nth-child(4),
+.reveal.is-visible .bento-card:nth-child(4) {
+  animation-delay: 0.38s;
+}
+
+.reveal.is-visible .donor-card:nth-child(5),
+.reveal.is-visible .bank-card:nth-child(5) {
+  animation-delay: 0.48s;
+}
+
+.reveal.is-visible .donor-card:nth-child(6),
+.reveal.is-visible .bank-card:nth-child(6) {
+  animation-delay: 0.58s;
+}
+
+@keyframes scrollCardCascade {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.965);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 @keyframes pulse-ring {
@@ -6616,4 +6694,388 @@ select option {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* ==========================================================================
+   MULTI-SECTION CLINICAL COLOR PALETTES (Diverse, Attractive & Crystalline)
+   Ensures every section features a distinct vibrant palette while preserving
+   crystal-clear frosted glass transparency over the 3D biological background.
+   ========================================================================== */
+
+/* Eyebrow base: inherit section accent and glow */
+.section .eyebrow {
+  color: var(--section-accent, #38bdf8) !important;
+  transition: all 0.25s ease;
+}
+
+.section .eyebrow .pulse-dot {
+  background: var(--section-accent, #38bdf8) !important;
+  box-shadow: 0 0 10px var(--section-accent, #38bdf8) !important;
+}
+
+/* 1. Problem / Clinical Challenges — Warm Amber & Golden Topaz */
+.problem-section {
+  --section-accent: #fbbf24;
+  --section-rim: rgba(245, 158, 11, 0.25);
+  --section-rim-hover: rgba(251, 191, 36, 0.7);
+  --section-glow: rgba(245, 158, 11, 0.08);
+  --section-glow-hover: rgba(245, 158, 11, 0.35);
+  --section-divider: rgba(245, 158, 11, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #fbbf24 0%, #fde68a 50%, #fffbeb 100%);
+}
+
+.problem-section .eyebrow {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.18);
+}
+
+.problem-section .problem-card {
+  border-color: var(--section-rim);
+}
+
+.problem-section .problem-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.problem-section .problem-index {
+  color: #fbbf24 !important;
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.45);
+}
+
+.problem-section .problem-link {
+  color: #fbbf24 !important;
+}
+
+/* 2. Donor-to-Vein Journey Tracker — Bio-Emerald & Luminous Mint */
+.journey-section {
+  --section-accent: #34d399;
+  --section-rim: rgba(16, 185, 129, 0.25);
+  --section-rim-hover: rgba(52, 211, 153, 0.7);
+  --section-glow: rgba(16, 185, 129, 0.1);
+  --section-glow-hover: rgba(16, 185, 129, 0.4);
+  --section-divider: rgba(16, 185, 129, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #34d399 0%, #a7f3d0 50%, #f0fdf4 100%);
+}
+
+.journey-section .eyebrow {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+.journey-section .specimen-pill.is-active {
+  border-color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #fff !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45) !important;
+}
+
+.journey-section .specimen-pill .pack-group {
+  color: #34d399 !important;
+}
+
+.journey-section .timeline-node.is-active .node-indicator,
+.journey-section .stepper-node.is-active .stepper-circle {
+  border-color: #34d399 !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.6) !important;
+}
+
+.journey-section .stage-card,
+.journey-section .bento-card {
+  border-color: var(--section-rim);
+}
+
+.journey-section .stage-card:hover,
+.journey-section .bento-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+/* 3. Live Donor Finder / Registry — Vivid Crimson & Ruby Rose */
+.finder-section {
+  --section-accent: #fb7185;
+  --section-rim: rgba(244, 63, 94, 0.22);
+  --section-rim-hover: rgba(251, 113, 133, 0.7);
+  --section-glow: rgba(244, 63, 94, 0.1);
+  --section-glow-hover: rgba(244, 63, 94, 0.4);
+  --section-divider: rgba(244, 63, 94, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #fb7185 0%, #fecdd3 50%, #fff1f2 100%);
+}
+
+.finder-section .eyebrow {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.2);
+}
+
+.finder-section .donor-console {
+  border-color: rgba(244, 63, 94, 0.25) !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 32px -8px rgba(244, 63, 94, 0.2) !important;
+}
+
+.finder-section .console-group-pill:hover {
+  border-color: rgba(251, 113, 133, 0.55);
+}
+
+.finder-section .console-group-pill.is-active {
+  border-color: #fb7185 !important;
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.45) 0%, rgba(225, 29, 72, 0.3) 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(244, 63, 94, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+}
+
+.finder-section .console-group-pill.is-active .pill-count {
+  background: #e11d48 !important;
+  color: #fff !important;
+}
+
+.finder-section .stat-pill.is-highlight {
+  border-color: rgba(244, 63, 94, 0.5) !important;
+  background: rgba(244, 63, 94, 0.16) !important;
+  color: #ffe4e6 !important;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.finder-section .stat-pill.is-highlight b {
+  color: #fb7185 !important;
+}
+
+.finder-section .donor-card {
+  border-color: var(--section-rim);
+}
+
+.finder-section .donor-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.finder-section .donor-group {
+  color: #fb7185 !important;
+  text-shadow: 0 0 12px rgba(251, 113, 133, 0.45);
+}
+
+/* 4. Urgent Hospital Requisitions Carousel — Sunset Coral & Vivid Tangerine */
+.requests-section {
+  --section-accent: #fb923c;
+  --section-rim: rgba(249, 115, 22, 0.25);
+  --section-rim-hover: rgba(251, 146, 60, 0.7);
+  --section-glow: rgba(249, 115, 22, 0.1);
+  --section-glow-hover: rgba(249, 115, 22, 0.4);
+  --section-divider: rgba(249, 115, 22, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #fb923c 0%, #fed7aa 50%, #fff7ed 100%);
+}
+
+.requests-section .eyebrow {
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.2);
+}
+
+.requests-section .request-card {
+  border-color: var(--section-rim);
+}
+
+.requests-section .request-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.requests-section .request-card.is-urgent::before {
+  background: linear-gradient(90deg, #f97316, transparent) !important;
+}
+
+.requests-section .filter-pill.is-active {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: #fff !important;
+  border-color: #fb923c !important;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.45) !important;
+}
+
+/* 5. Radial Proximity Radar — Electric Neon Cyan & Radar Green */
+.radar-section {
+  --section-accent: #00f0ff;
+  --section-rim: rgba(0, 240, 255, 0.25);
+  --section-rim-hover: rgba(0, 240, 255, 0.7);
+  --section-glow: rgba(0, 240, 255, 0.12);
+  --section-glow-hover: rgba(0, 240, 255, 0.4);
+  --section-divider: rgba(0, 240, 255, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #00f0ff 0%, #a5f3fc 50%, #f0fdfa 100%);
+}
+
+.radar-section .eyebrow {
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+}
+
+.radar-section .radar-shell {
+  border-color: rgba(0, 240, 255, 0.25) !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 36px -8px rgba(0, 240, 255, 0.25) !important;
+}
+
+/* 6. Crisis Surge Forecaster — Electric Canary Gold & Solar Flame */
+.surge-section {
+  --section-accent: #facc15;
+  --section-rim: rgba(250, 204, 21, 0.25);
+  --section-rim-hover: rgba(250, 204, 21, 0.7);
+  --section-glow: rgba(250, 204, 21, 0.1);
+  --section-glow-hover: rgba(250, 204, 21, 0.4);
+  --section-divider: rgba(250, 204, 21, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #facc15 0%, #fef08a 50%, #fefce8 100%);
+}
+
+.surge-section .eyebrow {
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.2);
+}
+
+.surge-section .scenario-toggle-btn.is-dengue.is-active {
+  color: #fef08a !important;
+  background: rgba(250, 204, 21, 0.22) !important;
+  border-color: rgba(250, 204, 21, 0.55) !important;
+  box-shadow: 0 4px 16px rgba(250, 204, 21, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+.surge-section .surge-chart-card,
+.surge-section .surge-alert-card {
+  border-color: var(--section-rim);
+}
+
+.surge-section .surge-chart-card:hover,
+.surge-section .surge-alert-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.surge-section .surge-bar.is-demand {
+  background: linear-gradient(180deg, #facc15 0%, #ca8a04 100%) !important;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.45) !important;
+}
+
+/* 7. Advanced Transfusion Medicine Lab — Cyber Violet & Royal Orchid */
+.lab-section {
+  --section-accent: #c084fc;
+  --section-rim: rgba(168, 85, 247, 0.25);
+  --section-rim-hover: rgba(192, 132, 252, 0.7);
+  --section-glow: rgba(168, 85, 247, 0.12);
+  --section-glow-hover: rgba(168, 85, 247, 0.4);
+  --section-divider: rgba(168, 85, 247, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #c084fc 0%, #e9d5ff 50%, #faf5ff 100%);
+}
+
+.lab-section .eyebrow {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.22);
+}
+
+.lab-section .adv-lab-shell {
+  border-color: rgba(168, 85, 247, 0.25) !important;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 36px -8px rgba(168, 85, 247, 0.25) !important;
+}
+
+.lab-section .adv-lab-tab.is-active {
+  background: rgba(168, 85, 247, 0.25) !important;
+  color: #ffffff !important;
+  border-color: #a855f7 !important;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 8. Regional Blood Banks Directory — Oceanic Aquamarine & Bio-Teal */
+.banks-section {
+  --section-accent: #2dd4bf;
+  --section-rim: rgba(45, 212, 191, 0.25);
+  --section-rim-hover: rgba(45, 212, 191, 0.7);
+  --section-glow: rgba(45, 212, 191, 0.1);
+  --section-glow-hover: rgba(45, 212, 191, 0.4);
+  --section-divider: rgba(45, 212, 191, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #2dd4bf 0%, #99f6e4 50%, #f0fdfa 100%);
+}
+
+.banks-section .eyebrow {
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.2);
+}
+
+.banks-section .bank-card {
+  border-color: var(--section-rim);
+}
+
+.banks-section .bank-card:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.banks-section .type-tag.is-bank {
+  border-color: rgba(45, 212, 191, 0.45) !important;
+  background: rgba(45, 212, 191, 0.18) !important;
+  color: #99f6e4 !important;
+}
+
+.banks-section .bank-hours {
+  color: #2dd4bf !important;
+}
+
+/* 9. Clinical Donation Guidelines & Mythbusters — Royal Azure & Sky Sapphire */
+.donate-section {
+  --section-accent: #38bdf8;
+  --section-rim: rgba(56, 189, 248, 0.25);
+  --section-rim-hover: rgba(56, 189, 248, 0.7);
+  --section-glow: rgba(56, 189, 248, 0.1);
+  --section-glow-hover: rgba(56, 189, 248, 0.4);
+  --section-divider: rgba(56, 189, 248, 0.45);
+  --section-heading-grad: linear-gradient(135deg, #38bdf8 0%, #7dd3fc 50%, #eff6ff 100%);
+}
+
+.donate-section .eyebrow {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 4px 12px;
+  border-radius: 99px;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.2);
+}
+
+.donate-section .guide-item {
+  border-color: var(--section-rim);
+}
+
+.donate-section .guide-item:hover {
+  border-color: var(--section-rim-hover) !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 0 32px var(--section-glow-hover) !important;
+}
+
+.donate-section .guide-item.is-open {
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 28px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* 10. Final Call To Action — Iridescent Aurora Holographic Gradient */
+.cta-band {
+  background: radial-gradient(ellipse at 15% 0%, rgba(244, 63, 94, 0.22) 0%, transparent 50%),
+              radial-gradient(ellipse at 85% 100%, rgba(168, 85, 247, 0.24) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 50%, rgba(0, 240, 255, 0.16) 0%, transparent 60%),
+              linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 40px rgba(168, 85, 247, 0.22) !important;
 }
