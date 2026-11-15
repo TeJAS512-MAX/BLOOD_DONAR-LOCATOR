@@ -7,11 +7,11 @@
    ========================================================= */
 
 :root {
-  --night: #080e1a;
-  --night-2: #0e1726;
-  --paper: #0c1424;
-  --paper-2: #101c30;
-  --paper-card: rgba(12, 20, 36, 0.82);
+  --night: #06020e;
+  --night-2: #0a0416;
+  --paper: #0a0416;
+  --paper-2: #0f0620;
+  --paper-card: rgba(10, 4, 22, 0.85);
 
   /* Vivid Futuristic Neon & Electric Yellow Palette */
   --neon-yellow: #facc15;
@@ -131,7 +131,7 @@ body {
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--text);
-  background: #080e1a;
+  background: #06020e;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -338,16 +338,14 @@ h2 em {
   color: #0d9488;
 }
 
-.eyebrow.is-cyan {
-  color: #0284c7;
-}
-
-.eyebrow.is-amber {
-  color: #d97706;
-}
-
+.eyebrow.is-cyan,
+.eyebrow.is-amber,
+.eyebrow.is-teal,
 .eyebrow.is-crimson {
-  color: #e11d48;
+  color: #f5d0fe !important;
+  background: rgba(176, 38, 255, 0.18) !important;
+  border: 1px solid rgba(176, 38, 255, 0.55) !important;
+  box-shadow: 0 0 20px rgba(176, 38, 255, 0.4) !important;
 }
 
 .section-head .eyebrow::before {
@@ -798,9 +796,9 @@ select option {
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
-  background: rgba(6, 12, 24, 0.92);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 1px 16px rgba(0, 240, 255, 0.15);
+  border-bottom: 1px solid rgba(176, 38, 255, 0.35);
+  background: rgba(8, 3, 18, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.8), 0 1px 20px rgba(176, 38, 255, 0.2);
 }
 
 .header-inner {
@@ -1070,11 +1068,11 @@ select option {
 .hero-smart-hub-card {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 240, 255, 0.45);
-  border-top: 3px solid #facc15;
+  border: 1px solid rgba(176, 38, 255, 0.45);
+  border-top: 3px solid #b026ff;
   border-radius: var(--radius-xl);
-  background: linear-gradient(155deg, rgba(0, 240, 255, 0.1) 0%, rgba(8, 16, 32, 0.9) 100%);
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 0 45px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.75);
+  background: linear-gradient(155deg, rgba(176, 38, 255, 0.15) 0%, rgba(10, 4, 22, 0.92) 100%);
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.35), 0 0 35px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.85);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -4536,10 +4534,10 @@ select option {
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid rgba(0, 240, 255, 0.45);
-  border-top: 3px solid #facc15;
-  background: #08101e;
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.3), 0 0 45px rgba(250, 204, 21, 0.2), 0 25px 65px rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(176, 38, 255, 0.45);
+  border-top: 3px solid #b026ff;
+  background: #0a0416;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.35), 0 25px 65px rgba(0, 0, 0, 0.85);
   overflow: hidden;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -4735,10 +4733,10 @@ select option {
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   border-radius: 20px;
-  border: 1px solid rgba(0, 240, 255, 0.45);
-  border-top: 3px solid #facc15;
-  background: #08101e;
-  box-shadow: 0 0 40px rgba(0, 240, 255, 0.3), 0 0 50px rgba(250, 204, 21, 0.2), 0 30px 80px rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(176, 38, 255, 0.45);
+  border-top: 3px solid #b026ff;
+  background: #0a0416;
+  box-shadow: 0 0 50px rgba(176, 38, 255, 0.4), 0 30px 80px rgba(0, 0, 0, 0.9);
   padding: 28px;
   display: flex;
   flex-direction: column;
@@ -6573,10 +6571,10 @@ select option {
 .rapidpass-card {
   padding: 24px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(0, 240, 255, 0.45);
-  border-top: 3px solid #facc15;
-  background: #08101e;
-  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 0 45px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(176, 38, 255, 0.45);
+  border-top: 3px solid #b026ff;
+  background: #0a0416;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.35), 0 0 35px rgba(250, 204, 21, 0.2), 0 20px 50px rgba(0, 0, 0, 0.85);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   display: flex;
@@ -6804,11 +6802,11 @@ select option {
    (Neon Cyan, Neon Magenta, Neon Green, Neon Violet, Neon Orange)
    ========================================================= */
 
-/* Common Section Typography & Eyebrow Styling */
+/* Common Section Typography & Eyebrow Styling — Unified Cutting-Edge Clinical Innovations */
 .section .eyebrow {
-  color: var(--section-accent, #00f0ff) !important;
-  background: var(--section-accent-bg, rgba(0, 240, 255, 0.12)) !important;
-  border: 1px solid var(--section-accent-border, rgba(0, 240, 255, 0.5)) !important;
+  color: #f5d0fe !important;
+  background: rgba(176, 38, 255, 0.18) !important;
+  border: 1px solid rgba(176, 38, 255, 0.55) !important;
   padding: 5px 16px;
   border-radius: 99px;
   font-family: var(--mono);
@@ -6819,12 +6817,12 @@ select option {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 0 20px var(--section-glow, rgba(0, 240, 255, 0.35));
+  box-shadow: 0 0 20px rgba(176, 38, 255, 0.4);
 }
 
 .section .eyebrow .pulse-dot {
-  background: var(--section-accent, #00f0ff) !important;
-  box-shadow: 0 0 12px var(--section-accent, #00f0ff) !important;
+  background: #b026ff !important;
+  box-shadow: 0 0 12px #b026ff !important;
 }
 
 .section-head h2 {
@@ -6838,12 +6836,12 @@ select option {
 }
 
 .section-head h2 em {
-  color: var(--section-accent, #facc15) !important;
+  color: #d946ef !important;
   font-style: normal !important;
   font-weight: 800 !important;
   background: none !important;
   -webkit-text-fill-color: initial !important;
-  text-shadow: 0 0 22px var(--section-glow, rgba(250, 204, 21, 0.6)) !important;
+  text-shadow: 0 0 22px rgba(176, 38, 255, 0.7) !important;
 }
 
 .section-head p {
@@ -6854,24 +6852,23 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   1. PROBLEM & CLINICAL CHALLENGES: High-Voltage Electric Neon Yellow
-   Solid dark obsidian slate, glowing neon yellow trim, neon amber badges
+   1. PROBLEM & CLINICAL CHALLENGES: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .problem-section {
-  --section-accent: #facc15;
-  --section-accent-bg: rgba(250, 204, 21, 0.16);
-  --section-accent-border: rgba(250, 204, 21, 0.6);
-  --section-glow: rgba(250, 204, 21, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .problem-section .problem-card {
   position: relative;
-  background: #09101e !important;
-  border: 1px solid rgba(250, 204, 21, 0.3) !important;
-  border-top: 3px solid #facc15 !important;
-  border-radius: 18px !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
   padding: 28px 24px !important;
-  box-shadow: 0 0 22px rgba(250, 204, 21, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
   display: flex;
   flex-direction: column;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
@@ -6879,8 +6876,8 @@ select option {
 
 .problem-section .problem-card:hover {
   transform: translateY(-4px);
-  border-color: #facc15 !important;
-  box-shadow: 0 0 35px rgba(250, 204, 21, 0.6), 0 24px 54px rgba(0, 0, 0, 0.85) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 24px 54px rgba(0, 0, 0, 0.9) !important;
 }
 
 .problem-section .problem-index {
@@ -6890,13 +6887,13 @@ select option {
   font-size: 12.5px !important;
   font-weight: 800 !important;
   letter-spacing: 0.08em;
-  color: #facc15 !important;
-  background: rgba(250, 204, 21, 0.18) !important;
-  border: 1px solid #facc15 !important;
+  color: #f5d0fe !important;
+  background: rgba(176, 38, 255, 0.22) !important;
+  border: 1px solid #b026ff !important;
   padding: 4px 11px;
   border-radius: 6px;
   margin-bottom: 14px;
-  box-shadow: 0 0 14px rgba(250, 204, 21, 0.45) !important;
+  box-shadow: 0 0 14px rgba(176, 38, 255, 0.5) !important;
 }
 
 .problem-section .problem-card h3 {
@@ -6912,10 +6909,10 @@ select option {
   padding: 12px 14px !important;
   border-radius: 10px !important;
   margin-bottom: 8px !important;
-  background: rgba(255, 0, 85, 0.08) !important;
-  border: 1px solid rgba(255, 0, 85, 0.25) !important;
-  border-left: 3px solid #ff0055 !important;
-  box-shadow: inset 0 0 12px rgba(255, 0, 85, 0.08);
+  background: rgba(255, 0, 127, 0.08) !important;
+  border: 1px solid rgba(255, 0, 127, 0.25) !important;
+  border-left: 3px solid #ff007f !important;
+  box-shadow: inset 0 0 12px rgba(255, 0, 127, 0.08);
 }
 
 .problem-section .problem-row span {
@@ -6933,15 +6930,15 @@ select option {
 }
 
 .problem-section .problem-row.is-solution {
-  background: rgba(0, 255, 136, 0.09) !important;
-  border: 1px solid rgba(0, 255, 136, 0.35) !important;
-  border-left: 3px solid #00ff88 !important;
-  box-shadow: 0 0 14px rgba(0, 255, 136, 0.18), inset 0 0 12px rgba(0, 255, 136, 0.06) !important;
+  background: rgba(176, 38, 255, 0.14) !important;
+  border: 1px solid rgba(176, 38, 255, 0.35) !important;
+  border-left: 3px solid #b026ff !important;
+  box-shadow: 0 0 14px rgba(176, 38, 255, 0.22), inset 0 0 12px rgba(176, 38, 255, 0.08) !important;
 }
 
 .problem-section .problem-row.is-solution span {
-  color: #00ff88 !important;
-  text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+  color: #d946ef !important;
+  text-shadow: 0 0 8px rgba(176, 38, 255, 0.6);
 }
 
 .problem-section .problem-row.is-solution p {
@@ -6968,21 +6965,21 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   2. DONOR JOURNEY TRACKER: Bio-Phosphor Neon Green & Cyan Pipeline
+   2. DONOR JOURNEY TRACKER: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .journey-section {
-  --section-accent: #00ff88;
-  --section-accent-bg: rgba(0, 255, 136, 0.15);
-  --section-accent-border: rgba(0, 255, 136, 0.55);
-  --section-glow: rgba(0, 255, 136, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .journey-section .journey-specimen-select {
-  background: #061618 !important;
-  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
   border-radius: 16px !important;
   padding: 16px 20px !important;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2) !important;
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.25) !important;
 }
 
 .journey-section .specimen-pill {
@@ -6992,40 +6989,40 @@ select option {
 }
 
 .journey-section .specimen-pill:hover {
-  border-color: #00ff88 !important;
-  background: rgba(0, 255, 136, 0.2) !important;
+  border-color: #b026ff !important;
+  background: rgba(176, 38, 255, 0.25) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(0, 255, 136, 0.4) !important;
+  box-shadow: 0 0 14px rgba(176, 38, 255, 0.5) !important;
 }
 
 .journey-section .specimen-pill.is-active {
-  border-color: #00ff88 !important;
-  background: #059669 !important;
+  border-color: #b026ff !important;
+  background: rgba(176, 38, 255, 0.35) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.65) !important;
+  box-shadow: 0 0 22px rgba(176, 38, 255, 0.65) !important;
 }
 
 .journey-section .stepper-node.is-passed .node-indicator {
-  background: #10b981 !important;
-  border-color: #00ff88 !important;
+  background: #7928ca !important;
+  border-color: #b026ff !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(0, 255, 136, 0.6) !important;
+  box-shadow: 0 0 16px rgba(176, 38, 255, 0.6) !important;
 }
 
 .journey-section .stepper-node.is-active .node-indicator {
-  background: #059669 !important;
-  border-color: #00ff88 !important;
+  background: #b026ff !important;
+  border-color: #d946ef !important;
   color: #ffffff !important;
-  box-shadow: 0 0 30px rgba(0, 255, 136, 0.9) !important;
+  box-shadow: 0 0 30px rgba(176, 38, 255, 0.95) !important;
 }
 
 .journey-section .bento-card,
 .journey-section .stage-card {
-  background: #061618 !important;
-  border: 1px solid rgba(0, 255, 136, 0.35) !important;
-  border-left: 4px solid #00ff88 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 24px rgba(0, 255, 136, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.3), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
 }
 
 .journey-section .stage-title-wrap h3 {
@@ -7034,8 +7031,8 @@ select option {
 }
 
 .journey-section .fraction-item {
-  background: rgba(0, 255, 136, 0.08) !important;
-  border: 1px solid rgba(0, 255, 136, 0.3) !important;
+  background: #06020e !important;
+  border: 1px solid rgba(176, 38, 255, 0.35) !important;
   border-radius: 12px !important;
 }
 
@@ -7044,20 +7041,21 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   3. DONOR DIRECTORY & CONSOLE: Cyber Neon Magenta & Neon Yellow
+   3. DONOR DIRECTORY & CONSOLE: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .finder-section {
-  --section-accent: #ff007f;
-  --section-accent-bg: rgba(255, 0, 127, 0.16);
-  --section-accent-border: rgba(255, 0, 127, 0.55);
-  --section-glow: rgba(255, 0, 127, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .finder-section .donor-console {
-  background: #0a0e1c !important;
-  border: 1px solid rgba(255, 0, 127, 0.4) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  border-top: 3px solid #b026ff !important;
   border-radius: 20px !important;
-  box-shadow: 0 0 30px rgba(255, 0, 127, 0.25), 0 18px 48px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.35), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
   padding: 24px !important;
 }
 
@@ -7068,17 +7066,17 @@ select option {
 }
 
 .finder-section .console-group-pill:hover {
-  border-color: #ff007f !important;
-  background: rgba(255, 0, 127, 0.2) !important;
+  border-color: #b026ff !important;
+  background: rgba(176, 38, 255, 0.25) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(255, 0, 127, 0.4) !important;
+  box-shadow: 0 0 16px rgba(176, 38, 255, 0.5) !important;
 }
 
 .finder-section .console-group-pill.is-active {
-  border-color: #ff007f !important;
-  background: linear-gradient(135deg, #ff007f 0%, #be123c 100%) !important;
+  border-color: #b026ff !important;
+  background: linear-gradient(135deg, #b026ff 0%, #7928ca 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 24px rgba(255, 0, 127, 0.7) !important;
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.75) !important;
 }
 
 .finder-section .console-group-pill .pill-count {
@@ -7088,19 +7086,19 @@ select option {
 }
 
 .finder-section .donor-card {
-  background: #0c1424 !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid #ff007f !important;
-  border-radius: 16px !important;
-  box-shadow: 0 0 18px rgba(255, 0, 127, 0.2), 0 10px 28px rgba(0, 0, 0, 0.6) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.35) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 0 24px rgba(176, 38, 255, 0.25), 0 12px 32px rgba(0, 0, 0, 0.75) !important;
   padding: 20px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .finder-section .donor-card:hover {
   transform: translateY(-3px);
-  border-color: #ff007f !important;
-  box-shadow: 0 0 32px rgba(255, 0, 127, 0.5), 0 18px 40px rgba(0, 0, 0, 0.8) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 38px rgba(176, 38, 255, 0.65), 0 20px 48px rgba(0, 0, 0, 0.85) !important;
 }
 
 .finder-section .donor-name-row h3 {
@@ -7121,37 +7119,51 @@ select option {
   text-shadow: 0 0 10px rgba(250, 204, 21, 0.5) !important;
 }
 
+.donor-table-wrap {
+  margin-top: 24px;
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(176, 38, 255, 0.45);
+  border-top: 3px solid #b026ff;
+  background: #0a0416;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 16px 40px rgba(0, 0, 0, 0.8);
+}
+
+.donor-table-row:hover {
+  background: rgba(176, 38, 255, 0.18) !important;
+}
+
 /* -------------------------------------------------------------
-   4. URGENT REQUISITIONS: Solar Flare Neon Orange & Neon Yellow
+   4. URGENT REQUISITIONS: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .requests-section {
-  --section-accent: #ff8800;
-  --section-accent-bg: rgba(255, 136, 0, 0.16);
-  --section-accent-border: rgba(255, 136, 0, 0.55);
-  --section-glow: rgba(255, 136, 0, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .requests-section .filter-pill.is-active {
-  background: linear-gradient(135deg, #ff8800 0%, #ea580c 100%) !important;
+  background: linear-gradient(135deg, #b026ff 0%, #ff007f 100%) !important;
   color: #ffffff !important;
-  border-color: #ff8800 !important;
-  box-shadow: 0 0 22px rgba(255, 136, 0, 0.65) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.7) !important;
 }
 
 .requests-section .request-card {
-  background: #140d1e !important;
-  border: 1px solid rgba(255, 136, 0, 0.35) !important;
-  border-top: 3px solid #ff8800 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 22px rgba(255, 136, 0, 0.25), 0 14px 36px rgba(0, 0, 0, 0.65) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 32px rgba(176, 38, 255, 0.28), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
   padding: 24px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .requests-section .request-card:hover {
   transform: translateY(-4px);
-  border-color: #ff8800 !important;
-  box-shadow: 0 0 35px rgba(255, 136, 0, 0.6), 0 20px 48px rgba(0, 0, 0, 0.8) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 22px 50px rgba(0, 0, 0, 0.85) !important;
 }
 
 .requests-section .request-card h3 {
@@ -7168,44 +7180,45 @@ select option {
 }
 
 .requests-section .request-need {
-  background: rgba(255, 136, 0, 0.14) !important;
-  border-left: 3px solid #ff8800 !important;
-  color: #ffedd5 !important;
+  background: rgba(176, 38, 255, 0.16) !important;
+  border-left: 3px solid #b026ff !important;
+  color: #f5d0fe !important;
   font-size: 13.5px !important;
   line-height: 1.5 !important;
   border-radius: 0 8px 8px 0 !important;
-  box-shadow: inset 0 0 12px rgba(255, 136, 0, 0.08) !important;
+  box-shadow: inset 0 0 12px rgba(176, 38, 255, 0.12) !important;
 }
 
 /* -------------------------------------------------------------
-   5. GEOSPATIAL DISPATCH RADAR: Electric Cyber Neon Cyan
+   5. GEOSPATIAL DISPATCH RADAR: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .radar-section {
-  --section-accent: #00f0ff;
-  --section-accent-bg: rgba(0, 240, 255, 0.16);
-  --section-accent-border: rgba(0, 240, 255, 0.55);
-  --section-glow: rgba(0, 240, 255, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .radar-section .radar-shell {
-  background: #020712 !important;
-  border: 1px solid rgba(0, 240, 255, 0.45) !important;
+  background: #06020e !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  border-top: 3px solid #b026ff !important;
   border-radius: 24px !important;
-  box-shadow: 0 0 45px rgba(0, 240, 255, 0.3), 0 24px 64px rgba(0, 0, 0, 0.85), inset 0 0 32px rgba(0, 240, 255, 0.08) !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.35), 0 24px 64px rgba(0, 0, 0, 0.85) !important;
 }
 
 .radar-section .radar-scope {
-  background: #030814 !important;
-  border: 2px solid #00f0ff !important;
-  box-shadow: 0 0 45px rgba(0, 240, 255, 0.5), inset 0 0 24px rgba(0, 240, 255, 0.15) !important;
+  background: #04010a !important;
+  border: 2px solid #b026ff !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.45), inset 0 0 24px rgba(176, 38, 255, 0.15) !important;
 }
 
 .radar-section .lock-card {
-  background: #080616 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
   border-top: 3px solid #b026ff !important;
-  border-radius: 16px !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.3), 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 0 28px rgba(176, 38, 255, 0.35), 0 10px 30px rgba(0, 0, 0, 0.7) !important;
 }
 
 .radar-section .lock-card h3 {
@@ -7219,36 +7232,36 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   6. CRISIS SURGE FORECASTER: High-Voltage Neon Yellow War-Room
+   6. CRISIS SURGE FORECASTER: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .surge-section {
-  --section-accent: #facc15;
-  --section-accent-bg: rgba(250, 204, 21, 0.18);
-  --section-accent-border: rgba(250, 204, 21, 0.6);
-  --section-glow: rgba(250, 204, 21, 0.5);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .surge-section .scenario-toggles-bar {
-  background: #141108 !important;
-  border: 1px solid rgba(250, 204, 21, 0.4) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
   border-radius: 16px !important;
-  box-shadow: 0 0 24px rgba(250, 204, 21, 0.2) !important;
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.25) !important;
 }
 
 .surge-section .scenario-toggle-btn.is-active {
-  background: rgba(250, 204, 21, 0.28) !important;
+  background: rgba(176, 38, 255, 0.35) !important;
   color: #ffffff !important;
-  border-color: #facc15 !important;
-  box-shadow: 0 0 20px rgba(250, 204, 21, 0.6) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 22px rgba(176, 38, 255, 0.65) !important;
 }
 
 .surge-section .surge-chart-card,
 .surge-section .surge-telemetry-card {
-  background: #141108 !important;
-  border: 1px solid rgba(250, 204, 21, 0.35) !important;
-  border-top: 3px solid #facc15 !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 25px rgba(250, 204, 21, 0.3), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
 }
 
 .surge-section .surge-chart-header h3 {
@@ -7257,10 +7270,10 @@ select option {
 }
 
 .surge-section .depletion-clock-block {
-  background: rgba(250, 204, 21, 0.14) !important;
-  border: 1px solid rgba(250, 204, 21, 0.5) !important;
+  background: #06020e !important;
+  border: 1px solid rgba(176, 38, 255, 0.5) !important;
   border-radius: 12px !important;
-  box-shadow: 0 0 24px rgba(250, 204, 21, 0.25) !important;
+  box-shadow: 0 0 25px rgba(176, 38, 255, 0.3) !important;
 }
 
 .surge-section .clock-digits .big-num {
@@ -7275,7 +7288,7 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   7. TRANSFUSION MEDICINE LAB: Electric Neon Purple & Cyber Violet
+   7. TRANSFUSION MEDICINE LAB: Cutting-Edge Clinical Innovations
    ------------------------------------------------------------- */
 .lab-section {
   --section-accent: #b026ff;
@@ -7328,29 +7341,29 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   8. REGIONAL BLOOD BANKS: Bio-Neon Teal & Flashing Neon Yellow
+   8. REGIONAL BLOOD BANKS: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .banks-section {
-  --section-accent: #00ffcc;
-  --section-accent-bg: rgba(0, 255, 204, 0.16);
-  --section-accent-border: rgba(0, 255, 204, 0.55);
-  --section-glow: rgba(0, 255, 204, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .banks-section .bank-card {
-  background: #081618 !important;
-  border: 1px solid rgba(0, 255, 204, 0.35) !important;
-  border-top: 3px solid #00ffcc !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 24px rgba(0, 255, 204, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 30px rgba(176, 38, 255, 0.3), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
   padding: 24px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .banks-section .bank-card:hover {
   transform: translateY(-4px);
-  border-color: #00ffcc !important;
-  box-shadow: 0 0 35px rgba(0, 255, 204, 0.6), 0 22px 50px rgba(0, 0, 0, 0.8) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 22px 50px rgba(0, 0, 0, 0.9) !important;
 }
 
 .banks-section .bank-card h3 {
@@ -7360,10 +7373,10 @@ select option {
 }
 
 .banks-section .type-tag.is-bank {
-  background: rgba(0, 255, 204, 0.2) !important;
-  border: 1px solid rgba(0, 255, 204, 0.5) !important;
-  color: #00ffcc !important;
-  text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+  background: rgba(176, 38, 255, 0.2) !important;
+  border: 1px solid rgba(176, 38, 255, 0.55) !important;
+  color: #f5d0fe !important;
+  text-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
 }
 
 .banks-section .type-tag.is-hosp {
@@ -7373,8 +7386,8 @@ select option {
 }
 
 .banks-section .bank-hours {
-  color: #00ffcc !important;
-  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+  color: #f5d0fe !important;
+  text-shadow: 0 0 8px rgba(176, 38, 255, 0.4);
 }
 
 .banks-section .stock-chip {
@@ -7395,33 +7408,33 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   9. CLINICAL GUIDELINES & STANDARDS: Electric Sky Neon & Yellow
+   9. CLINICAL GUIDELINES & STANDARDS: Cutting-Edge Clinical Theme
    ------------------------------------------------------------- */
 .donate-section {
-  --section-accent: #38bdf8;
-  --section-accent-bg: rgba(56, 189, 248, 0.16);
-  --section-accent-border: rgba(56, 189, 248, 0.55);
-  --section-glow: rgba(56, 189, 248, 0.45);
+  --section-accent: #b026ff;
+  --section-accent-bg: rgba(176, 38, 255, 0.18);
+  --section-accent-border: rgba(176, 38, 255, 0.6);
+  --section-glow: rgba(176, 38, 255, 0.55);
 }
 
 .donate-section .guide-item {
-  background: #081122 !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
-  border-left: 3px solid #38bdf8 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 30px rgba(176, 38, 255, 0.28), 0 12px 32px rgba(0, 0, 0, 0.75) !important;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .donate-section .guide-item:hover {
-  border-color: #38bdf8 !important;
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.5), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  border-color: #b026ff !important;
+  box-shadow: 0 0 42px rgba(176, 38, 255, 0.65), 0 16px 40px rgba(0, 0, 0, 0.85) !important;
 }
 
 .donate-section .guide-item.is-open {
-  border-color: #38bdf8 !important;
-  background: #0a152a !important;
-  box-shadow: 0 0 35px rgba(56, 189, 248, 0.55), 0 20px 48px rgba(0, 0, 0, 0.75) !important;
+  border-color: #b026ff !important;
+  background: #0e0620 !important;
+  box-shadow: 0 0 45px rgba(176, 38, 255, 0.7), 0 20px 48px rgba(0, 0, 0, 0.85) !important;
 }
 
 .donate-section .guide-trigger strong {
@@ -7437,14 +7450,15 @@ select option {
 }
 
 .donate-section .info-card {
-  background: #091326 !important;
-  border: 1px solid rgba(56, 189, 248, 0.35) !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 22px rgba(56, 189, 248, 0.25), 0 14px 36px rgba(0, 0, 0, 0.65) !important;
+  background: #0a0416 !important;
+  border: 1px solid rgba(176, 38, 255, 0.4) !important;
+  border-top: 3px solid #b026ff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 0 30px rgba(176, 38, 255, 0.28), 0 14px 36px rgba(0, 0, 0, 0.75) !important;
 }
 
 .donate-section .info-card .panel-label {
-  color: #38bdf8 !important;
+  color: #d946ef !important;
   font-weight: 700 !important;
 }
 
