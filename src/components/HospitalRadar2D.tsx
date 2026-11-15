@@ -81,6 +81,9 @@ const COLOR = {
   sweepBeam: "#00f0ff",
   sweepGlow: "rgba(0, 240, 255, 0.85)",
   centerCitadel: "#ff007f",
+  neonPurple: "#b026ff",
+  neonPurpleGlow: "rgba(176, 38, 255, 0.85)",
+  neonPurpleSoft: "rgba(176, 38, 255, 0.35)",
 };
 
 function bearingFromId(id: string): number {
@@ -568,16 +571,18 @@ export function HospitalRadar2D({
           ctx.beginPath();
           ctx.moveTo(ox, oy);
           ctx.quadraticCurveTo(midX, midY, cx, cy);
-          ctx.strokeStyle = "rgba(0, 245, 212, 0.35)";
+          ctx.strokeStyle = COLOR.neonPurpleSoft;
           ctx.lineWidth = 3;
           ctx.stroke();
 
-          // Animated flowing dash line
+          // Animated flowing dash line in Neon Purple
           ctx.beginPath();
           ctx.moveTo(ox, oy);
           ctx.quadraticCurveTo(midX, midY, cx, cy);
-          ctx.strokeStyle = "#00f5d4";
-          ctx.lineWidth = 1.8;
+          ctx.strokeStyle = COLOR.neonPurple;
+          ctx.lineWidth = 2;
+          ctx.shadowColor = COLOR.neonPurpleGlow;
+          ctx.shadowBlur = 12;
           ctx.setLineDash([6, 8]);
           ctx.lineDashOffset = -timeMs * 0.04;
           ctx.stroke();
@@ -742,7 +747,7 @@ export function HospitalRadar2D({
         ctx.lineTo(x, y);
         ctx.stroke();
 
-        // Animated target lock brackets
+        // Animated target lock brackets (Cyan)
         ctx.setLineDash([]);
         ctx.strokeStyle = "#00f0ff";
         ctx.lineWidth = 2;
@@ -761,6 +766,19 @@ export function HospitalRadar2D({
           ctx.lineTo(x + dx * (box - arm), y + dy * box);
           ctx.stroke();
         }
+
+        // Futuristic Neon Purple Rotating Targeting Ring
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, box + 6, 0, Math.PI * 2);
+        ctx.strokeStyle = COLOR.neonPurple;
+        ctx.lineWidth = 1.8;
+        ctx.shadowColor = COLOR.neonPurpleGlow;
+        ctx.shadowBlur = 14;
+        ctx.setLineDash([4, 6]);
+        ctx.lineDashOffset = -timeMs * 0.05;
+        ctx.stroke();
+        ctx.restore();
 
         // Center reticle point
         ctx.fillStyle = "#00f0ff";
