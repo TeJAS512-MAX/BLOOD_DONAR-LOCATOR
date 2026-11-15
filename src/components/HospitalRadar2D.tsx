@@ -72,7 +72,7 @@ const COLOR = {
   donorDim: "#64748b",
   bank: "#00ff88",
   bankGlow: "rgba(0, 255, 136, 0.65)",
-  transitCourier: "#facc15",
+  transitCourier: "#ff2b4e",
   ringMajor: "rgba(0, 240, 255, 0.45)",
   ringMinor: "rgba(0, 240, 255, 0.18)",
   gridAxis: "rgba(0, 240, 255, 0.28)",
@@ -80,10 +80,10 @@ const COLOR = {
   labelBright: "#ffffff",
   sweepBeam: "#00f0ff",
   sweepGlow: "rgba(0, 240, 255, 0.85)",
-  centerCitadel: "#ff007f",
-  neonPurple: "#b026ff",
-  neonPurpleGlow: "rgba(176, 38, 255, 0.85)",
-  neonPurpleSoft: "rgba(176, 38, 255, 0.35)",
+  centerCitadel: "#ff2b4e",
+  neonPurple: "#a855f7",
+  neonPurpleGlow: "rgba(168, 85, 247, 0.85)",
+  neonPurpleSoft: "rgba(168, 85, 247, 0.35)",
 };
 
 function bearingFromId(id: string): number {

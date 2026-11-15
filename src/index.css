@@ -832,14 +832,14 @@ select option {
 }
 
 .brand-mark circle {
-  fill: #ff007f;
+  fill: #ff2b4e;
   stroke: none;
-  filter: drop-shadow(0 0 8px #ff007f);
+  filter: drop-shadow(0 0 10px #ff2b4e);
 }
 
 .brand-accent {
-  color: #facc15;
-  text-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
+  color: #ff2b4e;
+  text-shadow: 0 0 16px rgba(255, 43, 78, 0.85), 0 0 32px rgba(255, 43, 78, 0.45);
 }
 
 .main-nav {
@@ -1000,11 +1000,13 @@ select option {
 
 .hero-title em {
   padding-right: 0.06em;
-  background: linear-gradient(135deg, #facc15 0%, #00f0ff 38%, #b026ff 72%, #fde047 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 20px rgba(250, 204, 21, 0.6)) drop-shadow(0 0 35px rgba(176, 38, 255, 0.45));
+  font-style: normal;
+  color: #ff2b4e !important;
+  text-shadow: 0 0 20px rgba(255, 43, 78, 0.85), 0 0 40px rgba(255, 43, 78, 0.45) !important;
+  background: none !important;
+  -webkit-text-fill-color: #ff2b4e !important;
   display: inline-block;
+  animation: red-glow-pulse 3s ease-in-out infinite alternate;
 }
 
 .hero-sub {
@@ -6758,71 +6760,183 @@ select option {
 }
 
 /* ==========================================================================
-   MULTI-SECTION CLINICAL COLOR PALETTES (Vibrant, Rich Tinted Translucent Shields)
-   Allows the 3D biological background to be clearly visible while each section
-   features a distinct, rich, attractive color palette with crisp contrast.
+   NEXT-GEN CLINICAL OBSIDIAN & ARTERIAL SIGNAL DESIGN SYSTEM
+   Ultra-clean, high-tech frontend architecture designed for judges & engineers.
+   100% transparent/translucent panels letting the 3D biological background shine.
    ========================================================================== */
 
-/* Universal Section Eyebrow: clinical pill badge matching section accent */
-.section .eyebrow {
-  color: var(--section-accent, #00f0ff) !important;
-  background: var(--section-accent-bg, rgba(0, 240, 255, 0.14)) !important;
-  border: 1px solid var(--section-accent-border, rgba(0, 240, 255, 0.45)) !important;
-  padding: 4px 14px;
-  border-radius: 99px;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 0 14px var(--section-glow, rgba(0, 240, 255, 0.2));
+/* -------------------------------------------------------------
+   0. ADVANCED TECH KEYFRAME ANIMATIONS
+   ------------------------------------------------------------- */
+@keyframes red-glow-pulse {
+  0% {
+    color: #ff2b4e;
+    text-shadow: 0 0 14px rgba(255, 43, 78, 0.7), 0 0 30px rgba(255, 43, 78, 0.35);
+  }
+  50% {
+    color: #ff4767;
+    text-shadow: 0 0 25px rgba(255, 43, 78, 0.95), 0 0 50px rgba(255, 43, 78, 0.6);
+  }
+  100% {
+    color: #ff2b4e;
+    text-shadow: 0 0 14px rgba(255, 43, 78, 0.7), 0 0 30px rgba(255, 43, 78, 0.35);
+  }
 }
 
-.section .eyebrow .pulse-dot {
-  background: var(--section-accent, #00f0ff) !important;
-  box-shadow: 0 0 8px var(--section-accent, #00f0ff) !important;
+@keyframes arterial-beat {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 43, 78, 0.7);
+  }
+  40% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 8px rgba(255, 43, 78, 0);
+  }
+  60% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(255, 43, 78, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 43, 78, 0);
+  }
 }
 
-.section-head h2 {
+@keyframes laser-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes cyber-scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+@keyframes float-smooth {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* -------------------------------------------------------------
+   1. BRANDING & HERO TITLE (Red "Link" & Red "connects")
+   ------------------------------------------------------------- */
+.brand {
+  font-family: var(--display) !important;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
   color: #ffffff !important;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
 }
 
-.section-head h2 em {
-  color: var(--section-accent, #00f0ff) !important;
-  font-style: italic;
+.brand-mark circle {
+  fill: #ff2b4e !important;
+  stroke: none !important;
+  filter: drop-shadow(0 0 10px #ff2b4e) !important;
+  animation: arterial-beat 2.4s ease-in-out infinite !important;
 }
 
-.section-head p {
-  color: #cbd5e1 !important;
+.brand-accent {
+  color: #ff2b4e !important;
+  text-shadow: 0 0 16px rgba(255, 43, 78, 0.85), 0 0 32px rgba(255, 43, 78, 0.45) !important;
 }
 
-/* =========================================================
-   Judge-Impressive Multi-Section Bespoke UI Architecture
-   Electric Yellow Core + Vivid Neon Cyber Palette
-   (Neon Cyan, Neon Magenta, Neon Green, Neon Violet, Neon Orange)
-   ========================================================= */
+.hero-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.03em !important;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8) !important;
+}
 
-/* Common Section Typography & Eyebrow Styling — Unified Cutting-Edge Clinical Innovations */
+.hero-title em {
+  font-style: normal !important;
+  color: #ff2b4e !important;
+  text-shadow: 0 0 24px rgba(255, 43, 78, 0.9), 0 0 48px rgba(255, 43, 78, 0.5) !important;
+  background: none !important;
+  -webkit-text-fill-color: #ff2b4e !important;
+  display: inline-block !important;
+  animation: red-glow-pulse 3s ease-in-out infinite alternate !important;
+}
+
+.hero-sub {
+  color: #94a3b8 !important;
+  font-size: 15.5px !important;
+  line-height: 1.65 !important;
+  max-width: 520px !important;
+}
+
+.hero-badge {
+  background: rgba(255, 43, 78, 0.1) !important;
+  border: 1px solid rgba(255, 43, 78, 0.35) !important;
+  border-radius: 99px !important;
+  padding: 6px 16px !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #fecdd3 !important;
+  box-shadow: 0 0 18px rgba(255, 43, 78, 0.25) !important;
+  animation: float-smooth 5s ease-in-out infinite !important;
+}
+
+.hero-badge .pulse-dot {
+  background: #ff2b4e !important;
+  box-shadow: 0 0 10px #ff2b4e !important;
+}
+
+/* Hero Smart Life-Coordination Hub */
+.hero-smart-hub-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 20px !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 43, 78, 0.18) !important;
+  padding: 24px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.hero-smart-hub-card:hover {
+  border-color: rgba(255, 43, 78, 0.45) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 43, 78, 0.3) !important;
+}
+
+/* -------------------------------------------------------------
+   2. GLOBAL SECTION TYPOGRAPHY & EYEBROWS
+   ------------------------------------------------------------- */
 .section .eyebrow {
-  color: #f5d0fe !important;
-  background: rgba(176, 38, 255, 0.18) !important;
-  border: 1px solid rgba(176, 38, 255, 0.55) !important;
-  padding: 5px 16px;
-  border-radius: 99px;
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 0 20px rgba(176, 38, 255, 0.4);
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 43, 78, 0.1) !important;
+  border: 1px solid rgba(255, 43, 78, 0.35) !important;
+  border-radius: 99px !important;
+  padding: 5px 16px !important;
+  font-family: var(--mono) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: #fecdd3 !important;
+  box-shadow: 0 0 16px rgba(255, 43, 78, 0.2) !important;
 }
 
 .section .eyebrow .pulse-dot {
-  background: #b026ff !important;
-  box-shadow: 0 0 12px #b026ff !important;
+  background: #ff2b4e !important;
+  box-shadow: 0 0 10px #ff2b4e !important;
+  animation: arterial-beat 2.2s infinite !important;
 }
 
 .section-head h2 {
@@ -6832,113 +6946,99 @@ select option {
   font-weight: 800 !important;
   letter-spacing: -0.025em !important;
   line-height: 1.15 !important;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8) !important;
 }
 
 .section-head h2 em {
-  color: #d946ef !important;
+  color: #ff2b4e !important;
   font-style: normal !important;
   font-weight: 800 !important;
   background: none !important;
-  -webkit-text-fill-color: initial !important;
-  text-shadow: 0 0 22px rgba(176, 38, 255, 0.7) !important;
+  -webkit-text-fill-color: #ff2b4e !important;
+  text-shadow: 0 0 20px rgba(255, 43, 78, 0.75) !important;
 }
 
 .section-head p {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
   font-size: 15.5px !important;
-  line-height: 1.6 !important;
-  max-width: 620px;
+  line-height: 1.65 !important;
+  max-width: 620px !important;
 }
 
 /* -------------------------------------------------------------
-   1. PROBLEM & CLINICAL CHALLENGES: Cutting-Edge Clinical Theme
+   3. PROBLEM DOSSIER CARDS (#clinical-need)
    ------------------------------------------------------------- */
-.problem-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .problem-section .problem-card {
-  position: relative;
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  padding: 28px 24px !important;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
+  position: relative !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 18px !important;
+  padding: 26px 22px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 20px rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .problem-section .problem-card:hover {
-  transform: translateY(-4px);
-  border-color: #b026ff !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 24px 54px rgba(0, 0, 0, 0.9) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(255, 43, 78, 0.5) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 43, 78, 0.25) !important;
 }
 
 .problem-section .problem-index {
-  display: inline-block;
-  align-self: flex-start;
+  display: inline-block !important;
   font-family: var(--mono) !important;
-  font-size: 12.5px !important;
+  font-size: 12px !important;
   font-weight: 800 !important;
-  letter-spacing: 0.08em;
-  color: #f5d0fe !important;
-  background: rgba(176, 38, 255, 0.22) !important;
-  border: 1px solid #b026ff !important;
-  padding: 4px 11px;
-  border-radius: 6px;
-  margin-bottom: 14px;
-  box-shadow: 0 0 14px rgba(176, 38, 255, 0.5) !important;
+  color: #ff2b4e !important;
+  background: rgba(255, 43, 78, 0.12) !important;
+  border: 1px solid rgba(255, 43, 78, 0.35) !important;
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  margin-bottom: 12px !important;
 }
 
 .problem-section .problem-card h3 {
   color: #ffffff !important;
-  font-size: 1.35rem !important;
+  font-size: 1.28rem !important;
   font-weight: 700 !important;
-  line-height: 1.25 !important;
-  margin: 0 0 16px !important;
+  line-height: 1.3 !important;
+  margin-bottom: 14px !important;
 }
 
 .problem-section .problem-row {
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-  padding: 12px 14px !important;
   border-radius: 10px !important;
+  padding: 12px 14px !important;
   margin-bottom: 8px !important;
-  background: rgba(255, 0, 127, 0.08) !important;
-  border: 1px solid rgba(255, 0, 127, 0.25) !important;
-  border-left: 3px solid #ff007f !important;
-  box-shadow: inset 0 0 12px rgba(255, 0, 127, 0.08);
+  background: rgba(255, 43, 78, 0.06) !important;
+  border: 1px solid rgba(255, 43, 78, 0.2) !important;
+  border-left: 3px solid #ff2b4e !important;
 }
 
 .problem-section .problem-row span {
-  color: #ff5588 !important;
+  color: #ff6b84 !important;
   font-weight: 700 !important;
   font-size: 11px !important;
-  letter-spacing: 0.1em;
 }
 
 .problem-section .problem-row p {
-  color: #e2e8f0 !important;
-  font-size: 14px !important;
+  color: #cbd5e1 !important;
+  font-size: 13.5px !important;
   line-height: 1.5 !important;
-  margin-top: 4px !important;
+  margin-top: 3px !important;
 }
 
 .problem-section .problem-row.is-solution {
-  background: rgba(176, 38, 255, 0.14) !important;
-  border: 1px solid rgba(176, 38, 255, 0.35) !important;
-  border-left: 3px solid #b026ff !important;
-  box-shadow: 0 0 14px rgba(176, 38, 255, 0.22), inset 0 0 12px rgba(176, 38, 255, 0.08) !important;
+  background: rgba(0, 240, 255, 0.06) !important;
+  border: 1px solid rgba(0, 240, 255, 0.25) !important;
+  border-left: 3px solid #00f0ff !important;
 }
 
 .problem-section .problem-row.is-solution span {
-  color: #d946ef !important;
-  text-shadow: 0 0 8px rgba(176, 38, 255, 0.6);
+  color: #38bdf8 !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5) !important;
 }
 
 .problem-section .problem-row.is-solution p {
@@ -6947,158 +7047,114 @@ select option {
 }
 
 .problem-section .problem-link {
-  color: #facc15 !important;
-  font-weight: 800 !important;
+  color: #00f0ff !important;
+  font-weight: 700 !important;
   font-size: 13.5px !important;
-  margin-top: auto;
-  padding-top: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
-}
-
-.problem-section .problem-link:hover {
-  text-decoration: underline;
-  color: #fef08a !important;
-  text-shadow: 0 0 16px rgba(250, 204, 21, 0.8) !important;
+  margin-top: auto !important;
+  padding-top: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4) !important;
 }
 
 /* -------------------------------------------------------------
-   2. DONOR JOURNEY TRACKER: Cutting-Edge Clinical Theme
+   4. DONOR JOURNEY TRACKER (#how-it-works)
    ------------------------------------------------------------- */
-.journey-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .journey-section .journey-specimen-select {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 16px !important;
   padding: 16px 20px !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
 
 .journey-section .specimen-pill {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #94a3b8 !important;
 }
 
 .journey-section .specimen-pill:hover {
-  border-color: #b026ff !important;
-  background: rgba(176, 38, 255, 0.25) !important;
+  border-color: #ff2b4e !important;
+  background: rgba(255, 43, 78, 0.15) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(176, 38, 255, 0.5) !important;
 }
 
 .journey-section .specimen-pill.is-active {
-  border-color: #b026ff !important;
-  background: rgba(176, 38, 255, 0.35) !important;
+  border-color: #ff2b4e !important;
+  background: rgba(255, 43, 78, 0.25) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 22px rgba(176, 38, 255, 0.65) !important;
-}
-
-.journey-section .stepper-node.is-passed .node-indicator {
-  background: #7928ca !important;
-  border-color: #b026ff !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(176, 38, 255, 0.6) !important;
+  box-shadow: 0 0 18px rgba(255, 43, 78, 0.5) !important;
 }
 
 .journey-section .stepper-node.is-active .node-indicator {
-  background: #b026ff !important;
-  border-color: #d946ef !important;
+  background: #ff2b4e !important;
+  border-color: #ff6b84 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 30px rgba(176, 38, 255, 0.95) !important;
+  box-shadow: 0 0 24px rgba(255, 43, 78, 0.8) !important;
 }
 
 .journey-section .bento-card,
 .journey-section .stage-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.3), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
-}
-
-.journey-section .stage-title-wrap h3 {
-  color: #ffffff !important;
-  font-weight: 700 !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
 }
 
 .journey-section .fraction-item {
-  background: #06020e !important;
-  border: 1px solid rgba(176, 38, 255, 0.35) !important;
+  background: rgba(6, 10, 22, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 12px !important;
 }
 
-.journey-section .fraction-info strong {
-  color: #ffffff !important;
-}
-
 /* -------------------------------------------------------------
-   3. DONOR DIRECTORY & CONSOLE: Cutting-Edge Clinical Theme
+   5. DONOR DIRECTORY & SEARCH CONSOLE (#find-blood)
    ------------------------------------------------------------- */
-.finder-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .finder-section .donor-console {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: 2px solid #ff2b4e !important;
   border-radius: 20px !important;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.35), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
   padding: 24px !important;
 }
 
 .finder-section .console-group-pill {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
 }
 
 .finder-section .console-group-pill:hover {
-  border-color: #b026ff !important;
-  background: rgba(176, 38, 255, 0.25) !important;
+  border-color: #ff2b4e !important;
+  background: rgba(255, 43, 78, 0.16) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(176, 38, 255, 0.5) !important;
 }
 
 .finder-section .console-group-pill.is-active {
-  border-color: #b026ff !important;
-  background: linear-gradient(135deg, #b026ff 0%, #7928ca 100%) !important;
+  border-color: #ff2b4e !important;
+  background: linear-gradient(135deg, #ff2b4e 0%, #be123c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.75) !important;
-}
-
-.finder-section .console-group-pill .pill-count {
-  background: rgba(0, 0, 0, 0.35) !important;
-  color: #facc15 !important;
-  font-weight: 800 !important;
+  box-shadow: 0 0 22px rgba(255, 43, 78, 0.6) !important;
 }
 
 .finder-section .donor-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.35) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 24px rgba(176, 38, 255, 0.25), 0 12px 32px rgba(0, 0, 0, 0.75) !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7) !important;
   padding: 20px !important;
-  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .finder-section .donor-card:hover {
-  transform: translateY(-3px);
-  border-color: #b026ff !important;
-  box-shadow: 0 0 38px rgba(176, 38, 255, 0.65), 0 20px 48px rgba(0, 0, 0, 0.85) !important;
+  transform: translateY(-3px) !important;
+  border-color: rgba(255, 43, 78, 0.5) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 43, 78, 0.25) !important;
 }
 
 .finder-section .donor-name-row h3 {
@@ -7108,67 +7164,84 @@ select option {
 }
 
 .finder-section .donor-group {
-  color: #ff007f !important;
+  color: #ff2b4e !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 14px rgba(255, 0, 127, 0.7) !important;
-}
-
-.finder-section .metric-val {
-  color: #facc15 !important;
-  font-weight: 700 !important;
-  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5) !important;
+  text-shadow: 0 0 12px rgba(255, 43, 78, 0.65) !important;
 }
 
 .donor-table-wrap {
-  margin-top: 24px;
-  overflow-x: auto;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(176, 38, 255, 0.45);
-  border-top: 3px solid #b026ff;
-  background: #0a0416;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 16px 40px rgba(0, 0, 0, 0.8);
+  margin-top: 24px !important;
+  overflow-x: auto !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
+}
+
+.donor-table th {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #94a3b8 !important;
+  font-family: var(--mono) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.donor-table td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  color: #cbd5e1 !important;
 }
 
 .donor-table-row:hover {
-  background: rgba(176, 38, 255, 0.18) !important;
+  background: rgba(255, 43, 78, 0.1) !important;
+}
+
+.td-dist {
+  color: #00f0ff !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5) !important;
+}
+
+.td-readiness {
+  color: #00ff88 !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.5) !important;
 }
 
 /* -------------------------------------------------------------
-   4. URGENT REQUISITIONS: Cutting-Edge Clinical Theme
+   6. URGENT REQUISITIONS BOARD (#requests)
    ------------------------------------------------------------- */
-.requests-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .requests-section .filter-pill.is-active {
-  background: linear-gradient(135deg, #b026ff 0%, #ff007f 100%) !important;
+  background: linear-gradient(135deg, #ff2b4e 0%, #be123c 100%) !important;
   color: #ffffff !important;
-  border-color: #b026ff !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.7) !important;
+  border-color: #ff2b4e !important;
+  box-shadow: 0 0 20px rgba(255, 43, 78, 0.6) !important;
 }
 
 .requests-section .request-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 32px rgba(176, 38, 255, 0.28), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
   padding: 24px !important;
-  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .requests-section .request-card:hover {
-  transform: translateY(-4px);
-  border-color: #b026ff !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 22px 50px rgba(0, 0, 0, 0.85) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(255, 43, 78, 0.5) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 43, 78, 0.25) !important;
 }
 
 .requests-section .request-card h3 {
   color: #ffffff !important;
-  font-size: 1.25rem !important;
+  font-size: 1.22rem !important;
   font-weight: 700 !important;
 }
 
@@ -7176,49 +7249,41 @@ select option {
   color: #facc15 !important;
   font-size: 1.85rem !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 16px rgba(250, 204, 21, 0.65) !important;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.6) !important;
 }
 
 .requests-section .request-need {
-  background: rgba(176, 38, 255, 0.16) !important;
-  border-left: 3px solid #b026ff !important;
-  color: #f5d0fe !important;
+  background: rgba(255, 43, 78, 0.08) !important;
+  border-left: 3px solid #ff2b4e !important;
+  color: #fecdd3 !important;
   font-size: 13.5px !important;
   line-height: 1.5 !important;
   border-radius: 0 8px 8px 0 !important;
-  box-shadow: inset 0 0 12px rgba(176, 38, 255, 0.12) !important;
 }
 
 /* -------------------------------------------------------------
-   5. GEOSPATIAL DISPATCH RADAR: Cutting-Edge Clinical Theme
+   7. GEOSPATIAL RADAR TERMINAL (#radar)
    ------------------------------------------------------------- */
-.radar-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .radar-section .radar-shell {
-  background: #06020e !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 24px !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.35), 0 24px 64px rgba(0, 0, 0, 0.85) !important;
+  background: rgba(6, 10, 22, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 22px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85) !important;
 }
 
 .radar-section .radar-scope {
-  background: #04010a !important;
-  border: 2px solid #b026ff !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.45), inset 0 0 24px rgba(176, 38, 255, 0.15) !important;
+  background: #040814 !important;
+  border: 1.5px solid rgba(0, 240, 255, 0.4) !important;
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), inset 0 0 20px rgba(0, 240, 255, 0.08) !important;
 }
 
 .radar-section .lock-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 18px !important;
-  box-shadow: 0 0 28px rgba(176, 38, 255, 0.35), 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+  background: rgba(8, 14, 28, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #00f0ff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
 }
 
 .radar-section .lock-card h3 {
@@ -7228,334 +7293,183 @@ select option {
 .radar-section .lock-stats dd {
   color: #facc15 !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 14px rgba(250, 204, 21, 0.65) !important;
 }
 
 /* -------------------------------------------------------------
-   6. CRISIS SURGE FORECASTER: Cutting-Edge Clinical Theme
+   8. CRISIS SURGE FORECASTER (#forecaster)
    ------------------------------------------------------------- */
-.surge-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .surge-section .scenario-toggles-bar {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 16px !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.25) !important;
 }
 
 .surge-section .scenario-toggle-btn.is-active {
-  background: rgba(176, 38, 255, 0.35) !important;
+  background: rgba(255, 43, 78, 0.25) !important;
   color: #ffffff !important;
-  border-color: #b026ff !important;
-  box-shadow: 0 0 22px rgba(176, 38, 255, 0.65) !important;
+  border-color: #ff2b4e !important;
+  box-shadow: 0 0 18px rgba(255, 43, 78, 0.5) !important;
 }
 
 .surge-section .surge-chart-card,
 .surge-section .surge-telemetry-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.32), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
-}
-
-.surge-section .surge-chart-header h3 {
-  color: #ffffff !important;
-  font-weight: 700 !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
 }
 
 .surge-section .depletion-clock-block {
-  background: #06020e !important;
-  border: 1px solid rgba(176, 38, 255, 0.5) !important;
+  background: rgba(6, 10, 22, 0.85) !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
   border-radius: 12px !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.15) !important;
 }
 
 .surge-section .clock-digits .big-num {
   color: #facc15 !important;
   font-family: var(--mono) !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 28px rgba(250, 204, 21, 0.9), 0 0 50px rgba(250, 204, 21, 0.5) !important;
-}
-
-.surge-section .spec-row strong {
-  color: #ffffff !important;
+  text-shadow: 0 0 24px rgba(250, 204, 21, 0.8) !important;
 }
 
 /* -------------------------------------------------------------
-   7. TRANSFUSION MEDICINE LAB: Cutting-Edge Clinical Innovations
+   9. CLINICAL INNOVATIONS LAB (#advanced-lab)
    ------------------------------------------------------------- */
-.lab-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .lab-section .adv-lab-shell {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.45) !important;
-  border-top: 3px solid #b026ff !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #a855f7 !important;
   border-radius: 20px !important;
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.38), 0 18px 48px rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.18) !important;
 }
 
 .lab-section .adv-lab-tab.is-active {
-  background: rgba(176, 38, 255, 0.35) !important;
+  background: rgba(168, 85, 247, 0.28) !important;
   color: #ffffff !important;
-  border-color: #b026ff !important;
-  box-shadow: 0 0 25px rgba(176, 38, 255, 0.7) !important;
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 22px rgba(168, 85, 247, 0.6) !important;
 }
 
 .lab-section .flight-hud-frame,
 .lab-section .microscope-frame {
-  background: #06020e !important;
-  border: 2px solid rgba(176, 38, 255, 0.55) !important;
+  background: rgba(6, 10, 22, 0.85) !important;
+  border: 1.5px solid rgba(168, 85, 247, 0.4) !important;
   border-radius: 16px !important;
-  box-shadow: 0 0 32px rgba(176, 38, 255, 0.3) !important;
-}
-
-.lab-section .donor-candidate-btn {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
-}
-
-.lab-section .donor-candidate-btn.is-selected {
-  background: rgba(176, 38, 255, 0.3) !important;
-  border-color: #b026ff !important;
-  box-shadow: 0 0 22px rgba(176, 38, 255, 0.6) !important;
-}
-
-.lab-section .cand-info strong {
-  color: #ffffff !important;
-}
-
-.lab-section .mode-title {
-  color: #ffffff !important;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.2) !important;
 }
 
 /* -------------------------------------------------------------
-   8. REGIONAL BLOOD BANKS: Cutting-Edge Clinical Theme
+   10. REGIONAL BLOOD BANKS (#banks)
    ------------------------------------------------------------- */
-.banks-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
 .banks-section .bank-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 30px rgba(176, 38, 255, 0.3), 0 16px 40px rgba(0, 0, 0, 0.8) !important;
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #00ff88 !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75) !important;
   padding: 24px !important;
-  transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .banks-section .bank-card:hover {
-  transform: translateY(-4px);
-  border-color: #b026ff !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.65), 0 22px 50px rgba(0, 0, 0, 0.9) !important;
+  transform: translateY(-4px) !important;
+  border-color: rgba(0, 255, 136, 0.5) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 255, 136, 0.25) !important;
 }
 
 .banks-section .bank-card h3 {
   color: #ffffff !important;
-  font-size: 1.25rem !important;
+  font-size: 1.22rem !important;
   font-weight: 700 !important;
 }
 
 .banks-section .type-tag.is-bank {
-  background: rgba(176, 38, 255, 0.2) !important;
-  border: 1px solid rgba(176, 38, 255, 0.55) !important;
-  color: #f5d0fe !important;
-  text-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
-}
-
-.banks-section .type-tag.is-hosp {
-  background: rgba(0, 240, 255, 0.2) !important;
-  border: 1px solid rgba(0, 240, 255, 0.5) !important;
-  color: #38bdf8 !important;
-}
-
-.banks-section .bank-hours {
-  color: #f5d0fe !important;
-  text-shadow: 0 0 8px rgba(176, 38, 255, 0.4);
-}
-
-.banks-section .stock-chip {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
-}
-
-.banks-section .stock-chip b {
-  color: #94a3b8 !important;
+  background: rgba(0, 255, 136, 0.12) !important;
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
+  color: #00ff88 !important;
 }
 
 .banks-section .stock-chip.is-low {
-  border-color: #facc15 !important;
-  background: rgba(250, 204, 21, 0.22) !important;
-  color: #fef08a !important;
-  box-shadow: 0 0 16px rgba(250, 204, 21, 0.55) !important;
+  border-color: #ff2b4e !important;
+  background: rgba(255, 43, 78, 0.2) !important;
+  color: #fecdd3 !important;
+  box-shadow: 0 0 14px rgba(255, 43, 78, 0.5) !important;
 }
 
 /* -------------------------------------------------------------
-   9. CLINICAL GUIDELINES & STANDARDS: Cutting-Edge Clinical Theme
+   11. CLINICAL GUIDELINES & FAQS (#guidelines)
    ------------------------------------------------------------- */
-.donate-section {
-  --section-accent: #b026ff;
-  --section-accent-bg: rgba(176, 38, 255, 0.18);
-  --section-accent-border: rgba(176, 38, 255, 0.6);
-  --section-glow: rgba(176, 38, 255, 0.55);
-}
-
-.donate-section .guide-item {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 30px rgba(176, 38, 255, 0.28), 0 12px 32px rgba(0, 0, 0, 0.75) !important;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+.donate-section .guide-item,
+.donate-section .info-card {
+  background: rgba(8, 14, 28, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 2px solid #00f0ff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7) !important;
+  transition: all 0.25s ease !important;
 }
 
 .donate-section .guide-item:hover {
-  border-color: #b026ff !important;
-  box-shadow: 0 0 42px rgba(176, 38, 255, 0.65), 0 16px 40px rgba(0, 0, 0, 0.85) !important;
-}
-
-.donate-section .guide-item.is-open {
-  border-color: #b026ff !important;
-  background: #0e0620 !important;
-  box-shadow: 0 0 45px rgba(176, 38, 255, 0.7), 0 20px 48px rgba(0, 0, 0, 0.85) !important;
+  border-color: rgba(0, 240, 255, 0.5) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 240, 255, 0.2) !important;
 }
 
 .donate-section .guide-trigger strong {
   color: #ffffff !important;
-  font-size: 1.25rem !important;
-  font-weight: 700 !important;
-}
-
-.donate-section .guide-body {
-  color: #e2e8f0 !important;
-  font-size: 15px !important;
-  line-height: 1.7 !important;
-}
-
-.donate-section .info-card {
-  background: #0a0416 !important;
-  border: 1px solid rgba(176, 38, 255, 0.4) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 0 30px rgba(176, 38, 255, 0.28), 0 14px 36px rgba(0, 0, 0, 0.75) !important;
-}
-
-.donate-section .info-card .panel-label {
-  color: #d946ef !important;
-  font-weight: 700 !important;
-}
-
-.donate-section .eligibility-list li {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.donate-section .eligibility-list span {
-  color: #cbd5e1 !important;
-}
-
-.donate-section .eligibility-list strong {
-  color: #facc15 !important;
-  font-family: var(--mono) !important;
-  font-weight: 700 !important;
-  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5) !important;
 }
 
 .donate-section .myth-text {
-  font-family: inherit !important;
-  font-style: normal !important;
-  font-size: 1.3rem !important;
-  font-weight: 600 !important;
-  line-height: 1.4 !important;
-  color: #ff5588 !important;
-  text-decoration: line-through !important;
-  text-decoration-color: rgba(255, 0, 85, 0.7) !important;
-}
-
-.donate-section .fact-text {
-  color: #ffffff !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
+  color: #ff4767 !important;
+  text-decoration-color: rgba(255, 43, 78, 0.7) !important;
 }
 
 .donate-section .fact-text strong {
   color: #00ff88 !important;
-  text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.5) !important;
 }
 
 /* -------------------------------------------------------------
-   10. FINAL CALL TO ACTION: Futuristic Multi-Spectral Neon Aurora
+   12. FINAL CALL TO ACTION BANNER
    ------------------------------------------------------------- */
 .cta-band {
-  background: linear-gradient(135deg, rgba(255, 0, 127, 0.28) 0%, rgba(176, 38, 255, 0.32) 35%, rgba(0, 240, 255, 0.28) 70%, rgba(250, 204, 21, 0.28) 100%) !important;
-  border: 1px solid rgba(176, 38, 255, 0.5) !important;
-  border-top: 3px solid #b026ff !important;
-  border-radius: 24px !important;
-  box-shadow: 0 0 50px rgba(176, 38, 255, 0.35), 0 0 35px rgba(250, 204, 21, 0.25), 0 24px 64px rgba(0, 0, 0, 0.85) !important;
+  background: linear-gradient(135deg, rgba(255, 43, 78, 0.2) 0%, rgba(8, 14, 28, 0.9) 60%, rgba(0, 240, 255, 0.15) 100%) !important;
+  border: 1px solid rgba(255, 43, 78, 0.4) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 22px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(255, 43, 78, 0.2) !important;
   padding: 44px 36px !important;
 }
 
 .cta-band h3 {
   color: #ffffff !important;
-  font-size: clamp(1.4rem, 2.4vw, 1.95rem) !important;
-  font-weight: 800 !important;
 }
 
 .cta-band p {
-  color: #e2e8f0 !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-}
-
-/* Universal Futuristic Checkbox Styling */
-label.check {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  color: #cbd5e1;
-  transition: color 0.2s ease;
-}
-
-label.check input[type="checkbox"] {
-  accent-color: #facc15;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-}
-
-label.check:hover {
-  color: #ffffff;
-}
-
-label.check.is-disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  color: #94a3b8 !important;
 }
 
 /* -------------------------------------------------------------
-   11. FUTURISTIC NEON PURPLE UTILITIES & CYBER SCROLLBAR
+   13. MODALS & OVERLAYS
+   ------------------------------------------------------------- */
+.modal,
+.matrix-modal-panel,
+.cmd-palette-panel,
+.rapidpass-card {
+  background: rgba(8, 14, 28, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: 2px solid #ff2b4e !important;
+  border-radius: 18px !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 43, 78, 0.2) !important;
+}
+
+/* -------------------------------------------------------------
+   14. EXECUTIVE CYBER SCROLLBAR
    ------------------------------------------------------------- */
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -7563,40 +7477,12 @@ label.check.is-disabled {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #facc15 0%, #00f0ff 38%, #b026ff 72%, #facc15 100%);
+  background: linear-gradient(180deg, #ff2b4e 0%, #00f0ff 100%);
   border-radius: 99px;
   border: 2px solid #040812;
-  box-shadow: 0 0 12px rgba(176, 38, 255, 0.6);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #fde047 0%, #38bdf8 38%, #d946ef 72%, #fde047 100%);
-  box-shadow: 0 0 18px rgba(176, 38, 255, 0.95);
-}
-
-.chip-neon-purple,
-.badge-neon-purple {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(176, 38, 255, 0.16) !important;
-  border: 1px solid #b026ff !important;
-  color: #f5d0fe !important;
-  font-family: var(--mono) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  padding: 3px 10px !important;
-  border-radius: 99px !important;
-  box-shadow: 0 0 14px rgba(176, 38, 255, 0.4) !important;
-}
-
-.cmd-kbd-hint {
-  font-family: var(--mono) !important;
-  font-size: 10.5px !important;
-  color: #f5d0fe !important;
-  padding: 2px 7px !important;
-  border-radius: 4px !important;
-  border: 1px solid rgba(176, 38, 255, 0.5) !important;
-  background: rgba(176, 38, 255, 0.16) !important;
-  box-shadow: 0 0 10px rgba(176, 38, 255, 0.3) !important;
+  background: linear-gradient(180deg, #ff4767 0%, #38bdf8 100%);
+  box-shadow: 0 0 12px rgba(255, 43, 78, 0.8);
 }
