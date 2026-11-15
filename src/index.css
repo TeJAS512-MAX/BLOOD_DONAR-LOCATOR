@@ -13,11 +13,24 @@
   --paper-2: #101c30;
   --paper-card: rgba(12, 20, 36, 0.82);
 
-  /* Vivid Clinical Palette — High Contrast & Clarity */
-  --blood: #f43f5e;
+  /* Vivid Futuristic Neon & Electric Yellow Palette */
+  --neon-yellow: #facc15;
+  --neon-yellow-glow: #fde047;
+  --neon-cyan: #00f0ff;
+  --neon-cyan-glow: #38bdf8;
+  --neon-pink: #ff007f;
+  --neon-pink-glow: #fb7185;
+  --neon-green: #00ff88;
+  --neon-green-glow: #34d399;
+  --neon-violet: #c084fc;
+  --neon-violet-glow: #d8b4fe;
+  --neon-orange: #ff8800;
+  --neon-orange-glow: #fb923c;
+
+  --blood: #ff007f;
   --blood-deep: #e11d48;
   --blood-glow: #fb7185;
-  --teal: #2dd4bf;
+  --teal: #00ffcc;
   --teal-deep: #14b8a6;
   --cyan: #00f0ff;
   --cyan-deep: #0284c7;
@@ -629,35 +642,34 @@ select option {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+  background: linear-gradient(135deg, #ff0055 0%, #e11d48 100%);
   color: #ffffff;
   font-weight: 700;
-  border: 1px solid #be123c;
-  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.28);
+  border: 1px solid #ff2a85;
+  box-shadow: 0 0 18px rgba(255, 0, 85, 0.4), 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-  color: #ffffff;
-  border-color: #e11d48;
-  box-shadow: 0 8px 24px rgba(225, 29, 72, 0.38);
+  background: linear-gradient(135deg, #ff2a85 0%, #f43f5e 100%);
+  border-color: #ff007f;
+  box-shadow: 0 0 28px rgba(255, 0, 127, 0.65), 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 .btn-glass {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  background: rgba(8, 20, 38, 0.65);
   color: #f8fafc;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
 }
 
 .btn-glass:hover:not(:disabled) {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.12);
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.16);
   color: #ffffff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.45);
 }
 
 .btn-light {
@@ -781,9 +793,9 @@ select option {
   position: sticky;
   top: 0;
   z-index: 50;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(8, 14, 26, 0.88);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+  background: rgba(6, 12, 24, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 1px 16px rgba(0, 240, 255, 0.15);
 }
 
 .header-inner {
@@ -810,44 +822,48 @@ select option {
   width: 28px;
   height: 28px;
   fill: none;
-  stroke: currentColor;
+  stroke: #ffffff;
   stroke-width: 1.9;
   stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5));
 }
 
 .brand-mark circle {
-  fill: #f43f5e;
+  fill: #ff007f;
   stroke: none;
+  filter: drop-shadow(0 0 8px #ff007f);
 }
 
 .brand-accent {
-  color: #f43f5e;
+  color: #facc15;
+  text-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
 }
 
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 4px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: rgba(10, 18, 36, 0.75);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .main-nav a {
   padding: 6px 12px;
   border-radius: 99px;
   font-size: 13px;
-  font-weight: 500;
-  color: #94a3b8;
+  font-weight: 600;
+  color: #cbd5e1;
   white-space: nowrap;
   transition: all 0.2s ease;
 }
 
 .main-nav a:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: rgba(0, 240, 255, 0.18);
+  color: #00f0ff;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
 }
 
 .header-actions {
@@ -862,35 +878,35 @@ select option {
   align-items: center;
   gap: 10px;
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid rgba(244, 63, 94, 0.45);
+  padding: 0 18px;
+  border: 1px solid rgba(255, 0, 127, 0.55);
   border-radius: 99px;
-  background: rgba(225, 29, 72, 0.18);
+  background: rgba(255, 0, 127, 0.18);
   font-family: var(--mono);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #fda4af;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgba(255, 0, 127, 0.35);
   transition: all 0.2s ease;
 }
 
 .emergency-btn:hover,
 .emergency-btn.is-active {
-  border-color: #be123c;
-  background: #e11d48;
+  border-color: #ff007f;
+  background: linear-gradient(135deg, #ff007f 0%, #e11d48 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3);
+  box-shadow: 0 0 28px rgba(255, 0, 127, 0.75);
 }
 
-.emergency-btn:hover .pulse-dot,
-.emergency-btn.is-active .pulse-dot {
-  background: #fff;
+.emergency-btn .pulse-dot {
+  background: #facc15;
+  box-shadow: 0 0 12px #facc15;
 }
 
-.emergency-btn:hover .pulse-dot::after,
-.emergency-btn.is-active .pulse-dot::after {
-  border-color: #fff;
+.emergency-btn .pulse-dot::after {
+  border-color: #facc15;
 }
 
 .menu-toggle {
@@ -950,29 +966,39 @@ select option {
   align-items: center;
   gap: 12px;
   margin-bottom: 28px;
-  padding: 8px 16px 8px 14px;
-  border: 1px solid rgba(0, 240, 255, 0.45);
+  padding: 8px 18px;
+  border: 1px solid rgba(0, 240, 255, 0.55);
   border-radius: 99px;
   background: rgba(0, 240, 255, 0.12);
   font-family: var(--mono);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 700;
   color: #00f0ff;
-  box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.35), inset 0 0 14px rgba(0, 240, 255, 0.1);
+}
+
+.hero-badge .pulse-dot {
+  background: #facc15;
+  box-shadow: 0 0 12px #facc15;
+}
+
+.hero-badge .pulse-dot::after {
+  border-color: #facc15;
 }
 
 .hero-title {
   font-size: clamp(2.4rem, 4.6vw, 4.2rem);
   font-weight: 800;
   line-height: 0.98;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   color: #ffffff;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
 }
 
 .hero-title em {
   padding-right: 0.06em;
-  color: #f43f5e;
+  color: #facc15;
+  text-shadow: 0 0 24px rgba(250, 204, 21, 0.7), 0 0 45px rgba(250, 204, 21, 0.4);
 }
 
 .hero-sub {
@@ -6739,31 +6765,31 @@ select option {
 
 /* =========================================================
    Judge-Impressive Multi-Section Bespoke UI Architecture
-   Each section features its own distinctive material feel,
-   structural elevation, glowing contrast trims, and zero opacity clashes.
+   Electric Yellow Core + Vivid Neon Cyber Palette
+   (Neon Cyan, Neon Magenta, Neon Green, Neon Violet, Neon Orange)
    ========================================================= */
 
 /* Common Section Typography & Eyebrow Styling */
 .section .eyebrow {
   color: var(--section-accent, #00f0ff) !important;
   background: var(--section-accent-bg, rgba(0, 240, 255, 0.12)) !important;
-  border: 1px solid var(--section-accent-border, rgba(0, 240, 255, 0.4)) !important;
-  padding: 5px 14px;
+  border: 1px solid var(--section-accent-border, rgba(0, 240, 255, 0.5)) !important;
+  padding: 5px 16px;
   border-radius: 99px;
   font-family: var(--mono);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 0 16px var(--section-glow, rgba(0, 240, 255, 0.2));
+  box-shadow: 0 0 20px var(--section-glow, rgba(0, 240, 255, 0.35));
 }
 
 .section .eyebrow .pulse-dot {
   background: var(--section-accent, #00f0ff) !important;
-  box-shadow: 0 0 8px var(--section-accent, #00f0ff) !important;
+  box-shadow: 0 0 12px var(--section-accent, #00f0ff) !important;
 }
 
 .section-head h2 {
@@ -6773,15 +6799,16 @@ select option {
   font-weight: 800 !important;
   letter-spacing: -0.025em !important;
   line-height: 1.15 !important;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
 }
 
 .section-head h2 em {
-  color: var(--section-accent, #00f0ff) !important;
+  color: var(--section-accent, #facc15) !important;
   font-style: normal !important;
   font-weight: 800 !important;
   background: none !important;
   -webkit-text-fill-color: initial !important;
+  text-shadow: 0 0 22px var(--section-glow, rgba(250, 204, 21, 0.6)) !important;
 }
 
 .section-head p {
@@ -6792,24 +6819,24 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   1. PROBLEM & CLINICAL CHALLENGES: Clinical Investigation Dossier
-   Solid dark obsidian slate, top amber trim, two-tone problem/solution callouts
+   1. PROBLEM & CLINICAL CHALLENGES: High-Voltage Electric Neon Yellow
+   Solid dark obsidian slate, glowing neon yellow trim, neon amber badges
    ------------------------------------------------------------- */
 .problem-section {
-  --section-accent: #fbbf24;
-  --section-accent-bg: rgba(245, 158, 11, 0.15);
-  --section-accent-border: rgba(251, 191, 36, 0.5);
-  --section-glow: rgba(245, 158, 11, 0.3);
+  --section-accent: #facc15;
+  --section-accent-bg: rgba(250, 204, 21, 0.16);
+  --section-accent-border: rgba(250, 204, 21, 0.6);
+  --section-glow: rgba(250, 204, 21, 0.45);
 }
 
 .problem-section .problem-card {
   position: relative;
-  background: #0b1322 !important;
-  border: 1px solid rgba(251, 191, 36, 0.25) !important;
-  border-top: 3px solid #fbbf24 !important;
+  background: #09101e !important;
+  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  border-top: 3px solid #facc15 !important;
   border-radius: 18px !important;
   padding: 28px 24px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.1) !important;
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
   display: flex;
   flex-direction: column;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
@@ -6817,23 +6844,24 @@ select option {
 
 .problem-section .problem-card:hover {
   transform: translateY(-4px);
-  border-color: #fbbf24 !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.8), 0 0 32px rgba(245, 158, 11, 0.28) !important;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 35px rgba(250, 204, 21, 0.6), 0 24px 54px rgba(0, 0, 0, 0.85) !important;
 }
 
 .problem-section .problem-index {
   display: inline-block;
   align-self: flex-start;
   font-family: var(--mono) !important;
-  font-size: 12px !important;
+  font-size: 12.5px !important;
   font-weight: 800 !important;
   letter-spacing: 0.08em;
-  color: #fbbf24 !important;
-  background: rgba(251, 191, 36, 0.14) !important;
-  border: 1px solid rgba(251, 191, 36, 0.4) !important;
-  padding: 3px 10px;
+  color: #facc15 !important;
+  background: rgba(250, 204, 21, 0.18) !important;
+  border: 1px solid #facc15 !important;
+  padding: 4px 11px;
   border-radius: 6px;
   margin-bottom: 14px;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.45) !important;
 }
 
 .problem-section .problem-card h3 {
@@ -6849,12 +6877,14 @@ select option {
   padding: 12px 14px !important;
   border-radius: 10px !important;
   margin-bottom: 8px !important;
-  background: rgba(239, 68, 68, 0.06) !important;
-  border: 1px solid rgba(239, 68, 68, 0.18) !important;
+  background: rgba(255, 0, 85, 0.08) !important;
+  border: 1px solid rgba(255, 0, 85, 0.25) !important;
+  border-left: 3px solid #ff0055 !important;
+  box-shadow: inset 0 0 12px rgba(255, 0, 85, 0.08);
 }
 
 .problem-section .problem-row span {
-  color: #f87171 !important;
+  color: #ff5588 !important;
   font-weight: 700 !important;
   font-size: 11px !important;
   letter-spacing: 0.1em;
@@ -6868,13 +6898,15 @@ select option {
 }
 
 .problem-section .problem-row.is-solution {
-  background: rgba(16, 185, 129, 0.08) !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
-  border-left: 3px solid #10b981 !important;
+  background: rgba(0, 255, 136, 0.09) !important;
+  border: 1px solid rgba(0, 255, 136, 0.35) !important;
+  border-left: 3px solid #00ff88 !important;
+  box-shadow: 0 0 14px rgba(0, 255, 136, 0.18), inset 0 0 12px rgba(0, 255, 136, 0.06) !important;
 }
 
 .problem-section .problem-row.is-solution span {
-  color: #34d399 !important;
+  color: #00ff88 !important;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
 }
 
 .problem-section .problem-row.is-solution p {
@@ -6883,77 +6915,82 @@ select option {
 }
 
 .problem-section .problem-link {
-  color: #fbbf24 !important;
-  font-weight: 700 !important;
+  color: #facc15 !important;
+  font-weight: 800 !important;
   font-size: 13.5px !important;
   margin-top: auto;
   padding-top: 14px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
 }
 
 .problem-section .problem-link:hover {
   text-decoration: underline;
   color: #fef08a !important;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.8) !important;
 }
 
 /* -------------------------------------------------------------
-   2. DONOR JOURNEY TRACKER: Connected Medical Logistics Pipeline
+   2. DONOR JOURNEY TRACKER: Bio-Phosphor Neon Green & Cyan Pipeline
    ------------------------------------------------------------- */
 .journey-section {
-  --section-accent: #34d399;
-  --section-accent-bg: rgba(16, 185, 129, 0.14);
-  --section-accent-border: rgba(52, 211, 153, 0.45);
-  --section-glow: rgba(16, 185, 129, 0.25);
+  --section-accent: #00ff88;
+  --section-accent-bg: rgba(0, 255, 136, 0.15);
+  --section-accent-border: rgba(0, 255, 136, 0.55);
+  --section-glow: rgba(0, 255, 136, 0.45);
 }
 
 .journey-section .journey-specimen-select {
-  background: #081518 !important;
-  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+  background: #061618 !important;
+  border: 1px solid rgba(0, 255, 136, 0.4) !important;
   border-radius: 16px !important;
   padding: 16px 20px !important;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2) !important;
 }
 
 .journey-section .specimen-pill {
   background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #cbd5e1 !important;
 }
 
 .journey-section .specimen-pill:hover {
-  border-color: #34d399 !important;
-  background: rgba(16, 185, 129, 0.18) !important;
+  border-color: #00ff88 !important;
+  background: rgba(0, 255, 136, 0.2) !important;
   color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(0, 255, 136, 0.4) !important;
 }
 
 .journey-section .specimen-pill.is-active {
-  border-color: #34d399 !important;
+  border-color: #00ff88 !important;
   background: #059669 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.65) !important;
 }
 
 .journey-section .stepper-node.is-passed .node-indicator {
   background: #10b981 !important;
-  border-color: #34d399 !important;
+  border-color: #00ff88 !important;
   color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.6) !important;
 }
 
 .journey-section .stepper-node.is-active .node-indicator {
   background: #059669 !important;
-  border-color: #34d399 !important;
+  border-color: #00ff88 !important;
   color: #ffffff !important;
-  box-shadow: 0 0 24px rgba(52, 211, 153, 0.7) !important;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.9) !important;
 }
 
 .journey-section .bento-card,
 .journey-section .stage-card {
-  background: #071518 !important;
-  border: 1px solid rgba(52, 211, 153, 0.25) !important;
-  border-left: 4px solid #10b981 !important;
+  background: #061618 !important;
+  border: 1px solid rgba(0, 255, 136, 0.35) !important;
+  border-left: 4px solid #00ff88 !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+  box-shadow: 0 0 24px rgba(0, 255, 136, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 .journey-section .stage-title-wrap h3 {
@@ -6962,8 +6999,8 @@ select option {
 }
 
 .journey-section .fraction-item {
-  background: rgba(16, 185, 129, 0.08) !important;
-  border: 1px solid rgba(52, 211, 153, 0.25) !important;
+  background: rgba(0, 255, 136, 0.08) !important;
+  border: 1px solid rgba(0, 255, 136, 0.3) !important;
   border-radius: 12px !important;
 }
 
@@ -6972,56 +7009,63 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   3. DONOR DIRECTORY & CONSOLE: Clinical Workstation & Credentials
+   3. DONOR DIRECTORY & CONSOLE: Cyber Neon Magenta & Neon Yellow
    ------------------------------------------------------------- */
 .finder-section {
-  --section-accent: #fb7185;
-  --section-accent-bg: rgba(244, 63, 94, 0.14);
-  --section-accent-border: rgba(251, 113, 133, 0.45);
-  --section-glow: rgba(244, 63, 94, 0.25);
+  --section-accent: #ff007f;
+  --section-accent-bg: rgba(255, 0, 127, 0.16);
+  --section-accent-border: rgba(255, 0, 127, 0.55);
+  --section-glow: rgba(255, 0, 127, 0.45);
 }
 
 .finder-section .donor-console {
-  background: #090e1b !important;
-  border: 1px solid rgba(244, 63, 94, 0.3) !important;
+  background: #0a0e1c !important;
+  border: 1px solid rgba(255, 0, 127, 0.4) !important;
   border-radius: 20px !important;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 0 30px rgba(255, 0, 127, 0.25), 0 18px 48px rgba(0, 0, 0, 0.75) !important;
   padding: 24px !important;
 }
 
 .finder-section .console-group-pill {
   background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #e2e8f0 !important;
 }
 
 .finder-section .console-group-pill:hover {
-  border-color: #fb7185 !important;
-  background: rgba(244, 63, 94, 0.18) !important;
+  border-color: #ff007f !important;
+  background: rgba(255, 0, 127, 0.2) !important;
   color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(255, 0, 127, 0.4) !important;
 }
 
 .finder-section .console-group-pill.is-active {
-  border-color: #fb7185 !important;
-  background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%) !important;
+  border-color: #ff007f !important;
+  background: linear-gradient(135deg, #ff007f 0%, #be123c 100%) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 20px rgba(244, 63, 94, 0.5) !important;
+  box-shadow: 0 0 24px rgba(255, 0, 127, 0.7) !important;
+}
+
+.finder-section .console-group-pill .pill-count {
+  background: rgba(0, 0, 0, 0.35) !important;
+  color: #facc15 !important;
+  font-weight: 800 !important;
 }
 
 .finder-section .donor-card {
   background: #0c1424 !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid #f43f5e !important;
+  border-left: 3px solid #ff007f !important;
   border-radius: 16px !important;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 0 18px rgba(255, 0, 127, 0.2), 0 10px 28px rgba(0, 0, 0, 0.6) !important;
   padding: 20px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .finder-section .donor-card:hover {
   transform: translateY(-3px);
-  border-color: #fb7185 !important;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(244, 63, 94, 0.3) !important;
+  border-color: #ff007f !important;
+  box-shadow: 0 0 32px rgba(255, 0, 127, 0.5), 0 18px 40px rgba(0, 0, 0, 0.8) !important;
 }
 
 .finder-section .donor-name-row h3 {
@@ -7031,47 +7075,48 @@ select option {
 }
 
 .finder-section .donor-group {
-  color: #fb7185 !important;
+  color: #ff007f !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 12px rgba(251, 113, 133, 0.5) !important;
+  text-shadow: 0 0 14px rgba(255, 0, 127, 0.7) !important;
 }
 
 .finder-section .metric-val {
-  color: #ffffff !important;
+  color: #facc15 !important;
   font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5) !important;
 }
 
 /* -------------------------------------------------------------
-   4. URGENT REQUISITIONS: Hospital Emergency Triage Board
+   4. URGENT REQUISITIONS: Solar Flare Neon Orange & Neon Yellow
    ------------------------------------------------------------- */
 .requests-section {
-  --section-accent: #fb923c;
-  --section-accent-bg: rgba(249, 115, 22, 0.14);
-  --section-accent-border: rgba(251, 146, 60, 0.45);
-  --section-glow: rgba(249, 115, 22, 0.25);
+  --section-accent: #ff8800;
+  --section-accent-bg: rgba(255, 136, 0, 0.16);
+  --section-accent-border: rgba(255, 136, 0, 0.55);
+  --section-glow: rgba(255, 136, 0, 0.45);
 }
 
 .requests-section .filter-pill.is-active {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  background: linear-gradient(135deg, #ff8800 0%, #ea580c 100%) !important;
   color: #ffffff !important;
-  border-color: #fb923c !important;
-  box-shadow: 0 0 18px rgba(249, 115, 22, 0.5) !important;
+  border-color: #ff8800 !important;
+  box-shadow: 0 0 22px rgba(255, 136, 0, 0.65) !important;
 }
 
 .requests-section .request-card {
-  background: #120e1c !important;
-  border: 1px solid rgba(249, 115, 22, 0.3) !important;
-  border-top: 3px solid #f97316 !important;
+  background: #140d1e !important;
+  border: 1px solid rgba(255, 136, 0, 0.35) !important;
+  border-top: 3px solid #ff8800 !important;
   border-radius: 18px !important;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 22px rgba(255, 136, 0, 0.25), 0 14px 36px rgba(0, 0, 0, 0.65) !important;
   padding: 24px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .requests-section .request-card:hover {
   transform: translateY(-4px);
-  border-color: #fb923c !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.75), 0 0 28px rgba(249, 115, 22, 0.3) !important;
+  border-color: #ff8800 !important;
+  box-shadow: 0 0 35px rgba(255, 136, 0, 0.6), 0 20px 48px rgba(0, 0, 0, 0.8) !important;
 }
 
 .requests-section .request-card h3 {
@@ -7081,47 +7126,50 @@ select option {
 }
 
 .requests-section .request-units {
-  color: #ffffff !important;
+  color: #facc15 !important;
+  font-size: 1.85rem !important;
   font-weight: 800 !important;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.65) !important;
 }
 
 .requests-section .request-need {
-  background: rgba(249, 115, 22, 0.12) !important;
-  border-left: 3px solid #f97316 !important;
+  background: rgba(255, 136, 0, 0.14) !important;
+  border-left: 3px solid #ff8800 !important;
   color: #ffedd5 !important;
   font-size: 13.5px !important;
   line-height: 1.5 !important;
   border-radius: 0 8px 8px 0 !important;
+  box-shadow: inset 0 0 12px rgba(255, 136, 0, 0.08) !important;
 }
 
 /* -------------------------------------------------------------
-   5. GEOSPATIAL DISPATCH RADAR: Tactical Radar Station
+   5. GEOSPATIAL DISPATCH RADAR: Electric Cyber Neon Cyan
    ------------------------------------------------------------- */
 .radar-section {
   --section-accent: #00f0ff;
-  --section-accent-bg: rgba(0, 240, 255, 0.14);
-  --section-accent-border: rgba(0, 240, 255, 0.45);
-  --section-glow: rgba(0, 240, 255, 0.25);
+  --section-accent-bg: rgba(0, 240, 255, 0.16);
+  --section-accent-border: rgba(0, 240, 255, 0.55);
+  --section-glow: rgba(0, 240, 255, 0.45);
 }
 
 .radar-section .radar-shell {
   background: #020712 !important;
-  border: 1px solid rgba(0, 240, 255, 0.35) !important;
+  border: 1px solid rgba(0, 240, 255, 0.45) !important;
   border-radius: 24px !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), inset 0 0 32px rgba(0, 240, 255, 0.05) !important;
+  box-shadow: 0 0 45px rgba(0, 240, 255, 0.3), 0 24px 64px rgba(0, 0, 0, 0.85), inset 0 0 32px rgba(0, 240, 255, 0.08) !important;
 }
 
 .radar-section .radar-scope {
   background: #030814 !important;
-  border: 2px solid rgba(0, 240, 255, 0.5) !important;
-  box-shadow: 0 0 36px rgba(0, 240, 255, 0.25) !important;
+  border: 2px solid #00f0ff !important;
+  box-shadow: 0 0 45px rgba(0, 240, 255, 0.5), inset 0 0 24px rgba(0, 240, 255, 0.15) !important;
 }
 
 .radar-section .lock-card {
   background: #061122 !important;
-  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+  border: 1px solid rgba(0, 240, 255, 0.35) !important;
   border-radius: 16px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2), 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
 
 .radar-section .lock-card h3 {
@@ -7129,40 +7177,42 @@ select option {
 }
 
 .radar-section .lock-stats dd {
-  color: #00f0ff !important;
-  text-shadow: 0 0 12px rgba(0, 240, 255, 0.5) !important;
+  color: #facc15 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 0 14px rgba(250, 204, 21, 0.65) !important;
 }
 
 /* -------------------------------------------------------------
-   6. CRISIS SURGE FORECASTER: War-Room Disaster Simulation Console
+   6. CRISIS SURGE FORECASTER: High-Voltage Neon Yellow War-Room
    ------------------------------------------------------------- */
 .surge-section {
   --section-accent: #facc15;
-  --section-accent-bg: rgba(250, 204, 21, 0.14);
-  --section-accent-border: rgba(250, 204, 21, 0.45);
-  --section-glow: rgba(250, 204, 21, 0.25);
+  --section-accent-bg: rgba(250, 204, 21, 0.18);
+  --section-accent-border: rgba(250, 204, 21, 0.6);
+  --section-glow: rgba(250, 204, 21, 0.5);
 }
 
 .surge-section .scenario-toggles-bar {
   background: #141108 !important;
-  border: 1px solid rgba(250, 204, 21, 0.3) !important;
+  border: 1px solid rgba(250, 204, 21, 0.4) !important;
   border-radius: 16px !important;
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.2) !important;
 }
 
 .surge-section .scenario-toggle-btn.is-active {
-  background: rgba(250, 204, 21, 0.25) !important;
-  color: #fef08a !important;
+  background: rgba(250, 204, 21, 0.28) !important;
+  color: #ffffff !important;
   border-color: #facc15 !important;
-  box-shadow: 0 0 16px rgba(250, 204, 21, 0.35) !important;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.6) !important;
 }
 
 .surge-section .surge-chart-card,
 .surge-section .surge-telemetry-card {
   background: #141108 !important;
-  border: 1px solid rgba(250, 204, 21, 0.28) !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
   border-top: 3px solid #facc15 !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.3), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 .surge-section .surge-chart-header h3 {
@@ -7171,16 +7221,17 @@ select option {
 }
 
 .surge-section .depletion-clock-block {
-  background: rgba(250, 204, 21, 0.12) !important;
-  border: 1px solid rgba(250, 204, 21, 0.35) !important;
+  background: rgba(250, 204, 21, 0.14) !important;
+  border: 1px solid rgba(250, 204, 21, 0.5) !important;
   border-radius: 12px !important;
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.25) !important;
 }
 
 .surge-section .clock-digits .big-num {
   color: #facc15 !important;
   font-family: var(--mono) !important;
   font-weight: 800 !important;
-  text-shadow: 0 0 20px rgba(250, 204, 21, 0.55) !important;
+  text-shadow: 0 0 28px rgba(250, 204, 21, 0.9), 0 0 50px rgba(250, 204, 21, 0.5) !important;
 }
 
 .surge-section .spec-row strong {
@@ -7188,47 +7239,48 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   7. TRANSFUSION MEDICINE LAB: Precision Laboratory Bench Instrument
+   7. TRANSFUSION MEDICINE LAB: Ultraviolet Cyber Violet & Neon Cyan
    ------------------------------------------------------------- */
 .lab-section {
   --section-accent: #c084fc;
-  --section-accent-bg: rgba(168, 85, 247, 0.14);
-  --section-accent-border: rgba(192, 132, 252, 0.45);
-  --section-glow: rgba(168, 85, 247, 0.25);
+  --section-accent-bg: rgba(168, 85, 247, 0.16);
+  --section-accent-border: rgba(192, 132, 252, 0.55);
+  --section-glow: rgba(168, 85, 247, 0.45);
 }
 
 .lab-section .adv-lab-shell {
   background: #0f0a1c !important;
-  border: 1px solid rgba(192, 132, 252, 0.35) !important;
+  border: 1px solid rgba(192, 132, 252, 0.4) !important;
   border-top: 3px solid #a855f7 !important;
   border-radius: 20px !important;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.3), 0 18px 48px rgba(0, 0, 0, 0.75) !important;
 }
 
 .lab-section .adv-lab-tab.is-active {
-  background: rgba(168, 85, 247, 0.28) !important;
+  background: rgba(168, 85, 247, 0.32) !important;
   color: #ffffff !important;
   border-color: #c084fc !important;
-  box-shadow: 0 0 18px rgba(168, 85, 247, 0.4) !important;
+  box-shadow: 0 0 22px rgba(168, 85, 247, 0.6) !important;
 }
 
 .lab-section .flight-hud-frame,
 .lab-section .microscope-frame {
   background: #080310 !important;
-  border: 2px solid rgba(192, 132, 252, 0.35) !important;
+  border: 2px solid rgba(192, 132, 252, 0.45) !important;
   border-radius: 16px !important;
+  box-shadow: 0 0 30px rgba(192, 132, 252, 0.25) !important;
 }
 
 .lab-section .donor-candidate-btn {
   background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
 }
 
 .lab-section .donor-candidate-btn.is-selected {
-  background: rgba(168, 85, 247, 0.25) !important;
+  background: rgba(168, 85, 247, 0.28) !important;
   border-color: #c084fc !important;
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
 }
 
 .lab-section .cand-info strong {
@@ -7240,29 +7292,29 @@ select option {
 }
 
 /* -------------------------------------------------------------
-   8. REGIONAL BLOOD BANKS: Municipal Cold-Chain Inventory Network
+   8. REGIONAL BLOOD BANKS: Bio-Neon Teal & Flashing Neon Yellow
    ------------------------------------------------------------- */
 .banks-section {
-  --section-accent: #2dd4bf;
-  --section-accent-bg: rgba(45, 212, 191, 0.14);
-  --section-accent-border: rgba(45, 212, 191, 0.45);
-  --section-glow: rgba(45, 212, 191, 0.25);
+  --section-accent: #00ffcc;
+  --section-accent-bg: rgba(0, 255, 204, 0.16);
+  --section-accent-border: rgba(0, 255, 204, 0.55);
+  --section-glow: rgba(0, 255, 204, 0.45);
 }
 
 .banks-section .bank-card {
   background: #081618 !important;
-  border: 1px solid rgba(45, 212, 191, 0.28) !important;
-  border-top: 3px solid #2dd4bf !important;
+  border: 1px solid rgba(0, 255, 204, 0.35) !important;
+  border-top: 3px solid #00ffcc !important;
   border-radius: 18px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65) !important;
+  box-shadow: 0 0 24px rgba(0, 255, 204, 0.25), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
   padding: 24px !important;
   transition: transform 0.25s var(--ease), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .banks-section .bank-card:hover {
   transform: translateY(-4px);
-  border-color: #2dd4bf !important;
-  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(45, 212, 191, 0.3) !important;
+  border-color: #00ffcc !important;
+  box-shadow: 0 0 35px rgba(0, 255, 204, 0.6), 0 22px 50px rgba(0, 0, 0, 0.8) !important;
 }
 
 .banks-section .bank-card h3 {
@@ -7272,24 +7324,26 @@ select option {
 }
 
 .banks-section .type-tag.is-bank {
-  background: rgba(45, 212, 191, 0.2) !important;
-  border: 1px solid rgba(45, 212, 191, 0.45) !important;
-  color: #5eead4 !important;
+  background: rgba(0, 255, 204, 0.2) !important;
+  border: 1px solid rgba(0, 255, 204, 0.5) !important;
+  color: #00ffcc !important;
+  text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
 }
 
 .banks-section .type-tag.is-hosp {
-  background: rgba(56, 189, 248, 0.2) !important;
-  border: 1px solid rgba(56, 189, 248, 0.45) !important;
-  color: #7dd3fc !important;
+  background: rgba(0, 240, 255, 0.2) !important;
+  border: 1px solid rgba(0, 240, 255, 0.5) !important;
+  color: #38bdf8 !important;
 }
 
 .banks-section .bank-hours {
-  color: #2dd4bf !important;
+  color: #00ffcc !important;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
 }
 
 .banks-section .stock-chip {
   background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   color: #ffffff !important;
 }
 
@@ -7298,39 +7352,40 @@ select option {
 }
 
 .banks-section .stock-chip.is-low {
-  border-color: rgba(250, 204, 21, 0.5) !important;
-  background: rgba(250, 204, 21, 0.18) !important;
+  border-color: #facc15 !important;
+  background: rgba(250, 204, 21, 0.22) !important;
   color: #fef08a !important;
+  box-shadow: 0 0 16px rgba(250, 204, 21, 0.55) !important;
 }
 
 /* -------------------------------------------------------------
-   9. CLINICAL GUIDELINES & STANDARDS: Accredited Medical Handbook
+   9. CLINICAL GUIDELINES & STANDARDS: Electric Sky Neon & Yellow
    ------------------------------------------------------------- */
 .donate-section {
   --section-accent: #38bdf8;
-  --section-accent-bg: rgba(56, 189, 248, 0.14);
-  --section-accent-border: rgba(56, 189, 248, 0.45);
-  --section-glow: rgba(56, 189, 248, 0.25);
+  --section-accent-bg: rgba(56, 189, 248, 0.16);
+  --section-accent-border: rgba(56, 189, 248, 0.55);
+  --section-glow: rgba(56, 189, 248, 0.45);
 }
 
 .donate-section .guide-item {
   background: #081122 !important;
-  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
   border-left: 3px solid #38bdf8 !important;
   border-radius: 16px !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55) !important;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), 0 12px 32px rgba(0, 0, 0, 0.6) !important;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .donate-section .guide-item:hover {
   border-color: #38bdf8 !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(56, 189, 248, 0.25) !important;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.5), 0 16px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 .donate-section .guide-item.is-open {
   border-color: #38bdf8 !important;
   background: #0a152a !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 28px rgba(56, 189, 248, 0.3) !important;
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.55), 0 20px 48px rgba(0, 0, 0, 0.75) !important;
 }
 
 .donate-section .guide-trigger strong {
@@ -7347,9 +7402,9 @@ select option {
 
 .donate-section .info-card {
   background: #091326 !important;
-  border: 1px solid rgba(56, 189, 248, 0.28) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
   border-radius: 18px !important;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.25), 0 14px 36px rgba(0, 0, 0, 0.65) !important;
 }
 
 .donate-section .info-card .panel-label {
@@ -7366,9 +7421,10 @@ select option {
 }
 
 .donate-section .eligibility-list strong {
-  color: #ffffff !important;
+  color: #facc15 !important;
   font-family: var(--mono) !important;
   font-weight: 700 !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.5) !important;
 }
 
 .donate-section .myth-text {
@@ -7377,9 +7433,9 @@ select option {
   font-size: 1.3rem !important;
   font-weight: 600 !important;
   line-height: 1.4 !important;
-  color: #f87171 !important;
+  color: #ff5588 !important;
   text-decoration: line-through !important;
-  text-decoration-color: rgba(239, 68, 68, 0.6) !important;
+  text-decoration-color: rgba(255, 0, 85, 0.7) !important;
 }
 
 .donate-section .fact-text {
@@ -7389,17 +7445,18 @@ select option {
 }
 
 .donate-section .fact-text strong {
-  color: #34d399 !important;
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
 }
 
 /* -------------------------------------------------------------
-   10. FINAL CALL TO ACTION: Unified Hospital & Donor Network Banner
+   10. FINAL CALL TO ACTION: Futuristic Multi-Spectral Neon Aurora
    ------------------------------------------------------------- */
 .cta-band {
-  background: linear-gradient(135deg, rgba(225, 29, 72, 0.25) 0%, rgba(168, 85, 247, 0.25) 50%, rgba(14, 165, 233, 0.25) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background: linear-gradient(135deg, rgba(255, 0, 127, 0.28) 0%, rgba(168, 85, 247, 0.28) 35%, rgba(0, 240, 255, 0.28) 70%, rgba(250, 204, 21, 0.28) 100%) !important;
+  border: 1px solid rgba(250, 204, 21, 0.5) !important;
   border-radius: 24px !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75), 0 0 40px rgba(168, 85, 247, 0.25) !important;
+  box-shadow: 0 0 50px rgba(250, 204, 21, 0.35), 0 24px 64px rgba(0, 0, 0, 0.85) !important;
   padding: 44px 36px !important;
 }
 
